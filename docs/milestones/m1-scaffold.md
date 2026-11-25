@@ -59,7 +59,7 @@
 **CI and docs**
 
 - [x] `.github/workflows/ci.yml`: install, lint, format check, type check, test, build, Docker build
-- [ ] Branch protection on `main` requiring a green pipeline
+- [x] Branch protection on `main` requiring a green pipeline
 - [x] README with start instructions
 - [x] Architecture and milestone documentation
 
