@@ -49,7 +49,6 @@ FR-01, FR-02, FR-03, NFR-04
 - [x] Run details page showing the brief and the uploads
 - [x] Dark theme by default with a light/dark toggle
 - [x] Length limits in `BRIEF_LIMITS` (shared), used by the API schema, the form (`maxLength`, placeholders, character counters) and the database (`VARCHAR` columns and a `CHECK` constraint on the brief JSON), with a test that keeps them in sync
-- [x] Buttons: pointer cursor; disabled buttons show `not-allowed` and ignore hover
 - [x] Component tests with Testing Library and MSW
 
 ## Exit criteria
