@@ -1,7 +1,9 @@
 import {
   Brief,
+  ListQuery,
   OutputLanguage,
   type RunDetailDto,
+  type RunListResponse,
   type RunSummaryDto,
 } from '@ai-post-recipe/shared'
 import type { Request, Response } from 'express'
@@ -20,9 +22,13 @@ export class RunController {
     res.status(201).json(toRunSummaryDto(run))
   }
 
-  list = async (_req: Request, res: Response) => {
-    const runs = await this.runs.list()
-    res.json(runs.map(toRunSummaryDto))
+  list = async (req: Request, res: Response) => {
+    const result = await this.runs.list(validate(ListQuery, req.query))
+    const body: RunListResponse = {
+      ...result,
+      items: result.items.map(toRunSummaryDto),
+    }
+    res.json(body)
   }
 
   get = async (req: Request<{ id: string }>, res: Response) => {

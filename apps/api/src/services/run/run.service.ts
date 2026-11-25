@@ -1,4 +1,4 @@
-import type { Brief } from '@ai-post-recipe/shared'
+import type { Brief, ListQuery } from '@ai-post-recipe/shared'
 
 import { NotFoundError } from '../../lib/errors.js'
 import type { AssetRepo } from '../../repositories/asset/asset.repo.js'
@@ -19,8 +19,15 @@ export class RunService {
     })
   }
 
-  list() {
-    return this.runs.list()
+  async list(query: ListQuery) {
+    const { items, total } = await this.runs.list(query)
+    return {
+      items,
+      total,
+      page: query.page,
+      size: query.size,
+      totalPages: Math.ceil(total / query.size),
+    }
   }
 
   async get(id: string) {

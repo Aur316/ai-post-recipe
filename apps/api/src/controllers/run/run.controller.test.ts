@@ -1,6 +1,9 @@
 import {
+  DEFAULT_PAGE_SIZE,
   ErrorResponse,
+  MAX_PAGE_SIZE,
   RunDetailDto,
+  RunListResponse,
   RunSummaryDto,
 } from '@ai-post-recipe/shared'
 import request from 'supertest'
@@ -45,16 +48,37 @@ describe('runs', () => {
     expect(paths).toEqual(expect.arrayContaining(['instagramUrl', 'products']))
   })
 
-  it('lists runs newest first', async () => {
+  it('lists runs newest first, one page at a time', async () => {
     const first = RunSummaryDto.parse((await createRun()).body)
     const second = RunSummaryDto.parse((await createRun()).body)
 
-    const res = await request(ctx.app).get('/api/runs')
-    const ids = (res.body as Array<RunSummaryDto>).map((r) => r.id)
+    const page1 = RunListResponse.parse(
+      (await request(ctx.app).get('/api/runs?page=1&size=1')).body,
+    )
+    const page2 = RunListResponse.parse(
+      (await request(ctx.app).get('/api/runs?page=2&size=1')).body,
+    )
 
-    expect(res.status).toBe(200)
-    expect(ids.indexOf(second.id)).toBeLessThan(ids.indexOf(first.id))
+    expect(page1.items.map((r) => r.id)).toEqual([second.id])
+    expect(page2.items.map((r) => r.id)).toEqual([first.id])
+    expect(page1).toMatchObject({ page: 1, size: 1 })
+    expect(page1.totalPages).toBe(page1.total)
   })
+
+  it('uses the default page size', async () => {
+    const res = await request(ctx.app).get('/api/runs')
+
+    expect(RunListResponse.parse(res.body).size).toBe(DEFAULT_PAGE_SIZE)
+  })
+
+  it.each(['size=0', `size=${MAX_PAGE_SIZE + 1}`, 'page=0', 'page=abc'])(
+    'rejects an invalid page query (%s)',
+    async (query) => {
+      expect((await request(ctx.app).get(`/api/runs?${query}`)).status).toBe(
+        400,
+      )
+    },
+  )
 
   it('returns a run with its brief and uploads', async () => {
     const { id } = RunSummaryDto.parse((await createRun()).body)

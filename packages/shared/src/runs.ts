@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { AssetDto } from './assets.js'
+import { paginated } from './pagination.js'
 
 export const OutputLanguage = z.enum(['hr', 'en'])
 export type OutputLanguage = z.infer<typeof OutputLanguage>
@@ -110,3 +111,6 @@ export const RunDetailDto = RunSummaryDto.extend({
   assets: z.array(AssetDto),
 })
 export type RunDetailDto = z.infer<typeof RunDetailDto>
+
+export const RunListResponse = paginated(RunSummaryDto)
+export type RunListResponse = z.infer<typeof RunListResponse>

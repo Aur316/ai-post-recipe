@@ -1,12 +1,22 @@
+import { DEFAULT_PAGE_SIZE } from '@ai-post-recipe/shared'
+import useInfiniteScroll from 'react-infinite-scroll-hook'
 import { Link } from 'react-router'
 
+import { InfiniteScrollSpinner } from '@/components/infinite-scroll-spinner'
 import { RunStatusBadge } from '@/components/run-status-badge'
 import { Button } from '@/components/ui/button'
 
-import { useGetRuns } from '@/hooks/queries/runs/useGetRuns'
+import { useGetRunsInfinite } from '@/hooks/queries/runs/useGetRunsInfinite'
 
 export function Runs() {
-  const { data: runs, isPending } = useGetRuns()
+  const { runs, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } =
+    useGetRunsInfinite({ params: { page: 1, size: DEFAULT_PAGE_SIZE } })
+
+  const [sentryRef] = useInfiniteScroll({
+    loading: isPending || isFetchingNextPage,
+    hasNextPage,
+    onLoadMore: () => void fetchNextPage(),
+  })
 
   return (
     <section className="space-y-6">
@@ -18,12 +28,12 @@ export function Runs() {
       </div>
 
       {isPending && <p className="text-muted-foreground">Loading…</p>}
-      {runs?.length === 0 && (
+      {!isPending && runs.length === 0 && (
         <p className="text-muted-foreground">
           No runs yet. Start one with a brand brief.
         </p>
       )}
-      {!!runs?.length && (
+      {runs.length > 0 && (
         <ul className="divide-y rounded-lg border">
           {runs.map((run) => (
             <li key={run.id}>
@@ -43,6 +53,11 @@ export function Runs() {
           ))}
         </ul>
       )}
+      <InfiniteScrollSpinner
+        sentryRef={sentryRef}
+        isFetchingNextPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+      />
     </section>
   )
 }

@@ -42,10 +42,10 @@ FR-01, FR-02, FR-03, NFR-04
 **Web**
 
 - [x] Routing: runs (`/`), new run (`/runs/new`), run details (`/runs/:id`)
-- [x] Query layer: axios `httpClient`, query keys and query functions per domain, one hook per file (`useGetRuns`, `useGetRunById`, `useCreateRun`, `useUploadAsset`)
+- [x] Query layer: axios `httpClient`, query keys and query functions per domain, one hook per file (`useGetRunsInfinite`, `useGetRunById`, `useCreateRun`, `useUploadAsset`)
 - [x] `brief-form` with React Hook Form and the Zod resolver, as a four-step wizard with link, product and inspiration lists
 - [x] `asset-uploader` with drag and drop, thumbnails, file type per upload, client-side checks and upload progress
-- [x] Runs list with status badges and an empty state
+- [x] Runs list with status badges and an empty state, loaded as an infinite query (20 per page, `DEFAULT_PAGE_SIZE` in shared) with a paginated `GET /api/runs`
 - [x] Run details page showing the brief and the uploads
 - [x] Dark theme by default with a light/dark toggle
 - [x] Length limits in `BRIEF_LIMITS` (shared), used by the API schema, the form (`maxLength`, placeholders, character counters) and the database (`VARCHAR` columns and a `CHECK` constraint on the brief JSON), with a test that keeps them in sync

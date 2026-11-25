@@ -9,7 +9,17 @@ describe('Theme toggle', () => {
   beforeEach(() => {
     document.documentElement.classList.add('dark')
     localStorage.clear()
-    server.use(http.get('/api/runs', () => HttpResponse.json([])))
+    server.use(
+      http.get('/api/runs', () =>
+        HttpResponse.json({
+          items: [],
+          total: 0,
+          page: 1,
+          size: 20,
+          totalPages: 0,
+        }),
+      ),
+    )
   })
 
   it('starts dark and switches to light and back, remembering the choice', async () => {

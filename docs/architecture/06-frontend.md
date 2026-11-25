@@ -26,7 +26,7 @@ apps/web/src/
 │  ├─ query-keys/           # key factories per domain: all, lists(), details(), detail(id)
 │  └─ query-functions/      # plain functions per domain that call httpClient
 ├─ hooks/
-│  ├─ queries/<domain>/     # useGetRuns, useGetRunById, useCreateRun, useUploadAsset, …
+│  ├─ queries/<domain>/     # useGetRunsInfinite, useGetRunById, useCreateRun, useUploadAsset, …
 │  └─ useTheme.ts           # other hooks
 ├─ layouts/                 # app-layout: header, theme toggle, toaster
 ├─ pages/                   # runs, add-run, run-details
@@ -42,6 +42,7 @@ apps/web/src/
 - **Query keys** live in `data/query-keys/<domain>.ts` as a factory, so invalidation can target all lists or one detail.
 - **Query functions** live in `data/query-functions/<domain>.ts` and only call `httpClient`; types come from `packages/shared`.
 - **Hooks** live in `hooks/queries/<domain>/`, one per file. Query hooks take optional `queryOptions`; mutation hooks invalidate the affected keys and show an error toast.
+- **Lists are infinite queries**: `use<Name>Infinite({ params, queryOptions })` takes `{ page: 1, size: DEFAULT_PAGE_SIZE }` (20, from `packages/shared`), asks for the next page while `page < totalPages`, and returns the flattened items with `hasNextPage` and `fetchNextPage`. The page renders an `InfiniteScrollSpinner` after the last item; `react-infinite-scroll-hook` loads the next page when it scrolls into view.
 - Failed queries show a toast from the shared `QueryCache` handler; form errors are shown next to their fields.
 
 ## Theme

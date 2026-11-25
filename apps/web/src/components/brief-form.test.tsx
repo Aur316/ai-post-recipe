@@ -53,7 +53,15 @@ describe('Brief form', () => {
       http.get('/api/runs/r1', () =>
         HttpResponse.json({ ...createdRun, brief: {}, assets: [] }),
       ),
-      http.get('/api/runs', () => HttpResponse.json([])),
+      http.get('/api/runs', () =>
+        HttpResponse.json({
+          items: [],
+          total: 0,
+          page: 1,
+          size: 20,
+          totalPages: 0,
+        }),
+      ),
     )
     const router = renderRoute('/runs/new')
 
