@@ -9,7 +9,7 @@ import {
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
 
-import { createTestContext, png } from '../../test/context.js'
+import { UNKNOWN_ID, createTestContext, png } from '../../test/context.js'
 import { gymbeamBrief } from '../../test/fixtures.js'
 
 describe('runs', () => {
@@ -99,6 +99,21 @@ describe('runs', () => {
   })
 
   it('returns 404 for an unknown run', async () => {
-    expect((await request(ctx.app).get('/api/runs/missing')).status).toBe(404)
+    expect((await request(ctx.app).get(`/api/runs/${UNKNOWN_ID}`)).status).toBe(
+      404,
+    )
+  })
+
+  it('returns 400 for a malformed id', async () => {
+    expect((await request(ctx.app).get('/api/runs/not-a-uuid')).status).toBe(
+      400,
+    )
+  })
+
+  it('creates runs with time-ordered UUID v7 ids', async () => {
+    const { id } = RunSummaryDto.parse((await createRun()).body)
+    expect(id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    )
   })
 })

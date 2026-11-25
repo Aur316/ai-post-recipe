@@ -1,5 +1,6 @@
 import {
   Brief,
+  IdParams,
   ListQuery,
   OutputLanguage,
   type RunDetailDto,
@@ -31,8 +32,9 @@ export class RunController {
     res.json(body)
   }
 
-  get = async (req: Request<{ id: string }>, res: Response) => {
-    const { run, assets } = await this.runs.get(req.params.id)
+  get = async (req: Request, res: Response) => {
+    const { id } = validate(IdParams, req.params)
+    const { run, assets } = await this.runs.get(id)
     const body: RunDetailDto = {
       ...toRunSummaryDto(run),
       brief: Brief.parse(run.brief),

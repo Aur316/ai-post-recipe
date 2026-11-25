@@ -51,7 +51,7 @@ enum AssetKind {
 /// Length limits mirror BRIEF_LIMITS in packages/shared; the brief JSON fields are
 /// limited by the run_brief_text_limits CHECK constraint (see the migrations).
 model Run {
-  id        String     @id @default(cuid())
+  id        String     @id @default(uuid(7)) @db.Uuid
   brandName String     @db.VarChar(120)
   instagram String     @db.VarChar(2048)
   language  String     @default("hr")
@@ -66,8 +66,8 @@ model Run {
 }
 
 model PhaseRun {
-  id           String      @id @default(cuid())
-  runId        String
+  id           String      @id @default(uuid(7)) @db.Uuid
+  runId        String      @db.Uuid
   run          Run         @relation(fields: [runId], references: [id], onDelete: Cascade)
   phase        PhaseKey
   attempt      Int         @default(1)
@@ -91,8 +91,8 @@ model PhaseRun {
 }
 
 model Source {
-  id        String   @id @default(cuid())
-  runId     String
+  id        String   @id @default(uuid(7)) @db.Uuid
+  runId     String   @db.Uuid
   run       Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
   url       String
   title     String?
@@ -104,8 +104,8 @@ model Source {
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  runId     String
+  id        String   @id @default(uuid(7)) @db.Uuid
+  runId     String   @db.Uuid
   run       Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
   /// 1, 2 or 3.
   index     Int
@@ -123,8 +123,8 @@ model Post {
 }
 
 model Asset {
-  id         String    @id @default(cuid())
-  runId      String
+  id         String    @id @default(uuid(7)) @db.Uuid
+  runId      String    @db.Uuid
   run        Run       @relation(fields: [runId], references: [id], onDelete: Cascade)
   kind       AssetKind
   storageKey String    @unique

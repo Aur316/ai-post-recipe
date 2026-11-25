@@ -32,3 +32,7 @@ export interface Paginated<T> {
   size: number
   totalPages: number
 }
+
+/** Route parameter of every `/:id` endpoint. */
+export const IdParams = z.object({ id: z.uuid('Not a valid id') })
+export type IdParams = z.infer<typeof IdParams>

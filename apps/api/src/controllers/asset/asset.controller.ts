@@ -1,4 +1,8 @@
-import { type AssetDto, UploadAssetBody } from '@ai-post-recipe/shared'
+import {
+  type AssetDto,
+  IdParams,
+  UploadAssetBody,
+} from '@ai-post-recipe/shared'
 import type { Request, Response } from 'express'
 
 import type { Asset } from '../../generated/prisma/client.js'
@@ -9,12 +13,13 @@ import type { AssetService } from '../../services/asset/asset.service.js'
 export class AssetController {
   constructor(private readonly assets: AssetService) {}
 
-  upload = async (req: Request<{ id: string }>, res: Response) => {
+  upload = async (req: Request, res: Response) => {
+    const { id: runId } = validate(IdParams, req.params)
     const { kind } = validate(UploadAssetBody, req.body)
     if (!req.file) throw new ValidationError('A "file" field is required')
 
     const asset = await this.assets.upload({
-      runId: req.params.id,
+      runId,
       kind,
       mimeType: req.file.mimetype,
       buffer: req.file.buffer,
@@ -22,8 +27,9 @@ export class AssetController {
     res.status(201).json(toAssetDto(asset))
   }
 
-  download = async (req: Request<{ id: string }>, res: Response) => {
-    const { asset, object } = await this.assets.open(req.params.id)
+  download = async (req: Request, res: Response) => {
+    const { id } = validate(IdParams, req.params)
+    const { asset, object } = await this.assets.open(id)
     res.setHeader('Content-Type', asset.mimeType)
     res.setHeader('Content-Length', String(asset.sizeBytes))
     res.setHeader('Cache-Control', 'private, max-age=3600')

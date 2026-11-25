@@ -1,6 +1,6 @@
 import type { UploadAssetKind } from '@ai-post-recipe/shared'
-import { randomUUID } from 'node:crypto'
 import sharp from 'sharp'
+import { v7 as uuidv7 } from 'uuid'
 
 import { NotFoundError, UnsupportedMediaTypeError } from '../../lib/errors.js'
 import type { StorageProvider } from '../../providers/storage/storage.provider.js'
@@ -37,7 +37,7 @@ export class AssetService {
     }
 
     const { width, height } = await readSize(buffer)
-    const assetId = randomUUID()
+    const assetId = uuidv7()
     const storageKey = `runs/${runId}/${kind}/${assetId}.${EXTENSIONS[mimeType]}`
 
     await this.storage.put(storageKey, buffer, mimeType)

@@ -6,6 +6,9 @@ import { createDb } from '../db/prisma.js'
 import { MemoryStorage } from '../providers/storage/memory.storage.js'
 import { RunRepo } from '../repositories/run/run.repo.js'
 
+/** A valid UUID that no row has. */
+export const UNKNOWN_ID = '0193a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b'
+
 /** Real PostgreSQL, in-memory storage. Runs created here are deleted after the file. */
 export function createTestContext() {
   const url = process.env.DATABASE_URL

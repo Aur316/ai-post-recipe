@@ -96,7 +96,7 @@ export const RunStatus = z.enum([
 export type RunStatus = z.infer<typeof RunStatus>
 
 export const RunSummaryDto = z.object({
-  id: z.string(),
+  id: z.uuid(),
   brandName: z.string(),
   instagram: z.string(),
   language: OutputLanguage,
