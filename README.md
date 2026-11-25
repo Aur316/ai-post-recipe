@@ -49,14 +49,15 @@ The Vite dev server proxies `/api` requests to the API, so the browser only talk
 
 Run these from the repository root. Turborepo runs each one in every workspace that defines it.
 
-| Command          | What it does                                                    |
-| ---------------- | --------------------------------------------------------------- |
-| `pnpm dev`       | Starts the database, then the API and the web app in watch mode |
-| `pnpm build`     | Builds all apps                                                 |
-| `pnpm typecheck` | Type-checks all packages                                        |
-| `pnpm lint`      | Lints all packages with ESLint                                  |
-| `pnpm test`      | Runs all tests with Vitest                                      |
-| `pnpm format`    | Formats every file with Prettier (`format:check` only checks)   |
+| Command          | What it does                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------------ |
+| `pnpm dev`       | Starts the database, then the API and the web app in watch mode                                              |
+| `pnpm build`     | Builds all apps                                                                                              |
+| `pnpm typecheck` | Type-checks all packages                                                                                     |
+| `pnpm lint`      | Lints all packages with ESLint                                                                               |
+| `pnpm test`      | Runs all tests with Vitest                                                                                   |
+| `pnpm format`    | Formats every file with Prettier (`format:check` only checks)                                                |
+| `pnpm seed`      | Adds 30 draft runs to the development database (`pnpm seed 50` for another number); re-running replaces them |
 
 ## Configuration
 
