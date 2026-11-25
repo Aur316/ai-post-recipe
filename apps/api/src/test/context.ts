@@ -9,7 +9,9 @@ import { RunRepo } from '../repositories/run/run.repo.js'
 /** Real PostgreSQL, in-memory storage. Runs created here are deleted after the file. */
 export function createTestContext() {
   const url = process.env.DATABASE_URL
-  if (!url) throw new Error('DATABASE_URL is required for API tests')
+  if (!url || !new URL(url).pathname.endsWith('_test')) {
+    throw new Error('API tests must run against a *_test database')
+  }
 
   const db = createDb(url)
   const storage = new MemoryStorage()
