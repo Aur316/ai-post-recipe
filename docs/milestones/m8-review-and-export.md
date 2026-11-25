@@ -12,7 +12,7 @@ FR-14, FR-15, FR-16
 
 **US-8.1** As an **operator**, I want the app to check the slides before export, so that obvious mistakes do not reach the client.
 
-- The review checks logo and product visibility, text readability, unsourced claims and image size.
+- The review checks logo and product visibility, text readability, unsourced claims, statements attributed to real people without a source, and image size.
 - A failing slide goes back to the visuals phase automatically, with the issue as an instruction.
 - The review result shows a score and a list of issues.
 
@@ -27,7 +27,7 @@ FR-14, FR-15, FR-16
 
 ## Tasks
 
-- [ ] Review prompt and phase: vision checks plus rule checks (size, sources)
+- [ ] Review prompt and phase: vision checks plus rule checks (size, sources, attributed statements)
 - [ ] Loop back to visuals for failing slides, with a retry limit
 - [ ] `export.service`: build the ZIP and store it as an `EXPORT_ZIP` asset
 - [ ] `GET /api/runs/:id/export`

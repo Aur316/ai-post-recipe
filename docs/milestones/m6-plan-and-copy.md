@@ -6,7 +6,7 @@
 
 ## Requirements
 
-FR-05, FR-06, FR-10, FR-11
+FR-05, FR-06, FR-10, FR-11, FR-17
 
 ## User stories
 
@@ -19,6 +19,7 @@ FR-05, FR-06, FR-10, FR-11
 
 - Copy is written in Croatian or English as set in the brief.
 - Every fact, price and product feature in the copy appears in a source.
+- The copy never puts words in a real person's mouth; a quote is allowed only word for word from a source, with its link.
 - The caption can be edited on the post preview.
 
 **US-6.3** As a **reviewer**, I want to see where the operator changed the AI proposal, so that the "own correction" example is visible.
@@ -31,6 +32,7 @@ FR-05, FR-06, FR-10, FR-11
 - [ ] Plan phase with its Zod schema; creates the three `Post` rows
 - [ ] Copy phase: caption, hashtags and slide text per post; only sourced facts
 - [ ] Grounding check that lists any fact in the copy not found in a source
+- [ ] Copy prompt and schema rule: no invented statements or quotes from real people; quotes carry their source URL
 - [ ] Plan approval panel: one editable card per post
 - [ ] `CaptionEditor`
 - [ ] Original vs. edited view for approved phases

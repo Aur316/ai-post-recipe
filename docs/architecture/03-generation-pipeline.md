@@ -62,4 +62,5 @@ The run itself has a coarser status (`DRAFT`, `RUNNING`, `AWAITING_APPROVAL`, `C
 1. Only downloaded official pages count as sources. A search snippet is never a fact.
 2. Every claim in the analysis is labelled `verified` (with a source URL) or `assumption`.
 3. The copy phase may only use facts, prices and product features that appear in a source.
-4. The review phase flags any claim without a source.
+4. No statement or quote is attributed to a real person (founder, athlete, customer, influencer) unless it is quoted word for word from a source, with its link.
+5. The review phase flags any claim without a source and any attributed statement that is not in a source.
