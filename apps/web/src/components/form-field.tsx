@@ -15,7 +15,7 @@ export function FormField({
   children,
 }: PropsWithChildren<FormFieldProps>) {
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
       {error && <p className="text-sm text-destructive">{error}</p>}
