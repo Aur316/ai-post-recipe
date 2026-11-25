@@ -42,6 +42,8 @@ flowchart LR
 
 The `main` branch is protected: merging requires a green pipeline.
 
+> **Current state:** CI runs everything except step 5's `prisma migrate deploy`; the PostgreSQL service container and migrations join in M2.
+
 ## CD
 
 After a commit lands on `main`, the workflow pushes both images to the GitHub Container Registry (GHCR) with the `latest` tag and the commit SHA.

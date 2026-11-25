@@ -28,7 +28,7 @@
 **US-1.4** As a **developer**, I want CI to check every push, so that `main` always builds.
 
 - [ ] A pull request with a lint, type or test error fails CI.
-- [ ] Both Docker images are built in CI.
+- [x] Both Docker images are built in CI.
 
 ## Tasks
 
@@ -58,7 +58,7 @@
 
 **CI and docs**
 
-- [ ] `.github/workflows/ci.yml`: install, lint, type check, test, build, Docker build
+- [x] `.github/workflows/ci.yml`: install, lint, format check, type check, test, build, Docker build
 - [ ] Branch protection on `main` requiring a green pipeline
 - [x] README with start instructions
 - [x] Architecture and milestone documentation
