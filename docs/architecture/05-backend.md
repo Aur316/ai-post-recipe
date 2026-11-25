@@ -40,6 +40,7 @@ apps/api/src/
 │  ├─ search/               # SearchProvider: SerperProvider, NoopSearchProvider (no key)
 │  ├─ fetcher/              # downloads a page, HTML → clean text, respects robots.txt
 │  ├─ storage/              # StorageProvider: S3Storage, MemoryStorage (tests)
+│  ├─ queue/                # JobQueue: PgBossQueue (+ an in-memory queue for tests)
 │  └─ renderer/             # SlideRenderer: Playwright, slide templates → PNG
 ├─ jobs/                    # pg-boss: queue registration, phase runner, retries
 ├─ middleware/              # error handler, upload (multer)
@@ -62,6 +63,24 @@ interface Phase<TOutput> {
 ```
 
 `PhaseContext` carries the run, the approved outputs of earlier phases (`editedOutput` when it exists, otherwise `output`) and the providers. A phase never writes to the database. The **phase runner** in `jobs/` does that: it marks the phase `RUNNING`, calls `execute`, validates the output, saves it with token usage and cost, and moves the state machine on.
+
+## Job queue
+
+Phases run as background jobs. The services and the phase runner depend on a small interface, not on pg-boss:
+
+```ts
+interface JobQueue {
+  start(): Promise<void>
+  stop(): Promise<void>
+  send<T>(queue: string, data: T, options?: { tx?: Tx }): Promise<string>
+  work<T>(queue: string, handler: (data: T) => Promise<void>): Promise<void>
+}
+```
+
+`PgBossQueue` (`providers/queue/`) implements it on the existing Postgres ([ADR 0002](adr/0002-postgres-job-queue-with-pg-boss.md)). `send` can join the caller's transaction, so a phase status change and its job are committed together. Tests use an in-memory queue that runs jobs immediately.
+
+> [!TIP]
+> **Further scaling: BullMQ + Redis.** The queue can move to BullMQ on Redis by adding a `BullMqQueue` that implements `JobQueue`; nothing else changes. It needs a Redis service and an outbox table, because the database update and the Redis job are no longer one transaction. See the scaling path in ADR 0002.
 
 ## Rules
 

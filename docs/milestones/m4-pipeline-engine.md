@@ -35,7 +35,8 @@ FR-04, FR-05, FR-06, FR-07, NFR-05, NFR-07, NFR-11
 
 **Engine**
 
-- [ ] pg-boss setup in the API process; one queue for phases
+- [ ] `JobQueue` interface and `PgBossQueue` in `providers/queue/`, started with the API; an in-memory queue for tests
+- [ ] Enqueue a phase in the same transaction as its status change
 - [ ] `Phase` interface and `PhaseContext` ([05 · Backend](../architecture/05-backend.md#phase-contract))
 - [ ] Phase runner: mark running, execute, validate the output, save it with usage and cost, advance
 - [ ] State machine in `run.service` with every transition in [03 · Generation pipeline](../architecture/03-generation-pipeline.md#phase-state-machine)
