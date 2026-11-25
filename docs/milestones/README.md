@@ -9,17 +9,17 @@ flowchart LR
   M5 --> M6[M6 Plan and copy] --> M7[M7 Visuals] --> M8[M8 Review and export] --> M9[M9 Delivery]
 ```
 
-| Milestone | Goal | Status |
-| --- | --- | --- |
-| [M1 · Scaffold](m1-scaffold.md) | Monorepo, empty apps, database, Docker, tooling and CI | In progress |
-| [M2 · Data and storage](m2-data-and-storage.md) | Prisma schema, repositories, object storage, uploads | Not started |
-| [M3 · Brief](m3-brief.md) | Create a run from a validated brief with uploads | Not started |
-| [M4 · Pipeline engine](m4-pipeline-engine.md) | Jobs, phase runner, state machine, approval and re-run | Not started |
-| [M5 · Research and analysis](m5-research-and-analysis.md) | Real sources and a grounded brand analysis | Not started |
-| [M6 · Plan and copy](m6-plan-and-copy.md) | Three post plans and their copy, editable at approval | Not started |
-| [M7 · Visuals](m7-visuals.md) | Slide templates, backgrounds, PNG rendering, preview | Not started |
-| [M8 · Review and export](m8-review-and-export.md) | Automatic checks, ZIP export, the three demo posts | Not started |
-| [M9 · Delivery](m9-delivery.md) | One-command start, recipe document, PDF, published images | Not started |
+| Milestone                                                 | Goal                                                      | Status      |
+| --------------------------------------------------------- | --------------------------------------------------------- | ----------- |
+| [M1 · Scaffold](m1-scaffold.md)                           | Monorepo, empty apps, database, Docker, tooling and CI    | In progress |
+| [M2 · Data and storage](m2-data-and-storage.md)           | Prisma schema, repositories, object storage, uploads      | Not started |
+| [M3 · Brief](m3-brief.md)                                 | Create a run from a validated brief with uploads          | Not started |
+| [M4 · Pipeline engine](m4-pipeline-engine.md)             | Jobs, phase runner, state machine, approval and re-run    | Not started |
+| [M5 · Research and analysis](m5-research-and-analysis.md) | Real sources and a grounded brand analysis                | Not started |
+| [M6 · Plan and copy](m6-plan-and-copy.md)                 | Three post plans and their copy, editable at approval     | Not started |
+| [M7 · Visuals](m7-visuals.md)                             | Slide templates, backgrounds, PNG rendering, preview      | Not started |
+| [M8 · Review and export](m8-review-and-export.md)         | Automatic checks, ZIP export, the three demo posts        | Not started |
+| [M9 · Delivery](m9-delivery.md)                           | One-command start, recipe document, PDF, published images | Not started |
 
 ## Definition of done
 
@@ -34,16 +34,16 @@ A milestone is done when all of these hold:
 
 ## Personas
 
-| Persona | Who | Wants |
-| --- | --- | --- |
-| **Operator** | The person creating posts for a brand | To go from a brief to three good posts quickly, correcting the AI where needed |
-| **Reviewer** | The person assessing the project | To start the app with one command and their own key, and to see how each result was produced |
-| **Developer** | Whoever extends the code | Clear layers, fast tests without keys, one place for contracts |
+| Persona       | Who                                   | Wants                                                                                        |
+| ------------- | ------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Operator**  | The person creating posts for a brand | To go from a brief to three good posts quickly, correcting the AI where needed               |
+| **Reviewer**  | The person assessing the project      | To start the app with one command and their own key, and to see how each result was produced |
+| **Developer** | Whoever extends the code              | Clear layers, fast tests without keys, one place for contracts                               |
 
 User stories in the milestone files use these personas.
 
 ## Conventions
 
 - Requirements: `FR-nn` (functional) and `NFR-nn` (non-functional), defined in [requirements.md](requirements.md).
-- User stories: `US-<milestone>.<n>`, written as *As a … I want … so that …*, each with acceptance criteria.
+- User stories: `US-<milestone>.<n>`, written as _As a … I want … so that …_, each with acceptance criteria.
 - Tasks: checkboxes in the milestone file, ticked when merged to `main`.

@@ -36,10 +36,10 @@ apps/web/src/
 
 ## Pages
 
-| Page | Purpose |
-| --- | --- |
-| Runs | Lists earlier runs with their status; starts a new run |
-| New run | Collects the brief in a multi-step wizard and uploads the reference files |
+| Page       | Purpose                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------ |
+| Runs       | Lists earlier runs with their status; starts a new run                                                             |
+| New run    | Collects the brief in a multi-step wizard and uploads the reference files                                          |
 | Run detail | Shows the phase timeline and each phase result; hosts the approval panel, the slide previews and the export button |
 
 ## Brief form fields
@@ -59,4 +59,4 @@ The `useRun` hook polls every 2 seconds while any phase is `RUNNING` and stops w
 
 The approval panel turns the phase JSON into an editable form (for example, one card per post in the content plan). Saving sends the edited version with the approval, so the original AI proposal stays untouched in `output`.
 
-> **Current state:** a single `App.tsx` page that shows the API health status. Tailwind CSS, shadcn/ui, routing and TanStack Query are added in M1 and M3.
+> **Current state:** a single `App.tsx` page that shows the API health status, styled with Tailwind CSS 4 and shadcn/ui. Routing and TanStack Query are added in M3.

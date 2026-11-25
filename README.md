@@ -8,11 +8,11 @@ Every phase runs as a background job and stores its output in PostgreSQL, so a r
 
 ## Prerequisites
 
-| Tool | Version | Notes |
-| --- | --- | --- |
-| Node.js | 24 | Only needed for local development |
-| pnpm | 10 | Enable it with `corepack enable` |
-| Docker | with Compose v2 | Runs PostgreSQL, and the whole app in the `full` profile |
+| Tool    | Version         | Notes                                                    |
+| ------- | --------------- | -------------------------------------------------------- |
+| Node.js | 24              | Only needed for local development                        |
+| pnpm    | 10              | Enable it with `corepack enable`                         |
+| Docker  | with Compose v2 | Runs PostgreSQL, and the whole app in the `full` profile |
 
 ## Quick start (Docker only)
 
@@ -38,9 +38,9 @@ pnpm dev
 
 `pnpm dev` starts PostgreSQL in Docker (and waits until it is healthy), then runs both apps with hot reload:
 
-| App | URL |
-| --- | --- |
-| Web (Vite) | http://localhost:5173 |
+| App           | URL                              |
+| ------------- | -------------------------------- |
+| Web (Vite)    | http://localhost:5173            |
 | API (Express) | http://localhost:3000/api/health |
 
 The Vite dev server proxies `/api` requests to the API, so the browser only talks to port 5173.
@@ -49,20 +49,22 @@ The Vite dev server proxies `/api` requests to the API, so the browser only talk
 
 Run these from the repository root. Turborepo runs each one in every workspace that defines it.
 
-| Command | What it does |
-| --- | --- |
-| `pnpm dev` | Starts the database, then the API and the web app in watch mode |
-| `pnpm build` | Builds all apps |
-| `pnpm typecheck` | Type-checks all apps |
-| `pnpm lint` | Lints all apps |
+| Command          | What it does                                                    |
+| ---------------- | --------------------------------------------------------------- |
+| `pnpm dev`       | Starts the database, then the API and the web app in watch mode |
+| `pnpm build`     | Builds all apps                                                 |
+| `pnpm typecheck` | Type-checks all packages                                        |
+| `pnpm lint`      | Lints all packages with ESLint                                  |
+| `pnpm test`      | Runs all tests with Vitest                                      |
+| `pnpm format`    | Formats every file with Prettier (`format:check` only checks)   |
 
 ## Configuration
 
 Copy `.env.example` to `.env`. API keys are never committed and never reach the browser.
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `PORT` | `3000` | API port |
+| Variable       | Default                                      | Purpose                                                                                |
+| -------------- | -------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `PORT`         | `3000`                                       | API port                                                                               |
 | `DATABASE_URL` | `postgresql://app:app@localhost:5432/recipe` | PostgreSQL connection string. Compose overrides the host to `db` in the `full` profile |
 
 Later milestones add the object storage settings, the OpenRouter and Serper API keys, the model overrides and a cost cap per run. See [Development and deployment](docs/architecture/10-development-and-deployment.md).
@@ -73,6 +75,10 @@ Later milestones add the object storage settings, the OpenRouter and Serper API 
 apps/
   api/        Express API (later: job worker and slide renderer)
   web/        React single-page app
+packages/
+  shared/         Zod schemas and types shared by the API and the web app
+  tsconfig/       Shared TypeScript settings
+  eslint-config/  Shared ESLint rules
 docker/       Dockerfiles and the nginx config for the web image
 docs/
   architecture/   How the app is designed, plus decision records

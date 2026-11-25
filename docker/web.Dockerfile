@@ -3,7 +3,7 @@ RUN corepack enable
 WORKDIR /repo
 COPY . .
 RUN pnpm install --frozen-lockfile --filter web...
-RUN pnpm --filter web build
+RUN pnpm --filter "web..." build
 
 FROM nginx:alpine
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf

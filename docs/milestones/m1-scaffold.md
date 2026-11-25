@@ -22,8 +22,8 @@
 
 **US-1.3** As a **developer**, I want shared lint, format, type and test tooling, so that every package follows the same rules.
 
-- [ ] `pnpm lint`, `pnpm typecheck` and `pnpm test` run in every workspace through Turborepo.
-- [ ] At least one test exists in each app and passes.
+- [x] `pnpm lint`, `pnpm typecheck` and `pnpm test` run in every workspace through Turborepo.
+- [x] At least one test exists in each app and passes.
 
 **US-1.4** As a **developer**, I want CI to check every push, so that `main` always builds.
 
@@ -37,16 +37,17 @@
 - [x] pnpm workspace and Turborepo with `dev`, `build`, `typecheck` and `lint` tasks
 - [x] `apps/api`: Express 5 and TypeScript, `app.ts` separate from `server.ts`, `GET /api/health`
 - [x] `apps/web`: React 19 and Vite, `/api` proxy to the API
-- [ ] `packages/tsconfig` with the shared base config, used by both apps
-- [ ] `packages/shared` with Zod and a first shared schema (the health response)
-- [ ] `apps/api/src/config/env.ts`: validate environment variables with Zod at startup
-- [ ] Tailwind CSS 4 and `shadcn/ui` initialised in `apps/web`
+- [x] `packages/tsconfig` with the shared base config, used by both apps
+- [x] `packages/shared` with Zod and a first shared schema (the health response)
+- [x] `apps/api/src/config/env.ts`: validate environment variables with Zod at startup
+- [x] Tailwind CSS 4 and `shadcn/ui` initialised in `apps/web`
 
 **Tooling**
 
-- [ ] `packages/eslint-config` with ESLint and Prettier; replace the template's oxlint setup
-- [ ] Vitest in both apps; Supertest test for `GET /api/health`; Testing Library test for `App`
-- [ ] `test` task in `turbo.json`
+- [x] `packages/eslint-config` with type-aware ESLint rules; Prettier with sorted imports and Tailwind classes; replace the template's oxlint setup
+- [x] `.vscode/settings.json`: format on save, ESLint fixes on save
+- [x] Vitest in both apps; Supertest test for `GET /api/health`; Testing Library test for `App`
+- [x] `test` task in `turbo.json`
 
 **Docker**
 
@@ -69,5 +70,6 @@
 
 ## Notes
 
+- TypeScript is pinned to 6.0, because `typescript-eslint` does not support TypeScript 7 yet.
 - pnpm is pinned to version 10, because the Corepack bundled with Node 24 cannot run pnpm 12 yet.
 - Object storage joins Compose in M2, the Playwright base image in M7.

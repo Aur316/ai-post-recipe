@@ -3,7 +3,7 @@ RUN corepack enable
 WORKDIR /repo
 COPY . .
 RUN pnpm install --frozen-lockfile --filter api...
-RUN pnpm --filter api build
+RUN pnpm --filter "api..." build
 RUN pnpm --filter api deploy --legacy --prod /out
 
 FROM node:24-alpine

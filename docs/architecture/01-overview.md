@@ -23,31 +23,31 @@ The application is the recipe. A reviewer can clone the repository, run `docker 
 
 ## Non-goals
 
-| Not in scope | Why |
-| --- | --- |
-| Login and user management | Single-user tool, run locally. The README must state that a public deployment needs it. |
-| Instagram scraping | The user uploads screenshots of the profile and posts instead. See [ADR 0006](adr/0006-screenshots-instead-of-instagram-scraping.md). |
-| Automatic publishing | The posts are delivered as files. Nothing is posted to Instagram. |
-| Video and reels | Only if time allows: a simple slideshow reel from story images with ffmpeg. |
+| Not in scope              | Why                                                                                                                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Login and user management | Single-user tool, run locally. The README must state that a public deployment needs it.                                               |
+| Instagram scraping        | The user uploads screenshots of the profile and posts instead. See [ADR 0006](adr/0006-screenshots-instead-of-instagram-scraping.md). |
+| Automatic publishing      | The posts are delivered as files. Nothing is posted to Instagram.                                                                     |
+| Video and reels           | Only if time allows: a simple slideshow reel from story images with ffmpeg.                                                           |
 
 ## Technology choices
 
-| Area | Choice | Reason |
-| --- | --- | --- |
-| Monorepo | Turborepo, pnpm workspaces | Shared types and Zod schemas between frontend and backend; one command starts everything ([ADR 0001](adr/0001-monorepo-with-turborepo-and-pnpm.md)) |
-| Frontend | React 19, Vite, TypeScript, Tailwind CSS 4, shadcn/ui | Fast development, consistent UI |
-| Server state | TanStack Query | Polling for running phases, caching, retries |
-| Forms | React Hook Form with the Zod resolver | The brief form validates with the same schema as the backend |
-| Backend | Node.js, Express, TypeScript | Layered structure with clear boundaries |
-| Database | PostgreSQL 16 with Prisma | Stores runs, phases and intermediate results |
-| Background jobs | pg-boss | Postgres-based queue, so no Redis; long AI calls do not block HTTP requests ([ADR 0002](adr/0002-postgres-job-queue-with-pg-boss.md)) |
-| LLM and images | OpenRouter (text, vision and image models) | Model-agnostic; the model is configurable per phase ([ADR 0003](adr/0003-openrouter-as-model-gateway.md)) |
-| Search | Serper API (optional) | Finds official pages, product pages and articles. Without a key the run uses the links given in the brief |
-| File storage | S3-compatible object storage | Uploads and generated images; any S3 service in production |
-| Slide rendering | React templates rendered to PNG by Playwright | Text, logo and product photo stay exact; AI only supplies backgrounds ([ADR 0004](adr/0004-render-slides-from-react-templates.md)) |
-| Tests | Vitest, Supertest, Testing Library | Fast and TypeScript-native |
-| CI | GitHub Actions | Lint, type check, tests and build on every push |
-| Authentication | None | See non-goals ([ADR 0007](adr/0007-no-authentication-in-mvp.md)) |
+| Area            | Choice                                                | Reason                                                                                                                                              |
+| --------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Monorepo        | Turborepo, pnpm workspaces                            | Shared types and Zod schemas between frontend and backend; one command starts everything ([ADR 0001](adr/0001-monorepo-with-turborepo-and-pnpm.md)) |
+| Frontend        | React 19, Vite, TypeScript, Tailwind CSS 4, shadcn/ui | Fast development, consistent UI                                                                                                                     |
+| Server state    | TanStack Query                                        | Polling for running phases, caching, retries                                                                                                        |
+| Forms           | React Hook Form with the Zod resolver                 | The brief form validates with the same schema as the backend                                                                                        |
+| Backend         | Node.js, Express, TypeScript                          | Layered structure with clear boundaries                                                                                                             |
+| Database        | PostgreSQL 16 with Prisma                             | Stores runs, phases and intermediate results                                                                                                        |
+| Background jobs | pg-boss                                               | Postgres-based queue, so no Redis; long AI calls do not block HTTP requests ([ADR 0002](adr/0002-postgres-job-queue-with-pg-boss.md))               |
+| LLM and images  | OpenRouter (text, vision and image models)            | Model-agnostic; the model is configurable per phase ([ADR 0003](adr/0003-openrouter-as-model-gateway.md))                                           |
+| Search          | Serper API (optional)                                 | Finds official pages, product pages and articles. Without a key the run uses the links given in the brief                                           |
+| File storage    | S3-compatible object storage                          | Uploads and generated images; any S3 service in production                                                                                          |
+| Slide rendering | React templates rendered to PNG by Playwright         | Text, logo and product photo stay exact; AI only supplies backgrounds ([ADR 0004](adr/0004-render-slides-from-react-templates.md))                  |
+| Tests           | Vitest, Supertest, Testing Library                    | Fast and TypeScript-native                                                                                                                          |
+| CI              | GitHub Actions                                        | Lint, type check, tests and build on every push                                                                                                     |
+| Authentication  | None                                                  | See non-goals ([ADR 0007](adr/0007-no-authentication-in-mvp.md))                                                                                    |
 
 ## Guiding principles
 

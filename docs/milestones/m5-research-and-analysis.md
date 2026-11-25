@@ -66,7 +66,7 @@ FR-08, FR-09, NFR-03, NFR-05, NFR-06, NFR-10, NFR-12
 
 ## Risks
 
-| Risk | Mitigation |
-| --- | --- |
-| Sites block automated fetching | Record the source as unreachable and continue; the brief's links remain |
-| The model invents facts | Schema requires a source URL for `verified`; the review phase flags unsourced claims |
+| Risk                           | Mitigation                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------------ |
+| Sites block automated fetching | Record the source as unreachable and continue; the brief's links remain              |
+| The model invents facts        | Schema requires a source URL for `verified`; the review phase flags unsourced claims |

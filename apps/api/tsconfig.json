@@ -1,14 +1,11 @@
 {
+  "extends": "@ai-post-recipe/tsconfig/base.json",
   "compilerOptions": {
-    "target": "es2023",
-    "lib": ["ES2023"],
     "types": ["node"],
     "module": "nodenext",
     "rootDir": "src",
-    "outDir": "dist",
-    "strict": true,
-    "skipLibCheck": true,
-    "verbatimModuleSyntax": true
+    "outDir": "dist"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
 }

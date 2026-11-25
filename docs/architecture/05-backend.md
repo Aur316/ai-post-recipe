@@ -52,14 +52,14 @@ interface Phase<TOutput> {
 
 ## Rules
 
-| Topic | Rule |
-| --- | --- |
-| LLM output | Always validated with a Zod schema (structured output or JSON mode). On invalid output the call is retried once with the validation error; after that the phase is `FAILED`. |
-| External calls | OpenRouter calls have a timeout and exponential backoff. Token counts and cost of every call are saved on the `PhaseRun`. |
-| Models | No model names in code. The prompt file's front matter sets the model; `.env` can override it. |
-| Cost | The phase runner checks `MAX_COST_USD_PER_RUN` before each call and fails the phase if the cap would be exceeded. |
-| Errors | One error shape for every response: `{ "error": { "code", "message", "details?" } }`. Domain errors extend `AppError` and map to status codes in one `errorHandler`. |
-| State changes | Only `run.service` changes run and phase status. An illegal transition returns `409 Conflict`. |
-| Logging | Structured JSON logs with pino, with a request id on every line. Prompts and API keys are never logged. |
+| Topic          | Rule                                                                                                                                                                         |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LLM output     | Always validated with a Zod schema (structured output or JSON mode). On invalid output the call is retried once with the validation error; after that the phase is `FAILED`. |
+| External calls | OpenRouter calls have a timeout and exponential backoff. Token counts and cost of every call are saved on the `PhaseRun`.                                                    |
+| Models         | No model names in code. The prompt file's front matter sets the model; `.env` can override it.                                                                               |
+| Cost           | The phase runner checks `MAX_COST_USD_PER_RUN` before each call and fails the phase if the cap would be exceeded.                                                            |
+| Errors         | One error shape for every response: `{ "error": { "code", "message", "details?" } }`. Domain errors extend `AppError` and map to status codes in one `errorHandler`.         |
+| State changes  | Only `run.service` changes run and phase status. An illegal transition returns `409 Conflict`.                                                                               |
+| Logging        | Structured JSON logs with pino, with a request id on every line. Prompts and API keys are never logged.                                                                      |
 
-> **Current state:** `app.ts` and `server.ts` exist with `GET /api/health`. The rest of the layout is filled in from M2 onwards.
+> **Current state:** `app.ts`, `server.ts` and `config/env.ts` exist, with `GET /api/health`. The rest of the layout is filled in from M2 onwards.

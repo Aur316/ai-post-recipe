@@ -28,20 +28,20 @@ flowchart LR
 
 ## Containers
 
-| Container | Responsibility | Dev port |
-| --- | --- | --- |
-| `web` | Serves the React SPA and proxies `/api` to the API. In development this is the Vite dev server, in the image it is nginx. | 5173 (dev), 8080 (image) |
-| `api` | REST API, the pg-boss worker in the same process, and the Playwright slide renderer | 3000 |
-| `db` | PostgreSQL 16: runs, phases, jobs and asset metadata | 5432 |
-| `storage` | Uploaded reference images, generated backgrounds, rendered slides, export ZIPs | 9000 (API), 9001 (console) |
+| Container | Responsibility                                                                                                            | Dev port                   |
+| --------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `web`     | Serves the React SPA and proxies `/api` to the API. In development this is the Vite dev server, in the image it is nginx. | 5173 (dev), 8080 (image)   |
+| `api`     | REST API, the pg-boss worker in the same process, and the Playwright slide renderer                                       | 3000                       |
+| `db`      | PostgreSQL 16: runs, phases, jobs and asset metadata                                                                      | 5432                       |
+| `storage` | Uploaded reference images, generated backgrounds, rendered slides, export ZIPs                                            | 9000 (API), 9001 (console) |
 
 ## External services
 
-| Service | Used for | Required |
-| --- | --- | --- |
-| OpenRouter | Every LLM, vision and image-generation call | Yes |
-| Serper | Discovering official pages and product pages | No. Without a key the run uses only the links in the brief |
-| Brand websites | Downloaded and converted to text in the research phase; `robots.txt` is respected | Yes, at least the links in the brief |
+| Service        | Used for                                                                          | Required                                                   |
+| -------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| OpenRouter     | Every LLM, vision and image-generation call                                       | Yes                                                        |
+| Serper         | Discovering official pages and product pages                                      | No. Without a key the run uses only the links in the brief |
+| Brand websites | Downloaded and converted to text in the research phase; `robots.txt` is respected | Yes, at least the links in the brief                       |
 
 ## Trust boundaries
 
