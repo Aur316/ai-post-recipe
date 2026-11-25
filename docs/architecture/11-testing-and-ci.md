@@ -18,6 +18,10 @@ Tests never call the real OpenRouter or Serper API, so they run without keys, fo
 - TypeScript stays on 6.0 because `typescript-eslint` does not support TypeScript 7 yet.
 - `.vscode/settings.json` formats on save and applies ESLint fixes.
 
+## Test database
+
+API tests never touch the development database. Before the tests, a Vitest global setup derives a `<name>_test` database from `DATABASE_URL` (locally `recipe_test` next to `recipe`), creates it if it is missing and applies the migrations. Every test file gets that URL, and the test context refuses to start against any database whose name does not end in `_test`. Tests delete the runs they create; a crashed test can only leave rows in the test database.
+
 ## CI pipeline
 
 GitHub Actions (`.github/workflows/ci.yml`) runs on every push and pull request:
@@ -27,7 +31,7 @@ flowchart LR
   a[Checkout<br/>pnpm, Node 24, Turbo cache] --> b[pnpm install<br/>--frozen-lockfile]
   b --> c[pnpm lint]
   c --> d[pnpm typecheck]
-  d --> e[prisma migrate deploy<br/>pnpm test]
+  d --> e[pnpm test<br/>test DB created and migrated]
   e --> f[pnpm build]
   f --> g[Docker build<br/>api, web]
 ```
@@ -36,13 +40,11 @@ flowchart LR
 2. `pnpm install --frozen-lockfile`.
 3. `pnpm lint` (ESLint) and `pnpm format:check` (Prettier). A failure stops the pipeline.
 4. `pnpm typecheck`.
-5. `prisma migrate deploy` against the PostgreSQL service container, then `pnpm test` (unit and API).
+5. `pnpm test` (unit and API); the test setup creates and migrates the test database in the PostgreSQL service container.
 6. `pnpm build`.
 7. Build the `api` and `web` Docker images, so the Dockerfiles are checked too.
 
 The `main` branch is protected: merging requires a green pipeline.
-
-> **Current state:** CI runs everything except step 5's `prisma migrate deploy`; the PostgreSQL service container and migrations join in M2.
 
 ## CD
 

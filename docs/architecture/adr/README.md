@@ -11,5 +11,6 @@ Each record captures one decision: the context, what was decided and what follow
 | [0005](0005-human-approval-gates.md)                      | Human approval after analysis and content plan              | Accepted |
 | [0006](0006-screenshots-instead-of-instagram-scraping.md) | Screenshots instead of Instagram scraping                   | Accepted |
 | [0007](0007-no-authentication-in-mvp.md)                  | No authentication in the MVP                                | Accepted |
+| [0008](0008-seaweedfs-locally-r2-in-production.md)        | SeaweedFS locally, Cloudflare R2 in production              | Accepted |
 
 New records follow the template in [`template.md`](template.md).

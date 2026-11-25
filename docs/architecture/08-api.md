@@ -15,7 +15,7 @@ The API is REST over JSON. Every request and response body has a Zod schema in `
 | POST   | `/api/runs/:id/phases/:phase/approve`                 | Approves a phase, optionally with an edited output; starts the next phase |
 | POST   | `/api/runs/:id/phases/:phase/rerun`                   | Re-runs a phase; later phases become `STALE`                              |
 | POST   | `/api/runs/:id/posts/:index/slides/:order/regenerate` | Regenerates one slide, with an optional instruction                       |
-| GET    | `/api/assets/:id`                                     | Returns a presigned URL or streams the file from storage                  |
+| GET    | `/api/assets/:id`                                     | Streams the file from storage                                             |
 | GET    | `/api/runs/:id/export`                                | Downloads the ZIP                                                         |
 
 ## State rules
@@ -58,4 +58,4 @@ Every error uses one shape:
 - Allowed types: PNG, JPEG, WebP, and SVG for logos. Size limit: 10 MB per file.
 - The API reads width and height with sharp and stores them on the `Asset`.
 
-> **Current state:** only `GET /api/health` exists, and it returns `{ "status": "ok" }` without checking dependencies yet.
+> **Current state:** `GET /api/health` (database and storage checks, 503 when degraded), `POST /api/runs/:id/assets` and `GET /api/assets/:id` exist.

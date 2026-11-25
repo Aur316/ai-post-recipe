@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.34.9",
   "scripts": {
-    "predev": "docker compose up -d --wait db",
+    "predev": "docker compose up -d --wait db storage && pnpm --filter api db:deploy",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",

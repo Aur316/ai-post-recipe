@@ -1,0 +1,136 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RunStatus {
+  DRAFT
+  RUNNING
+  AWAITING_APPROVAL
+  COMPLETED
+  FAILED
+}
+
+enum PhaseKey {
+  BRIEF
+  RESEARCH
+  ANALYSIS
+  PLAN
+  COPY
+  VISUALS
+  REVIEW
+  EXPORT
+}
+
+enum PhaseStatus {
+  PENDING
+  RUNNING
+  AWAITING_APPROVAL
+  APPROVED
+  DONE
+  FAILED
+  STALE
+}
+
+enum AssetKind {
+  UPLOAD_SCREENSHOT
+  UPLOAD_PRODUCT
+  UPLOAD_LOGO
+  UPLOAD_OTHER
+  GENERATED_BACKGROUND
+  RENDERED_SLIDE
+  EXPORT_ZIP
+}
+
+model Run {
+  id        String     @id @default(cuid())
+  brandName String
+  instagram String
+  language  String     @default("hr")
+  status    RunStatus  @default(DRAFT)
+  brief     Json
+  phases    PhaseRun[]
+  assets    Asset[]
+  sources   Source[]
+  posts     Post[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model PhaseRun {
+  id           String      @id @default(cuid())
+  runId        String
+  run          Run         @relation(fields: [runId], references: [id], onDelete: Cascade)
+  phase        PhaseKey
+  attempt      Int         @default(1)
+  status       PhaseStatus @default(PENDING)
+  input        Json?
+  /// The original AI output.
+  output       Json?
+  /// The version edited by a person at approval.
+  editedOutput Json?
+  /// Prompt id and version, e.g. analysis@v3.
+  promptId     String?
+  model        String?
+  tokensIn     Int?
+  tokensOut    Int?
+  costUsd      Decimal?
+  error        String?
+  startedAt    DateTime?
+  finishedAt   DateTime?
+
+  @@unique([runId, phase, attempt])
+}
+
+model Source {
+  id        String   @id @default(cuid())
+  runId     String
+  run       Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  url       String
+  title     String?
+  excerpt   String?
+  reachable Boolean
+  fetchedAt DateTime @default(now())
+
+  @@index([runId])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  runId     String
+  run       Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  /// 1, 2 or 3.
+  index     Int
+  /// IMAGE | CAROUSEL | STORY
+  format    String
+  goal      String
+  concept   String
+  rationale String
+  caption   String?
+  hashtags  String[]
+  /// [{ order, templateId, text, assetId }]
+  slides    Json
+
+  @@unique([runId, index])
+}
+
+model Asset {
+  id         String    @id @default(cuid())
+  runId      String
+  run        Run       @relation(fields: [runId], references: [id], onDelete: Cascade)
+  kind       AssetKind
+  storageKey String    @unique
+  mimeType   String
+  width      Int?
+  height     Int?
+  sizeBytes  Int
+  createdAt  DateTime  @default(now())
+
+  @@index([runId])
+}

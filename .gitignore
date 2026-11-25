@@ -4,3 +4,4 @@ dist/
 *.tsbuildinfo
 .env
 graphify-out/
+apps/api/src/generated/

@@ -13,6 +13,20 @@ jobs:
   check:
     name: Lint, test and build
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: recipe
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U app -d recipe"
+          --health-interval 2s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://app:app@localhost:5432/recipe
     steps:
       - uses: actions/checkout@v7
 

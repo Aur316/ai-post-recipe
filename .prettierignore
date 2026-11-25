@@ -2,3 +2,4 @@ pnpm-lock.yaml
 dist
 coverage
 graphify-out
+apps/api/src/generated

@@ -1,0 +1,51 @@
+import { type AssetDto, UploadAssetBody } from '@ai-post-recipe/shared'
+import type { Request, Response } from 'express'
+
+import type { Asset } from '../../generated/prisma/client.js'
+import { ValidationError } from '../../lib/errors.js'
+import { validate } from '../../lib/validate.js'
+import type { AssetService } from '../../services/asset/asset.service.js'
+
+export class AssetController {
+  constructor(private readonly assets: AssetService) {}
+
+  upload = async (req: Request<{ id: string }>, res: Response) => {
+    const { kind } = validate(UploadAssetBody, req.body)
+    if (!req.file) throw new ValidationError('A "file" field is required')
+
+    const asset = await this.assets.upload({
+      runId: req.params.id,
+      kind,
+      mimeType: req.file.mimetype,
+      buffer: req.file.buffer,
+    })
+    res.status(201).json(toAssetDto(asset))
+  }
+
+  download = async (req: Request<{ id: string }>, res: Response) => {
+    const { asset, object } = await this.assets.open(req.params.id)
+    res.setHeader('Content-Type', asset.mimeType)
+    res.setHeader('Content-Length', String(asset.sizeBytes))
+    res.setHeader('Cache-Control', 'private, max-age=3600')
+    // SVG uploads could carry scripts; never let them run in the app origin.
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'none'; style-src 'unsafe-inline'",
+    )
+    res.setHeader('X-Content-Type-Options', 'nosniff')
+    object.body.pipe(res)
+  }
+}
+
+export function toAssetDto(asset: Asset): AssetDto {
+  return {
+    id: asset.id,
+    runId: asset.runId,
+    kind: asset.kind,
+    mimeType: asset.mimeType,
+    width: asset.width,
+    height: asset.height,
+    sizeBytes: asset.sizeBytes,
+    createdAt: asset.createdAt.toISOString(),
+  }
+}
