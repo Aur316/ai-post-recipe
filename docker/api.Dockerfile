@@ -11,4 +11,4 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /out .
 EXPOSE 3000
-CMD ["node", "dist/server.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]

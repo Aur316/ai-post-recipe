@@ -2,7 +2,9 @@ import js from '@eslint/js'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import tseslint from 'typescript-eslint'
 
-export const ignores = { ignores: ['dist', 'node_modules', 'coverage'] }
+export const ignores = {
+  ignores: ['dist', 'node_modules', 'coverage', 'src/generated'],
+}
 
 export const typescript = {
   files: ['**/*.{ts,tsx}'],

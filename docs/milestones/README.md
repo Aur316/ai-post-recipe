@@ -11,8 +11,8 @@ flowchart LR
 
 | Milestone                                                 | Goal                                                      | Status      |
 | --------------------------------------------------------- | --------------------------------------------------------- | ----------- |
-| [M1 · Scaffold](m1-scaffold.md)                           | Monorepo, empty apps, database, Docker, tooling and CI    | In progress |
-| [M2 · Data and storage](m2-data-and-storage.md)           | Prisma schema, repositories, object storage, uploads      | Not started |
+| [M1 · Scaffold](m1-scaffold.md)                           | Monorepo, empty apps, database, Docker, tooling and CI    | Done        |
+| [M2 · Data and storage](m2-data-and-storage.md)           | Prisma schema, repositories, object storage, uploads      | Done        |
 | [M3 · Brief](m3-brief.md)                                 | Create a run from a validated brief with uploads          | Not started |
 | [M4 · Pipeline engine](m4-pipeline-engine.md)             | Jobs, phase runner, state machine, approval and re-run    | Not started |
 | [M5 · Research and analysis](m5-research-and-analysis.md) | Real sources and a grounded brand analysis                | Not started |

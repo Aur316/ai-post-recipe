@@ -62,4 +62,4 @@ interface Phase<TOutput> {
 | State changes  | Only `run.service` changes run and phase status. An illegal transition returns `409 Conflict`.                                                                               |
 | Logging        | Structured JSON logs with pino, with a request id on every line. Prompts and API keys are never logged.                                                                      |
 
-> **Current state:** `app.ts`, `server.ts` and `config/env.ts` exist, with `GET /api/health`. The rest of the layout is filled in from M2 onwards.
+> **Current state:** config, logger, errors, the error handler, Prisma, all four repositories, the storage provider and the asset upload exist. Phases, jobs and the other providers follow from M4.

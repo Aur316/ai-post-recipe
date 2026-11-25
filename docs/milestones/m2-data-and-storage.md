@@ -2,7 +2,7 @@
 
 **Goal:** the database schema, data access and file storage are in place, and files can be uploaded to a run.
 
-**Status:** Not started
+**Status:** Done
 
 ## Requirements
 
@@ -23,38 +23,38 @@ FR-02, NFR-04, NFR-09, NFR-11
 
 **US-2.3** As an **operator**, I want to open an uploaded file, so that I can check what I uploaded.
 
-- `GET /api/assets/:id` returns the file (presigned URL or stream); the bucket is never exposed directly.
+- `GET /api/assets/:id` returns the file (streamed by the API); the bucket is never exposed directly.
 
 ## Tasks
 
 **Database**
 
-- [ ] Add Prisma to `apps/api`, with the schema from [07 · Data model](../architecture/07-data-model.md)
-- [ ] First migration; `predev` runs `prisma migrate deploy`
-- [ ] Prisma client as a singleton
-- [ ] Repositories: `RunRepo`, `PhaseRunRepo`, `AssetRepo`, `SourceRepo`
+- [x] Add Prisma to `apps/api`, with the schema from [07 · Data model](../architecture/07-data-model.md)
+- [x] First migration; `predev` runs `prisma migrate deploy`
+- [x] Prisma client factory (`createDb`) with the pg driver adapter, injected into the app
+- [x] Repositories: `RunRepo`, `PhaseRunRepo`, `AssetRepo`, `SourceRepo`
 
 **Storage**
 
-- [ ] Choose the local S3-compatible server and add it to Compose as `storage` with a health check and volume
-- [ ] `StorageProvider` interface and `S3Storage` with the AWS SDK v3
-- [ ] Create the bucket at API startup if it is missing
-- [ ] Key layout `runs/{runId}/{kind}/{assetId}.{ext}`
-- [ ] `S3_*` variables in `config/env.ts` and `.env.example`; Compose overrides `S3_ENDPOINT` in the `full` profile
+- [x] Choose the local S3-compatible server (SeaweedFS, [ADR 0008](../architecture/adr/0008-seaweedfs-locally-r2-in-production.md)) and add it to Compose as `storage` with a health check and volume
+- [x] `StorageProvider` interface and `S3Storage` with the AWS SDK v3
+- [x] Create the bucket at API startup if it is missing
+- [x] Key layout `runs/{runId}/{kind}/{assetId}.{ext}`
+- [x] `S3_*` variables in `config/env.ts` and `.env.example`; Compose overrides `S3_ENDPOINT` in the `full` profile
 
 **Uploads and errors**
 
-- [ ] Upload middleware (multer) with a MIME allow-list and a 10 MB limit
-- [ ] Read width and height with sharp
-- [ ] `POST /api/runs/:id/assets` and `GET /api/assets/:id`
-- [ ] `AppError` hierarchy and one `errorHandler` with the `{ error: { code, message, details } }` shape
-- [ ] Request id middleware and pino logger
+- [x] Upload middleware (multer) with a MIME allow-list and a 10 MB limit
+- [x] Read width and height with sharp
+- [x] `POST /api/runs/:id/assets` and `GET /api/assets/:id`
+- [x] `AppError` hierarchy and one `errorHandler` with the `{ error: { code, message, details } }` shape
+- [x] Request id middleware and pino logger
 
 **Tests**
 
-- [ ] Repository tests against a real PostgreSQL
-- [ ] Upload endpoint tests: success, too large, wrong type, unknown run
-- [ ] CI: PostgreSQL service container and `prisma migrate deploy` before tests
+- [x] Repository tests against a real PostgreSQL
+- [x] Upload endpoint tests: success, too large, wrong type, unknown run
+- [x] CI: PostgreSQL service container and `prisma migrate deploy` before tests
 
 ## Exit criteria
 
@@ -63,6 +63,6 @@ FR-02, NFR-04, NFR-09, NFR-11
 
 ## Risks
 
-| Risk                                                          | Mitigation                                                                                                                  |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| The common local S3 server images may no longer be maintained | Compare current options (for example MinIO, SeaweedFS, Garage) when starting M2; the S3 client keeps the choice replaceable |
+| Risk                                   | Mitigation                                                                                                                 |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| The MinIO image is no longer published | Resolved: SeaweedFS locally, R2 in production ([ADR 0008](../architecture/adr/0008-seaweedfs-locally-r2-in-production.md)) |

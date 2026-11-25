@@ -1,17 +1,26 @@
 import { z } from 'zod'
 
 const Env = z.object({
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    .default('development'),
   PORT: z.coerce.number().int().positive().default(3000),
   DATABASE_URL: z.url(),
+  S3_ENDPOINT: z.url(),
+  S3_REGION: z.string().default('auto'),
+  S3_BUCKET: z.string().min(1),
+  S3_ACCESS_KEY: z.string().min(1),
+  S3_SECRET_KEY: z.string().min(1),
 })
 
-const parsed = Env.safeParse(process.env)
+export type Env = z.infer<typeof Env>
 
-if (!parsed.success) {
-  console.error(
-    'Invalid environment variables:\n' + z.prettifyError(parsed.error),
-  )
-  process.exit(1)
+export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
+  const parsed = Env.safeParse(source)
+  if (!parsed.success) {
+    throw new Error(
+      'Invalid environment variables:\n' + z.prettifyError(parsed.error),
+    )
+  }
+  return parsed.data
 }
-
-export const env = parsed.data

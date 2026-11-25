@@ -4,7 +4,7 @@ AI Post Recipe turns an Instagram brand brief into three ready-to-publish posts 
 
 Every phase runs as a background job and stores its output in PostgreSQL, so a run can be paused, resumed or re-run from any finished phase. After the brand analysis and the content plan the run stops and waits for a person to approve or edit the result. The final export is a ZIP with the images, captions, sources and every intermediate result.
 
-> **Status:** project scaffold (milestone M1). The API currently exposes only a health check. See [the milestones](docs/milestones/README.md) for what comes next.
+> **Status:** milestones M1–M2 done. The API has a health check (database and storage) and file uploads to a run. See [the milestones](docs/milestones/README.md) for what comes next.
 
 ## Prerequisites
 
@@ -67,7 +67,7 @@ Copy `.env.example` to `.env`. API keys are never committed and never reach the 
 | `PORT`         | `3000`                                       | API port                                                                               |
 | `DATABASE_URL` | `postgresql://app:app@localhost:5432/recipe` | PostgreSQL connection string. Compose overrides the host to `db` in the `full` profile |
 
-Later milestones add the object storage settings, the OpenRouter and Serper API keys, the model overrides and a cost cap per run. See [Development and deployment](docs/architecture/10-development-and-deployment.md).
+The `S3_*` variables configure object storage: SeaweedFS from Docker Compose by default, or Cloudflare R2. Later milestones add the OpenRouter and Serper API keys, the model overrides and a cost cap per run. See [Development and deployment](docs/architecture/10-development-and-deployment.md).
 
 ## Project structure
 

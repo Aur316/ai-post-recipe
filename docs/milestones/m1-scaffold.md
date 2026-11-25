@@ -2,7 +2,7 @@
 
 **Goal:** an empty but complete monorepo that starts with one command, has the tooling every later milestone relies on, and is checked by CI.
 
-**Status:** In progress
+**Status:** Done
 
 ## Requirements
 

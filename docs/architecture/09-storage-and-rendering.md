@@ -4,13 +4,13 @@ Files live in S3-compatible object storage. Slides are not drawn by an AI model:
 
 ## Object storage
 
-| Topic         | Design                                                                                                          |
-| ------------- | --------------------------------------------------------------------------------------------------------------- |
-| Client        | AWS SDK v3 S3 client, so any S3-compatible service works (AWS S3, Cloudflare R2, a local server in development) |
-| Bucket        | `ai-post-recipe`, created by the API at startup if missing                                                      |
-| Key layout    | `runs/{runId}/{kind}/{assetId}.{ext}`                                                                           |
-| Access        | The browser never reads the bucket. The API returns a short-lived presigned URL or streams the file             |
-| Upload checks | MIME type allow-list and a 10 MB size limit; width and height read with sharp                                   |
+| Topic         | Design                                                                                                                                                       |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Client        | AWS SDK v3 S3 client with path-style addressing: SeaweedFS locally, Cloudflare R2 in production ([ADR 0008](adr/0008-seaweedfs-locally-r2-in-production.md)) |
+| Bucket        | `ai-post-recipe`, created by the API at startup if missing                                                                                                   |
+| Key layout    | `runs/{runId}/{kind}/{assetId}.{ext}`                                                                                                                        |
+| Access        | The browser never reads the bucket. The API streams the file (`GET /api/assets/:id`), so storage URLs never leave the server                                 |
+| Upload checks | MIME type allow-list and a 10 MB size limit; width and height read with sharp                                                                                |
 
 ## Slide rendering
 
@@ -47,4 +47,4 @@ sequenceDiagram
 
 Not in the MVP. If time allows, ffmpeg can turn the story images into a simple slideshow reel.
 
-> **Current state:** no storage service yet. The API image is based on `node:24-alpine`; it moves to the Playwright base image in M7, when rendering is added. The local storage server is chosen in M2.
+> **Current state:** storage, uploads and streaming work. The API image is based on `node:24-alpine`; it moves to the Playwright base image in M7, when rendering is added.

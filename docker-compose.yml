@@ -12,19 +12,60 @@ services:
         retries: 20,
       }
 
+  storage:
+    image: chrislusf/seaweedfs:4.55
+    command: server -s3 -dir=/data -ip.bind=0.0.0.0
+    environment:
+      { AWS_ACCESS_KEY_ID: storage, AWS_SECRET_ACCESS_KEY: storage12345 }
+    ports: ['8333:8333']
+    volumes: [storage-data:/data]
+    healthcheck:
+      {
+        test:
+          [
+            'CMD',
+            'wget',
+            '-q',
+            '-O',
+            '/dev/null',
+            'http://127.0.0.1:8333/healthz',
+          ],
+        interval: 2s,
+        retries: 30,
+      }
+
   api:
     profiles: [full]
     build: { context: ., dockerfile: docker/api.Dockerfile }
     env_file: .env
     environment:
       DATABASE_URL: postgresql://app:app@db:5432/recipe
-    depends_on: { db: { condition: service_healthy } }
+      S3_ENDPOINT: http://storage:8333
+    depends_on:
+      {
+        db: { condition: service_healthy },
+        storage: { condition: service_healthy },
+      }
     ports: ['3000:3000']
+    healthcheck:
+      {
+        test:
+          [
+            'CMD',
+            'wget',
+            '-q',
+            '-O',
+            '/dev/null',
+            'http://127.0.0.1:3000/api/health',
+          ],
+        interval: 2s,
+        retries: 60,
+      }
 
   web:
     profiles: [full]
     build: { context: ., dockerfile: docker/web.Dockerfile }
-    depends_on: [api]
+    depends_on: { api: { condition: service_healthy } }
     ports: ['8080:80']
 
-volumes: { db-data: {} }
+volumes: { db-data: {}, storage-data: {} }

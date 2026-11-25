@@ -1,6 +1,9 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": { "noEmit": true },
-  "include": ["src"],
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": ["src", "prisma.config.ts", "vitest.config.ts"],
   "exclude": []
 }
