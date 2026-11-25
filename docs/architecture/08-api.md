@@ -4,19 +4,19 @@ The API is REST over JSON. Every request and response body has a Zod schema in `
 
 ## Endpoints
 
-| Method | Path                                                  | Description                                                               |
-| ------ | ----------------------------------------------------- | ------------------------------------------------------------------------- |
-| GET    | `/api/health`                                         | Checks the database, the storage and whether an OpenRouter key is set     |
-| POST   | `/api/runs`                                           | Creates a run from a brief (`DRAFT`)                                      |
-| GET    | `/api/runs`                                           | Lists runs                                                                |
-| GET    | `/api/runs/:id`                                       | One run with its phases, sources and posts                                |
-| POST   | `/api/runs/:id/assets`                                | Uploads a file (multipart): screenshot, product photo, logo, other        |
-| POST   | `/api/runs/:id/start`                                 | Starts the first phase that is not finished                               |
-| POST   | `/api/runs/:id/phases/:phase/approve`                 | Approves a phase, optionally with an edited output; starts the next phase |
-| POST   | `/api/runs/:id/phases/:phase/rerun`                   | Re-runs a phase; later phases become `STALE`                              |
-| POST   | `/api/runs/:id/posts/:index/slides/:order/regenerate` | Regenerates one slide, with an optional instruction                       |
-| GET    | `/api/assets/:id`                                     | Streams the file from storage                                             |
-| GET    | `/api/runs/:id/export`                                | Downloads the ZIP                                                         |
+| Method | Path                                                  | Description                                                                                                                                                        |
+| ------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GET    | `/api/health`                                         | Checks the database, the storage and whether an OpenRouter key is set                                                                                              |
+| POST   | `/api/runs`                                           | Creates a run from a brief (`DRAFT`)                                                                                                                               |
+| GET    | `/api/runs`                                           | Lists runs newest first, paginated: `?page=1&size=20` (defaults from `DEFAULT_PAGE_SIZE`, max `MAX_PAGE_SIZE`), returns `{ items, total, page, size, totalPages }` |
+| GET    | `/api/runs/:id`                                       | One run with its phases, sources and posts                                                                                                                         |
+| POST   | `/api/runs/:id/assets`                                | Uploads a file (multipart): screenshot, product photo, logo, other                                                                                                 |
+| POST   | `/api/runs/:id/start`                                 | Starts the first phase that is not finished                                                                                                                        |
+| POST   | `/api/runs/:id/phases/:phase/approve`                 | Approves a phase, optionally with an edited output; starts the next phase                                                                                          |
+| POST   | `/api/runs/:id/phases/:phase/rerun`                   | Re-runs a phase; later phases become `STALE`                                                                                                                       |
+| POST   | `/api/runs/:id/posts/:index/slides/:order/regenerate` | Regenerates one slide, with an optional instruction                                                                                                                |
+| GET    | `/api/assets/:id`                                     | Streams the file from storage                                                                                                                                      |
+| GET    | `/api/runs/:id/export`                                | Downloads the ZIP                                                                                                                                                  |
 
 ## State rules
 
@@ -58,4 +58,4 @@ Every error uses one shape:
 - Allowed types: PNG, JPEG, WebP, and SVG for logos. Size limit: 10 MB per file.
 - The API reads width and height with sharp and stores them on the `Asset`.
 
-> **Current state:** `GET /api/health` (database and storage checks, 503 when degraded), `POST /api/runs/:id/assets` and `GET /api/assets/:id` exist.
+> **Current state:** health, `POST/GET /api/runs`, `GET /api/runs/:id`, asset upload and download exist. The phase, slide and export endpoints follow from M4.

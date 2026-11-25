@@ -4,7 +4,7 @@ AI Post Recipe turns an Instagram brand brief into three ready-to-publish posts 
 
 Every phase runs as a background job and stores its output in PostgreSQL, so a run can be paused, resumed or re-run from any finished phase. After the brand analysis and the content plan the run stops and waits for a person to approve or edit the result. The final export is a ZIP with the images, captions, sources and every intermediate result.
 
-> **Status:** milestones M1–M2 done. The API has a health check (database and storage) and file uploads to a run. See [the milestones](docs/milestones/README.md) for what comes next.
+> **Status:** milestones M1–M3 done. You can create a run from a brand brief with reference uploads and see it in the list. See [the milestones](docs/milestones/README.md) for what comes next.
 
 ## Prerequisites
 
@@ -49,14 +49,15 @@ The Vite dev server proxies `/api` requests to the API, so the browser only talk
 
 Run these from the repository root. Turborepo runs each one in every workspace that defines it.
 
-| Command          | What it does                                                    |
-| ---------------- | --------------------------------------------------------------- |
-| `pnpm dev`       | Starts the database, then the API and the web app in watch mode |
-| `pnpm build`     | Builds all apps                                                 |
-| `pnpm typecheck` | Type-checks all packages                                        |
-| `pnpm lint`      | Lints all packages with ESLint                                  |
-| `pnpm test`      | Runs all tests with Vitest                                      |
-| `pnpm format`    | Formats every file with Prettier (`format:check` only checks)   |
+| Command          | What it does                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------------ |
+| `pnpm dev`       | Starts the database, then the API and the web app in watch mode                                              |
+| `pnpm build`     | Builds all apps                                                                                              |
+| `pnpm typecheck` | Type-checks all packages                                                                                     |
+| `pnpm lint`      | Lints all packages with ESLint                                                                               |
+| `pnpm test`      | Runs all tests with Vitest                                                                                   |
+| `pnpm format`    | Formats every file with Prettier (`format:check` only checks)                                                |
+| `pnpm seed`      | Adds 30 draft runs to the development database (`pnpm seed 50` for another number); re-running replaces them |
 
 ## Configuration
 

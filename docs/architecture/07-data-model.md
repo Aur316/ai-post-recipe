@@ -60,9 +60,9 @@ enum PhaseStatus { PENDING RUNNING AWAITING_APPROVAL APPROVED DONE FAILED STALE 
 enum AssetKind   { UPLOAD_SCREENSHOT UPLOAD_PRODUCT UPLOAD_LOGO UPLOAD_OTHER GENERATED_BACKGROUND RENDERED_SLIDE EXPORT_ZIP }
 
 model Run {
-  id          String     @id @default(cuid())
-  brandName   String
-  instagram   String
+  id          String     @id @default(uuid(7)) @db.Uuid
+  brandName   String     @db.VarChar(120)
+  instagram   String     @db.VarChar(2048)
   language    String     @default("hr")
   status      RunStatus  @default(DRAFT)
   brief       Json
@@ -75,8 +75,8 @@ model Run {
 }
 
 model PhaseRun {
-  id            String      @id @default(cuid())
-  runId         String
+  id            String      @id @default(uuid(7)) @db.Uuid
+  runId         String      @db.Uuid
   run           Run         @relation(fields: [runId], references: [id], onDelete: Cascade)
   phase         PhaseKey
   attempt       Int         @default(1)
@@ -96,8 +96,8 @@ model PhaseRun {
 }
 
 model Source {
-  id         String   @id @default(cuid())
-  runId      String
+  id         String   @id @default(uuid(7)) @db.Uuid
+  runId      String      @db.Uuid
   run        Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
   url        String
   title      String?
@@ -107,8 +107,8 @@ model Source {
 }
 
 model Post {
-  id         String   @id @default(cuid())
-  runId      String
+  id         String   @id @default(uuid(7)) @db.Uuid
+  runId      String      @db.Uuid
   run        Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
   index      Int      // 1, 2, 3
   format     String   // IMAGE | CAROUSEL | STORY
@@ -122,8 +122,8 @@ model Post {
 }
 
 model Asset {
-  id         String    @id @default(cuid())
-  runId      String
+  id         String    @id @default(uuid(7)) @db.Uuid
+  runId      String      @db.Uuid
   run        Run       @relation(fields: [runId], references: [id], onDelete: Cascade)
   kind       AssetKind
   storageKey String    @unique
@@ -136,6 +136,10 @@ model Asset {
 ```
 
 ## Design notes
+
+- **UUID v7 ids.** Every primary and foreign key is a native Postgres `uuid`. Version 7 starts with a timestamp, so new ids grow in time order and keep the indexes compact. The API rejects a malformed id with 400 before it reaches the database.
+
+- **Length limits.** `brandName` is `VARCHAR(120)` and `instagram` is `VARCHAR(2048)`; the text fields inside `brief` are limited by the `run_brief_text_limits` CHECK constraint. All of them mirror `BRIEF_LIMITS` in `packages/shared`, and an API test fails if they drift apart.
 
 - **Attempts, not overwrites.** A re-run adds a `PhaseRun` row with the next `attempt`. The latest attempt per phase is the current one; earlier attempts remain for comparison.
 - **`output` vs. `editedOutput`.** The AI proposal is never changed. Approval writes the human version next to it.

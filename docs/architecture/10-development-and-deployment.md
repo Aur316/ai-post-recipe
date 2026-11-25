@@ -58,7 +58,9 @@ The API validates its environment with Zod at startup and exits with a clear mes
 
 ## Demo data
 
-`pnpm seed` loads the GymBeam demo brief and reference images from `examples/gymbeam`, so a reviewer can start the recipe without filling in the form.
+`pnpm seed` (`apps/api/prisma/seed.ts`) currently adds draft runs named “Seed brand NN” for trying the runs list and its pagination; re-running replaces them and leaves other runs alone.
+
+In M8 the same command will also load the GymBeam demo brief and reference images from `examples/gymbeam`, so a reviewer can start the recipe without filling in the form.
 
 ## Deployment
 

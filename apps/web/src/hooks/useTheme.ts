@@ -1,0 +1,25 @@
+import { useState } from 'react'
+
+export type Theme = 'dark' | 'light'
+
+const STORAGE_KEY = 'theme'
+
+/** Dark by default; the choice is kept in localStorage. index.html applies it before first paint. */
+export const useTheme = () => {
+  const [theme, setTheme] = useState<Theme>(() =>
+    document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+  )
+
+  const toggleTheme = () => {
+    const next: Theme = theme === 'dark' ? 'light' : 'dark'
+    document.documentElement.classList.toggle('dark', next === 'dark')
+    try {
+      localStorage.setItem(STORAGE_KEY, next)
+    } catch {
+      // Storage can be blocked (private mode); the theme still switches.
+    }
+    setTheme(next)
+  }
+
+  return { theme, toggleTheme }
+}

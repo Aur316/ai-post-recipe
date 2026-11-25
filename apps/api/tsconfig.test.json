@@ -4,6 +4,6 @@
     "noEmit": true,
     "rootDir": "."
   },
-  "include": ["src", "prisma.config.ts", "vitest.config.ts"],
+  "include": ["src", "prisma.config.ts", "vitest.config.ts", "prisma/seed.ts"],
   "exclude": []
 }

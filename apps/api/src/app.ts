@@ -4,6 +4,7 @@ import { pinoHttp } from 'pino-http'
 
 import { AssetController } from './controllers/asset/asset.controller.js'
 import { HealthController } from './controllers/health/health.controller.js'
+import { RunController } from './controllers/run/run.controller.js'
 import type { Db } from './db/prisma.js'
 import { logger } from './lib/logger.js'
 import { errorHandler } from './middleware/error-handler.js'
@@ -12,6 +13,7 @@ import type { StorageProvider } from './providers/storage/storage.provider.js'
 import { AssetRepo } from './repositories/asset/asset.repo.js'
 import { RunRepo } from './repositories/run/run.repo.js'
 import { AssetService } from './services/asset/asset.service.js'
+import { RunService } from './services/run/run.service.js'
 
 export interface AppDeps {
   db: Db
@@ -19,8 +21,12 @@ export interface AppDeps {
 }
 
 export function createApp({ db, storage }: AppDeps) {
+  const runRepo = new RunRepo(db)
+  const assetRepo = new AssetRepo(db)
+
+  const runs = new RunController(new RunService(runRepo, assetRepo))
   const assets = new AssetController(
-    new AssetService(new RunRepo(db), new AssetRepo(db), storage),
+    new AssetService(runRepo, assetRepo, storage),
   )
   const health = new HealthController(db, storage)
 
@@ -39,6 +45,9 @@ export function createApp({ db, storage }: AppDeps) {
   app.use(express.json())
 
   app.get('/api/health', health.check)
+  app.post('/api/runs', runs.create)
+  app.get('/api/runs', runs.list)
+  app.get('/api/runs/:id', runs.get)
   app.post('/api/runs/:id/assets', uploadSingleFile, assets.upload)
   app.get('/api/assets/:id', assets.download)
 

@@ -13,7 +13,8 @@
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy"
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@ai-post-recipe/shared": "workspace:*",
@@ -27,6 +28,7 @@
     "pino-http": "^11.0.0",
     "prisma": "7.10.1",
     "sharp": "^0.35.5",
+    "uuid": "^14.0.3",
     "zod": "^4.6.7"
   },
   "devDependencies": {

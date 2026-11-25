@@ -2,7 +2,7 @@ import { AssetDto, ErrorResponse } from '@ai-post-recipe/shared'
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
 
-import { createTestContext, png } from '../../test/context.js'
+import { UNKNOWN_ID, createTestContext, png } from '../../test/context.js'
 
 describe('assets', () => {
   const ctx = createTestContext()
@@ -53,7 +53,12 @@ describe('assets', () => {
   })
 
   it('returns 404 for an unknown run', async () => {
-    const res = await upload('missing', 'UPLOAD_LOGO', await png(), 'image/png')
+    const res = await upload(
+      UNKNOWN_ID,
+      'UPLOAD_LOGO',
+      await png(),
+      'image/png',
+    )
 
     expect(res.status).toBe(404)
     expect(ErrorResponse.parse(res.body).error.code).toBe('RUN_NOT_FOUND')
@@ -103,6 +108,18 @@ describe('assets', () => {
   })
 
   it('returns 404 for an unknown asset', async () => {
-    expect((await request(ctx.app).get('/api/assets/missing')).status).toBe(404)
+    expect(
+      (await request(ctx.app).get(`/api/assets/${UNKNOWN_ID}`)).status,
+    ).toBe(404)
+  })
+
+  it('returns 400 for a malformed id', async () => {
+    expect((await request(ctx.app).get('/api/assets/not-a-uuid')).status).toBe(
+      400,
+    )
+    expect(
+      (await upload('not-a-uuid', 'UPLOAD_LOGO', await png(), 'image/png'))
+        .status,
+    ).toBe(400)
   })
 })

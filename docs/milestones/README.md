@@ -13,7 +13,7 @@ flowchart LR
 | --------------------------------------------------------- | --------------------------------------------------------- | ----------- |
 | [M1 · Scaffold](m1-scaffold.md)                           | Monorepo, empty apps, database, Docker, tooling and CI    | Done        |
 | [M2 · Data and storage](m2-data-and-storage.md)           | Prisma schema, repositories, object storage, uploads      | Done        |
-| [M3 · Brief](m3-brief.md)                                 | Create a run from a validated brief with uploads          | Not started |
+| [M3 · Brief](m3-brief.md)                                 | Create a run from a validated brief with uploads          | Done        |
 | [M4 · Pipeline engine](m4-pipeline-engine.md)             | Jobs, phase runner, state machine, approval and re-run    | Not started |
 | [M5 · Research and analysis](m5-research-and-analysis.md) | Real sources and a grounded brand analysis                | Not started |
 | [M6 · Plan and copy](m6-plan-and-copy.md)                 | Three post plans and their copy, editable at approval     | Not started |

@@ -32,8 +32,8 @@ export const UPLOAD_MIME_TYPES = [
 ] as const
 
 export const AssetDto = z.object({
-  id: z.string(),
-  runId: z.string(),
+  id: z.uuid(),
+  runId: z.uuid(),
   kind: AssetKind,
   mimeType: z.string(),
   width: z.number().int().nullable(),
