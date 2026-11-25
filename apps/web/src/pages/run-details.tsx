@@ -60,6 +60,29 @@ export function RunDetails() {
           <p>
             <span className="font-medium">Goals:</span> {brief.goals}
           </p>
+          {brief.inspiration && (
+            <p>
+              <span className="font-medium">Inspiration:</span>{' '}
+              {brief.inspiration}
+            </p>
+          )}
+          {brief.inspirationLinks.length > 0 && (
+            <Detail label="Inspiration links">
+              {brief.inspirationLinks.map((url) => (
+                <li key={url}>
+                  <a className="underline" href={url}>
+                    {url}
+                  </a>
+                </li>
+              ))}
+            </Detail>
+          )}
+          {brief.formats.length > 0 && (
+            <p>
+              <span className="font-medium">Preferred formats:</span>{' '}
+              {brief.formats.map((f) => f.toLowerCase()).join(', ')}
+            </p>
+          )}
           <p>
             <span className="font-medium">Language:</span>{' '}
             {brief.language === 'hr' ? 'Croatian' : 'English'}

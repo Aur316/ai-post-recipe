@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 
 import { UploadAssetKind } from '@ai-post-recipe/shared'
+import { FileIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -95,11 +96,17 @@ export function AssetUploader({
               key={upload.id}
               className="flex items-center gap-3 rounded-md border p-2"
             >
-              <img
-                src={upload.previewUrl}
-                alt=""
-                className="size-12 shrink-0 rounded object-cover"
-              />
+              {upload.file.type.startsWith('image/') ? (
+                <img
+                  src={upload.previewUrl}
+                  alt=""
+                  className="size-12 shrink-0 rounded object-cover"
+                />
+              ) : (
+                <div className="flex size-12 shrink-0 items-center justify-center rounded bg-muted">
+                  <FileIcon className="size-5 text-muted-foreground" />
+                </div>
+              )}
               <div className="min-w-0 flex-1 space-y-1">
                 <p className="truncate text-sm">{upload.file.name}</p>
                 {upload.status === 'uploading' && (

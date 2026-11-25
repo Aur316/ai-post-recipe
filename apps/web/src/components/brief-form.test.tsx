@@ -76,6 +76,14 @@ describe('Brief form', () => {
     await user.type(screen.getByLabelText('Goals'), 'More saves')
     await user.click(screen.getByRole('button', { name: 'Next' }))
 
+    // Next on the third step must open the last step, not submit the form.
+    expect(
+      await screen.findByText('Output and references', {
+        selector: '[data-slot="card-title"]',
+      }),
+    ).toBeInTheDocument()
+    expect(sentBrief).toBeUndefined()
+
     await user.upload(
       screen.getByTestId('file-input'),
       new File(['png'], 'logo.png', { type: 'image/png' }),

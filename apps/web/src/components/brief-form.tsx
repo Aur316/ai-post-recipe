@@ -94,6 +94,8 @@ export function BriefForm() {
   const form = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(BriefFormSchema),
     defaultValues: DEFAULT_VALUES,
+    // Validate a field when it loses focus, then live while it is corrected.
+    mode: 'onTouched',
   })
   const {
     register,
@@ -359,6 +361,7 @@ export function BriefForm() {
               >
                 <Textarea
                   id="audience"
+                  placeholder="e.g. Active adults 18–35 in Croatia who train in the gym"
                   maxLength={BRIEF_LIMITS.audience}
                   {...register('audience')}
                 />
@@ -375,6 +378,7 @@ export function BriefForm() {
               >
                 <Textarea
                   id="goals"
+                  placeholder="e.g. More saves and comments, interest in the new protein line"
                   maxLength={BRIEF_LIMITS.goals}
                   {...register('goals')}
                 />
@@ -390,6 +394,7 @@ export function BriefForm() {
               >
                 <Textarea
                   id="inspiration"
+                  placeholder="e.g. Brands, creators or posts whose style you like"
                   maxLength={BRIEF_LIMITS.inspiration}
                   {...register('inspiration')}
                 />
@@ -516,7 +521,11 @@ export function BriefForm() {
           Back
         </Button>
         {isLastStep ? (
-          <Button type="submit" disabled={isSubmitting || hasInvalidFiles}>
+          <Button
+            key="submit"
+            type="submit"
+            disabled={isSubmitting || hasInvalidFiles}
+          >
             {isSubmitting
               ? 'Creating…'
               : runId
@@ -524,7 +533,7 @@ export function BriefForm() {
                 : 'Create run'}
           </Button>
         ) : (
-          <Button type="button" onClick={() => void next()}>
+          <Button key="next" type="button" onClick={() => void next()}>
             Next
           </Button>
         )}
