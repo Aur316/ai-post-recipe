@@ -27,6 +27,10 @@ export function createTestContext() {
     db,
     storage,
     app: createApp({ db, storage }),
+    /** Deletes this run after the test file, e.g. one created through the API. */
+    track(id: string) {
+      created.push(id)
+    },
     async createRun() {
       const run = await runs.create({
         brandName: 'Test brand',

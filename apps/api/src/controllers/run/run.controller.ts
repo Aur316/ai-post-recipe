@@ -1,0 +1,49 @@
+import {
+  Brief,
+  OutputLanguage,
+  type RunDetailDto,
+  type RunSummaryDto,
+} from '@ai-post-recipe/shared'
+import type { Request, Response } from 'express'
+
+import type { Run } from '../../generated/prisma/client.js'
+import { validate } from '../../lib/validate.js'
+import type { RunService } from '../../services/run/run.service.js'
+import { toAssetDto } from '../asset/asset.controller.js'
+
+export class RunController {
+  constructor(private readonly runs: RunService) {}
+
+  create = async (req: Request, res: Response) => {
+    const brief = validate(Brief, req.body)
+    const run = await this.runs.create(brief)
+    res.status(201).json(toRunSummaryDto(run))
+  }
+
+  list = async (_req: Request, res: Response) => {
+    const runs = await this.runs.list()
+    res.json(runs.map(toRunSummaryDto))
+  }
+
+  get = async (req: Request<{ id: string }>, res: Response) => {
+    const { run, assets } = await this.runs.get(req.params.id)
+    const body: RunDetailDto = {
+      ...toRunSummaryDto(run),
+      brief: Brief.parse(run.brief),
+      assets: assets.map(toAssetDto),
+    }
+    res.json(body)
+  }
+}
+
+function toRunSummaryDto(run: Run): RunSummaryDto {
+  return {
+    id: run.id,
+    brandName: run.brandName,
+    instagram: run.instagram,
+    language: OutputLanguage.parse(run.language),
+    status: run.status,
+    createdAt: run.createdAt.toISOString(),
+    updatedAt: run.updatedAt.toISOString(),
+  }
+}

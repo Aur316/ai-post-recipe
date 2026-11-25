@@ -48,10 +48,12 @@ enum AssetKind {
   EXPORT_ZIP
 }
 
+/// Length limits mirror BRIEF_LIMITS in packages/shared; the brief JSON fields are
+/// limited by the run_brief_text_limits CHECK constraint (see the migrations).
 model Run {
   id        String     @id @default(cuid())
-  brandName String
-  instagram String
+  brandName String     @db.VarChar(120)
+  instagram String     @db.VarChar(2048)
   language  String     @default("hr")
   status    RunStatus  @default(DRAFT)
   brief     Json

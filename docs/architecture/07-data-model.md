@@ -61,8 +61,8 @@ enum AssetKind   { UPLOAD_SCREENSHOT UPLOAD_PRODUCT UPLOAD_LOGO UPLOAD_OTHER GEN
 
 model Run {
   id          String     @id @default(cuid())
-  brandName   String
-  instagram   String
+  brandName   String     @db.VarChar(120)
+  instagram   String     @db.VarChar(2048)
   language    String     @default("hr")
   status      RunStatus  @default(DRAFT)
   brief       Json
@@ -136,6 +136,8 @@ model Asset {
 ```
 
 ## Design notes
+
+- **Length limits.** `brandName` is `VARCHAR(120)` and `instagram` is `VARCHAR(2048)`; the text fields inside `brief` are limited by the `run_brief_text_limits` CHECK constraint. All of them mirror `BRIEF_LIMITS` in `packages/shared`, and an API test fails if they drift apart.
 
 - **Attempts, not overwrites.** A re-run adds a `PhaseRun` row with the next `attempt`. The latest attempt per phase is the current one; earlier attempts remain for comparison.
 - **`output` vs. `editedOutput`.** The AI proposal is never changed. Approval writes the human version next to it.
