@@ -49,6 +49,10 @@ apps/web/src/
 
 Dark is the default (`class="dark"` on `<html>`). The header toggle switches to light and stores the choice in `localStorage`; a small inline script in `index.html` applies it before first paint.
 
+## Layout and scrolling
+
+The app fills the screen: the header stays put and `main` scrolls pages that are taller than the screen. List pages (runs) fill `main` and scroll only their list, with the `scrollbar-thin` utility from `index.css` (thin, theme-aware). The infinite scroll observes that list container (`rootRef`).
+
 ## Pages
 
 | Page                      | Purpose                                                                                                                                         |

@@ -12,15 +12,15 @@ export function Runs() {
   const { runs, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useGetRunsInfinite({ params: { page: 1, size: DEFAULT_PAGE_SIZE } })
 
-  const [sentryRef] = useInfiniteScroll({
+  const [sentryRef, { rootRef }] = useInfiniteScroll({
     loading: isPending || isFetchingNextPage,
     hasNextPage,
     onLoadMore: () => void fetchNextPage(),
   })
 
   return (
-    <section className="space-y-6">
-      <div className="flex items-center justify-between">
+    <section className="flex h-full flex-col gap-6">
+      <div className="flex shrink-0 items-center justify-between">
         <h1 className="text-2xl font-semibold">Runs</h1>
         <Button asChild>
           <Link to="/runs/new">New run</Link>
@@ -34,30 +34,35 @@ export function Runs() {
         </p>
       )}
       {runs.length > 0 && (
-        <ul className="divide-y rounded-lg border">
-          {runs.map((run) => (
-            <li key={run.id}>
-              <Link
-                to={`/runs/${run.id}`}
-                className="flex items-center justify-between gap-4 p-4 hover:bg-muted"
-              >
-                <div>
-                  <p className="font-medium">{run.brandName}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(run.createdAt).toLocaleString()}
-                  </p>
-                </div>
-                <RunStatusBadge status={run.status} />
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div
+          ref={rootRef}
+          className="scrollbar-thin min-h-0 flex-1 overflow-y-auto rounded-lg border"
+        >
+          <ul className="divide-y">
+            {runs.map((run) => (
+              <li key={run.id}>
+                <Link
+                  to={`/runs/${run.id}`}
+                  className="flex items-center justify-between gap-4 p-4 hover:bg-muted"
+                >
+                  <div>
+                    <p className="font-medium">{run.brandName}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(run.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <RunStatusBadge status={run.status} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <InfiniteScrollSpinner
+            sentryRef={sentryRef}
+            isFetchingNextPage={isFetchingNextPage}
+            hasNextPage={hasNextPage}
+          />
+        </div>
       )}
-      <InfiniteScrollSpinner
-        sentryRef={sentryRef}
-        isFetchingNextPage={isFetchingNextPage}
-        hasNextPage={hasNextPage}
-      />
     </section>
   )
 }
