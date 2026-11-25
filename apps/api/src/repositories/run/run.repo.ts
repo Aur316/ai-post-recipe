@@ -1,5 +1,5 @@
-import type { Db } from '../db/prisma.js'
-import type { Prisma } from '../generated/prisma/client.js'
+import type { Db } from '../../db/prisma.js'
+import type { Prisma } from '../../generated/prisma/client.js'
 
 export class RunRepo {
   constructor(private readonly db: Db) {}

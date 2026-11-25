@@ -1,10 +1,10 @@
 import { type AssetDto, UploadAssetBody } from '@ai-post-recipe/shared'
 import type { Request, Response } from 'express'
 
-import type { Asset } from '../generated/prisma/client.js'
-import { ValidationError } from '../lib/errors.js'
-import { validate } from '../lib/validate.js'
-import type { AssetService } from '../services/asset.service.js'
+import type { Asset } from '../../generated/prisma/client.js'
+import { ValidationError } from '../../lib/errors.js'
+import { validate } from '../../lib/validate.js'
+import type { AssetService } from '../../services/asset/asset.service.js'
 
 export class AssetController {
   constructor(private readonly assets: AssetService) {}

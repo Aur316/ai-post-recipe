@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { createTestContext } from '../test/context.js'
-import { AssetRepo } from './asset.repo.js'
-import { PhaseRunRepo } from './phase-run.repo.js'
+import { createTestContext } from '../../test/context.js'
+import { AssetRepo } from '../asset/asset.repo.js'
+import { PhaseRunRepo } from '../phase-run/phase-run.repo.js'
 import { RunRepo } from './run.repo.js'
 
 describe('RunRepo', () => {

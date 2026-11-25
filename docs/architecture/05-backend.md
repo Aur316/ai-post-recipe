@@ -13,28 +13,41 @@ flowchart TB
 
 ## Folder layout
 
+Each layer folder is split into one subfolder per domain (`asset`, `run`, `phase-run`, `source`, `health`, …), so it is clear which file belongs to what. Tests sit next to the file they test.
+
 ```
 apps/api/src/
-├─ app.ts                   # builds the Express app (usable from tests without a port)
+├─ app.ts                   # builds the Express app from its dependencies (tests inject fakes)
 ├─ server.ts                # starts the HTTP server and the worker
 ├─ config/env.ts            # environment variables validated with Zod
-├─ routes/                  # /runs, /assets, /health: paths and middleware only
+├─ db/prisma.ts             # Prisma client with the pg driver adapter
 ├─ controllers/             # HTTP ↔ DTO, Zod validation, status codes
+│  ├─ asset/                # asset.controller.ts (+ .test.ts)
+│  ├─ health/               # health.controller.ts
+│  └─ run/                  # run.controller.ts
 ├─ services/
-│  ├─ run.service.ts        # creating runs, state machine, approval, re-run
+│  ├─ asset/                # asset.service.ts: upload, open
+│  ├─ run/                  # run.service.ts: creating runs, state machine, approval, re-run
 │  ├─ phases/               # one file per phase: brief, research, analysis, plan, copy, visuals, review, export
-│  └─ export.service.ts     # builds the ZIP
-├─ repositories/            # Prisma access: RunRepo, PhaseRunRepo, AssetRepo, SourceRepo
+│  └─ export/               # export.service.ts: builds the ZIP
+├─ repositories/            # Prisma access, one folder per table
+│  ├─ run/                  # run.repo.ts (+ .test.ts)
+│  ├─ phase-run/            # phase-run.repo.ts
+│  ├─ asset/                # asset.repo.ts
+│  └─ source/               # source.repo.ts
 ├─ providers/               # interface + implementation for each external system
 │  ├─ llm/                  # LlmProvider: OpenRouterProvider (+ FakeLlmProvider for tests)
 │  ├─ search/               # SearchProvider: SerperProvider, NoopSearchProvider (no key)
 │  ├─ fetcher/              # downloads a page, HTML → clean text, respects robots.txt
-│  ├─ storage/              # StorageProvider: S3Storage
+│  ├─ storage/              # StorageProvider: S3Storage, MemoryStorage (tests)
 │  └─ renderer/             # SlideRenderer: Playwright, slide templates → PNG
 ├─ jobs/                    # pg-boss: queue registration, phase runner, retries
-├─ middleware/              # errorHandler, requestId, upload (multer), rateLimit
-└─ lib/                     # logger (pino), errors (AppError hierarchy)
+├─ middleware/              # error handler, upload (multer)
+├─ lib/                     # logger (pino), errors (AppError hierarchy), validate
+└─ test/                    # shared test helpers: test context, fixtures
 ```
+
+Routes are registered in `app.ts` while there are few of them; they move to `routes/` when it grows.
 
 ## Phase contract
 

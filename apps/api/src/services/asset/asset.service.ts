@@ -2,10 +2,10 @@ import type { UploadAssetKind } from '@ai-post-recipe/shared'
 import { randomUUID } from 'node:crypto'
 import sharp from 'sharp'
 
-import { NotFoundError, UnsupportedMediaTypeError } from '../lib/errors.js'
-import type { StorageProvider } from '../providers/storage/storage.provider.js'
-import type { AssetRepo } from '../repositories/asset.repo.js'
-import type { RunRepo } from '../repositories/run.repo.js'
+import { NotFoundError, UnsupportedMediaTypeError } from '../../lib/errors.js'
+import type { StorageProvider } from '../../providers/storage/storage.provider.js'
+import type { AssetRepo } from '../../repositories/asset/asset.repo.js'
+import type { RunRepo } from '../../repositories/run/run.repo.js'
 
 const EXTENSIONS: Record<string, string> = {
   'image/png': 'png',

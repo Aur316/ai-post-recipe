@@ -4,7 +4,7 @@ import { afterAll } from 'vitest'
 import { createApp } from '../app.js'
 import { createDb } from '../db/prisma.js'
 import { MemoryStorage } from '../providers/storage/memory.storage.js'
-import { RunRepo } from '../repositories/run.repo.js'
+import { RunRepo } from '../repositories/run/run.repo.js'
 
 /** Real PostgreSQL, in-memory storage. Runs created here are deleted after the file. */
 export function createTestContext() {

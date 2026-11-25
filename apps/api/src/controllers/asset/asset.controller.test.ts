@@ -2,7 +2,7 @@ import { AssetDto, ErrorResponse } from '@ai-post-recipe/shared'
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
 
-import { createTestContext, png } from '../test/context.js'
+import { createTestContext, png } from '../../test/context.js'
 
 describe('assets', () => {
   const ctx = createTestContext()

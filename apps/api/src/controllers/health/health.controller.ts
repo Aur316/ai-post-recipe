@@ -1,8 +1,8 @@
 import type { HealthResponse } from '@ai-post-recipe/shared'
 import type { Request, Response } from 'express'
 
-import type { Db } from '../db/prisma.js'
-import type { StorageProvider } from '../providers/storage/storage.provider.js'
+import type { Db } from '../../db/prisma.js'
+import type { StorageProvider } from '../../providers/storage/storage.provider.js'
 
 export class HealthController {
   constructor(

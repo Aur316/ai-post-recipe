@@ -2,16 +2,16 @@ import express from 'express'
 import { randomUUID } from 'node:crypto'
 import { pinoHttp } from 'pino-http'
 
-import { AssetController } from './controllers/asset.controller.js'
-import { HealthController } from './controllers/health.controller.js'
+import { AssetController } from './controllers/asset/asset.controller.js'
+import { HealthController } from './controllers/health/health.controller.js'
 import type { Db } from './db/prisma.js'
 import { logger } from './lib/logger.js'
 import { errorHandler } from './middleware/error-handler.js'
 import { uploadSingleFile } from './middleware/upload.js'
 import type { StorageProvider } from './providers/storage/storage.provider.js'
-import { AssetRepo } from './repositories/asset.repo.js'
-import { RunRepo } from './repositories/run.repo.js'
-import { AssetService } from './services/asset.service.js'
+import { AssetRepo } from './repositories/asset/asset.repo.js'
+import { RunRepo } from './repositories/run/run.repo.js'
+import { AssetService } from './services/asset/asset.service.js'
 
 export interface AppDeps {
   db: Db
