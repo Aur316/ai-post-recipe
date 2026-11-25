@@ -63,6 +63,6 @@ FR-02, NFR-04, NFR-09, NFR-11
 
 ## Risks
 
-| Risk | Mitigation |
-| --- | --- |
+| Risk                                                          | Mitigation                                                                                                                  |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | The common local S3 server images may no longer be maintained | Compare current options (for example MinIO, SeaweedFS, Garage) when starting M2; the S3 client keeps the choice replaceable |

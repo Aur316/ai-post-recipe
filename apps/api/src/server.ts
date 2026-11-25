@@ -1,7 +1,6 @@
 import { app } from './app.js'
+import { env } from './config/env.js'
 
-const port = Number(process.env.PORT ?? 3000)
-
-app.listen(port, () => {
-  console.log(`api: http://localhost:${port}`)
+app.listen(env.PORT, () => {
+  console.log(`api: http://localhost:${env.PORT}`)
 })

@@ -4,13 +4,13 @@ Files live in S3-compatible object storage. Slides are not drawn by an AI model:
 
 ## Object storage
 
-| Topic | Design |
-| --- | --- |
-| Client | AWS SDK v3 S3 client, so any S3-compatible service works (AWS S3, Cloudflare R2, a local server in development) |
-| Bucket | `ai-post-recipe`, created by the API at startup if missing |
-| Key layout | `runs/{runId}/{kind}/{assetId}.{ext}` |
-| Access | The browser never reads the bucket. The API returns a short-lived presigned URL or streams the file |
-| Upload checks | MIME type allow-list and a 10 MB size limit; width and height read with sharp |
+| Topic         | Design                                                                                                          |
+| ------------- | --------------------------------------------------------------------------------------------------------------- |
+| Client        | AWS SDK v3 S3 client, so any S3-compatible service works (AWS S3, Cloudflare R2, a local server in development) |
+| Bucket        | `ai-post-recipe`, created by the API at startup if missing                                                      |
+| Key layout    | `runs/{runId}/{kind}/{assetId}.{ext}`                                                                           |
+| Access        | The browser never reads the bucket. The API returns a short-lived presigned URL or streams the file             |
+| Upload checks | MIME type allow-list and a 10 MB size limit; width and height read with sharp                                   |
 
 ## Slide rendering
 

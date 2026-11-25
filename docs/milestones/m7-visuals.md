@@ -57,7 +57,7 @@ FR-12, FR-13
 
 ## Risks
 
-| Risk | Mitigation |
-| --- | --- |
-| Larger API image with Chromium | Accepted ([ADR 0004](../architecture/adr/0004-render-slides-from-react-templates.md)); multi-stage build keeps the rest small |
-| Fonts differ between the preview and the renderer | Bundle the fonts with the templates |
+| Risk                                              | Mitigation                                                                                                                    |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Larger API image with Chromium                    | Accepted ([ADR 0004](../architecture/adr/0004-render-slides-from-react-templates.md)); multi-stage build keeps the rest small |
+| Fonts differ between the preview and the renderer | Bundle the fonts with the templates                                                                                           |

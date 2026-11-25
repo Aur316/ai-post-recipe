@@ -15,16 +15,16 @@ flowchart LR
 
 ## Phases
 
-| # | Phase | Input | What it does | Output |
-| --- | --- | --- | --- | --- |
-| 1 | Brief | Form | Brand name, Instagram profile, website and shop links, products, audience, goals, inspiration; uploaded screenshots, product photos and logo | `brief.json`, assets in storage |
-| 2 | Research | Brief | Finds official pages and product pages with Serper (if a key is set). The backend downloads them and converts them to clean text | `sources[]`: URL, title, excerpt, fetch time, reachable |
-| 3 | Brand analysis | Brief, sources, screenshots | A vision model describes tone of voice, audience, themes, colours and how products and people are shown. Each claim is `verified` (with a source link) or `assumption` | `brandAnalysis.json`, then **approval** |
-| 4 | Content plan | Approved analysis | Three posts, each with goal, format (image, carousel, story), concept, rationale and the product it features | `contentPlan.json`, then **approval** |
-| 5 | Copy | Approved plan, sources | Instagram caption, hashtags and slide text in Croatian or English. Only facts, prices and product features from sources may be used | `copy.json` per post and slide |
-| 6 | Visuals | Copy, brand colours, product photos, logo | An image model generates a background or scene. The slide is a React template rendered to PNG by Playwright, with the real product photo, logo and text | PNGs in storage, `Asset` rows |
-| 7 | Review | Rendered slides, copy, sources | A vision model plus rules: logo and product visible, text readable, no unsourced claims, correct size (1080×1350, 1080×1920). A failing slide goes back to phase 6 | `review.json` (score, issues) |
-| 8 | Export | Everything above | ZIP with a folder per post (images, `caption.txt`, `meta.json` with format, goal and rationale), plus `sources.md` and every intermediate JSON | Downloadable ZIP |
+| #   | Phase          | Input                                     | What it does                                                                                                                                                           | Output                                                  |
+| --- | -------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| 1   | Brief          | Form                                      | Brand name, Instagram profile, website and shop links, products, audience, goals, inspiration; uploaded screenshots, product photos and logo                           | `brief.json`, assets in storage                         |
+| 2   | Research       | Brief                                     | Finds official pages and product pages with Serper (if a key is set). The backend downloads them and converts them to clean text                                       | `sources[]`: URL, title, excerpt, fetch time, reachable |
+| 3   | Brand analysis | Brief, sources, screenshots               | A vision model describes tone of voice, audience, themes, colours and how products and people are shown. Each claim is `verified` (with a source link) or `assumption` | `brandAnalysis.json`, then **approval**                 |
+| 4   | Content plan   | Approved analysis                         | Three posts, each with goal, format (image, carousel, story), concept, rationale and the product it features                                                           | `contentPlan.json`, then **approval**                   |
+| 5   | Copy           | Approved plan, sources                    | Instagram caption, hashtags and slide text in Croatian or English. Only facts, prices and product features from sources may be used                                    | `copy.json` per post and slide                          |
+| 6   | Visuals        | Copy, brand colours, product photos, logo | An image model generates a background or scene. The slide is a React template rendered to PNG by Playwright, with the real product photo, logo and text                | PNGs in storage, `Asset` rows                           |
+| 7   | Review         | Rendered slides, copy, sources            | A vision model plus rules: logo and product visible, text readable, no unsourced claims, correct size (1080×1350, 1080×1920). A failing slide goes back to phase 6     | `review.json` (score, issues)                           |
+| 8   | Export         | Everything above                          | ZIP with a folder per post (images, `caption.txt`, `meta.json` with format, goal and rationale), plus `sources.md` and every intermediate JSON                         | Downloadable ZIP                                        |
 
 ## Phase state machine
 

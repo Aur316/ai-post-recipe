@@ -1,0 +1,18 @@
+{
+  "name": "@ai-post-recipe/eslint-config",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": "./index.js",
+  "dependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "typescript-eslint": "^8.74.0"
+  },
+  "devDependencies": {
+    "eslint": "^10.15.0"
+  },
+  "peerDependencies": {
+    "eslint": "^10.15.0"
+  }
+}

@@ -32,12 +32,12 @@ ai-post-recipe/
 
 ## Why separate packages
 
-| Package | Reason |
-| --- | --- |
-| `shared` | One source of truth for request, response and domain schemas. A contract change breaks the type check on both sides. |
-| `prompts` | Reviewers can read the recipe without reading the code, and every prompt has a version recorded on each `PhaseRun`. |
-| `slide-templates` | The same component renders the preview in the browser and the PNG in the renderer, so what the user approves is what gets exported. |
-| `eslint-config`, `tsconfig` | Shared tooling settings, so the apps stay consistent. |
+| Package                     | Reason                                                                                                                              |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `shared`                    | One source of truth for request, response and domain schemas. A contract change breaks the type check on both sides.                |
+| `prompts`                   | Reviewers can read the recipe without reading the code, and every prompt has a version recorded on each `PhaseRun`.                 |
+| `slide-templates`           | The same component renders the preview in the browser and the PNG in the renderer, so what the user approves is what gets exported. |
+| `eslint-config`, `tsconfig` | Shared tooling settings, so the apps stay consistent.                                                                               |
 
 ## Dependency rules
 
@@ -45,4 +45,4 @@ ai-post-recipe/
 - `packages/shared` has no runtime dependency other than Zod.
 - `apps/web` must never import server-only code such as providers or Prisma.
 
-> **Current state:** only `apps/api`, `apps/web` and `docker/` exist. The packages are added in the milestone that first needs them (see [milestones](../milestones/README.md)).
+> **Current state:** `packages/shared`, `packages/tsconfig` and `packages/eslint-config` exist. `prompts` and `slide-templates` are added in the milestone that first needs them (see [milestones](../milestones/README.md)).

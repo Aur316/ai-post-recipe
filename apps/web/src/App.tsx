@@ -1,19 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
-export default function App() {
-  const [api, setApi] = useState("...");
+import { HealthResponse } from '@ai-post-recipe/shared'
+
+export const App = () => {
+  const [api, setApi] = useState('...')
 
   useEffect(() => {
-    fetch("/api/health")
+    fetch('/api/health')
       .then((r) => r.json())
-      .then((d) => setApi(d.status))
-      .catch(() => setApi("Not available"));
-  }, []);
+      .then((body) => setApi(HealthResponse.parse(body).status))
+      .catch(() => setApi('unavailable'))
+  }, [])
 
   return (
-    <main>
-      <h1 className="">AI Post Recipe</h1>
-      <p>API: {api}</p>
+    <main className="h-screen bg-muted-foreground p-8">
+      <h1 className="text-2xl font-semibold">AI Post Recipe</h1>
+      <p className="text-red-500">API: {api}</p>
     </main>
-  );
+  )
 }
