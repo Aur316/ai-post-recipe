@@ -5,7 +5,7 @@
 
 ## Context
 
-The design called for MinIO as local S3-compatible storage. The `minio/minio` image is no longer published on Docker Hub. Reviewers must still be able to start everything with one command and no cloud account, and CI must not call cloud services.
+The app stores uploads, generated backgrounds, rendered slides and export ZIPs in S3-compatible object storage. Reviewers must start everything with one command and no cloud account, CI must not call cloud services, and a hosted deployment should use managed storage.
 
 ## Decision
 

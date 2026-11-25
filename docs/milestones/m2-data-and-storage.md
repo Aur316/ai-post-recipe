@@ -63,6 +63,6 @@ FR-02, NFR-04, NFR-09, NFR-11
 
 ## Risks
 
-| Risk                                   | Mitigation                                                                                                                 |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| The MinIO image is no longer published | Resolved: SeaweedFS locally, R2 in production ([ADR 0008](../architecture/adr/0008-seaweedfs-locally-r2-in-production.md)) |
+| Risk                                            | Mitigation                                                                                                                                                                |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Local and production storage behave differently | One `S3Storage` provider with path-style addressing for both, files streamed through the API ([ADR 0008](../architecture/adr/0008-seaweedfs-locally-r2-in-production.md)) |
