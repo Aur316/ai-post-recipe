@@ -1,0 +1,15 @@
+{
+  "name": "ai-post-recipe",
+  "private": true,
+  "packageManager": "pnpm@10.34.9",
+  "scripts": {
+    "predev": "docker compose up -d --wait db",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.13"
+  }
+}
