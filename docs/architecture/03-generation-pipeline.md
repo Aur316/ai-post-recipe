@@ -50,6 +50,14 @@ The run itself has a coarser status (`DRAFT`, `RUNNING`, `AWAITING_APPROVAL`, `C
 - The original stays in `output`, the edited version goes to `editedOutput`. Later phases read `editedOutput` when it exists.
 - The difference between the two is the "own correction" example required for the PDF, read straight from the database.
 
+## Run status
+
+The run status is derived from the latest attempt of each phase: `RUNNING` while any phase is queued or running, `AWAITING_APPROVAL` at a gate, `FAILED` when a phase failed, `COMPLETED` when all eight are done or approved, otherwise `DRAFT` (not started, or paused with stale phases). **Start** (shown as **Continue** after the first run) queues the first phase that is missing, failed or stale.
+
+## Retries
+
+A failed attempt goes back to the queue and is retried twice with exponential backoff. After the last retry the phase is `FAILED` with its error message, and **Continue** starts it again as a new attempt.
+
 ## Resumability and traceability
 
 - A run can restart from any finished phase: `POST /api/runs/:id/phases/:phase/rerun`. All later phases become `STALE`.

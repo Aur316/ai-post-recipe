@@ -1,6 +1,7 @@
 import type {
   BriefInput,
   ListQuery,
+  PhaseKey,
   RunDetailDto,
   RunListResponse,
   RunSummaryDto,
@@ -17,4 +18,17 @@ export const runsQueryFunctions = {
     httpClient.get(`${ROOT}/${id}`),
   create: (brief: BriefInput): Promise<RunSummaryDto> =>
     httpClient.post(ROOT, brief),
+  start: (id: string): Promise<void> => httpClient.post(`${ROOT}/${id}/start`),
+  approvePhase: ({
+    id,
+    phase,
+    editedOutput,
+  }: {
+    id: string
+    phase: PhaseKey
+    editedOutput?: unknown
+  }): Promise<void> =>
+    httpClient.post(`${ROOT}/${id}/phases/${phase}/approve`, { editedOutput }),
+  rerunPhase: ({ id, phase }: { id: string; phase: PhaseKey }): Promise<void> =>
+    httpClient.post(`${ROOT}/${id}/phases/${phase}/rerun`),
 }

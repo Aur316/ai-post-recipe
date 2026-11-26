@@ -58,4 +58,4 @@ Every error uses one shape:
 - Allowed types: PNG, JPEG, WebP, and SVG for logos. Size limit: 10 MB per file.
 - The API reads width and height with sharp and stores them on the `Asset`.
 
-> **Current state:** health, `POST/GET /api/runs`, `GET /api/runs/:id`, asset upload and download exist. The phase, slide and export endpoints follow from M4.
+> **Current state:** health, runs (create, list, detail with the latest attempt of each phase), start, approve, re-run, asset upload and download exist. Start, approve and re-run answer `202 Accepted`: the work happens in the background. Slide regeneration and export follow in M7–M8.

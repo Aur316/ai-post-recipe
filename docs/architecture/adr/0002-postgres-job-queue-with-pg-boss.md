@@ -25,3 +25,11 @@ The rest of the code never imports pg-boss: it uses a small `JobQueue` interface
 
 > [!TIP]
 > **Further scaling: BullMQ + Redis.** If the job volume ever outgrows Postgres, the queue can move to BullMQ on Redis by adding a `BullMqQueue` that implements the same `JobQueue` interface and wiring it in `server.ts`. Phases, the phase runner and the services do not change. Two things come with that move: a Redis service in Docker Compose, and an outbox table, because a database update and a Redis job can no longer be written in one transaction.
+
+### What keeps the switch cheap
+
+1. **Phase state lives in our `PhaseRun` table**, never in the queue's tables. The UI and the API never ask the queue what is running.
+2. **Queue options are generic** (retry limit, retry delay); each implementation maps them to its own names.
+3. **Only `providers/queue/` imports pg-boss.** An ESLint `no-restricted-imports` rule enforces it.
+4. **Phases are idempotent.** Both pg-boss and BullMQ deliver at least once, so the runner claims a phase run with a conditional update and skips it if another delivery already took it.
+5. **Tests go through the interface** with `MemoryQueue`, so the same tests would check a `BullMqQueue`.

@@ -27,7 +27,8 @@ apps/api/src/
 │  └─ run/                  # run.controller.ts
 ├─ services/
 │  ├─ asset/                # asset.service.ts: upload, open
-│  ├─ run/                  # run.service.ts: creating runs, state machine, approval, re-run
+│  ├─ run/                  # run.service.ts: creating, listing and reading runs
+│  ├─ pipeline/             # pipeline.service.ts: state machine (start, approve, re-run); run-status.ts
 │  ├─ phases/               # one file per phase: brief, research, analysis, plan, copy, visuals, review, export
 │  └─ export/               # export.service.ts: builds the ZIP
 ├─ repositories/            # Prisma access, one folder per table
@@ -36,13 +37,13 @@ apps/api/src/
 │  ├─ asset/                # asset.repo.ts
 │  └─ source/               # source.repo.ts
 ├─ providers/               # interface + implementation for each external system
-│  ├─ llm/                  # LlmProvider: OpenRouterProvider (+ FakeLlmProvider for tests)
+│  ├─ llm/                  # LlmProvider: FakeLlmProvider now, OpenRouterProvider in M5
 │  ├─ search/               # SearchProvider: SerperProvider, NoopSearchProvider (no key)
 │  ├─ fetcher/              # downloads a page, HTML → clean text, respects robots.txt
 │  ├─ storage/              # StorageProvider: S3Storage, MemoryStorage (tests)
 │  ├─ queue/                # JobQueue: PgBossQueue (+ an in-memory queue for tests)
 │  └─ renderer/             # SlideRenderer: Playwright, slide templates → PNG
-├─ jobs/                    # pg-boss: queue registration, phase runner, retries
+├─ jobs/                    # phase-runner.ts (claim, execute, validate, retry), queue names
 ├─ middleware/              # error handler, upload (multer)
 ├─ lib/                     # logger (pino), errors (AppError hierarchy), validate
 └─ test/                    # shared test helpers: test context, fixtures
@@ -55,14 +56,17 @@ Routes are registered in `app.ts` while there are few of them; they move to `rou
 Every phase implements the same interface:
 
 ```ts
-interface Phase<TOutput> {
-  key: PhaseKey
-  outputSchema: ZodType<TOutput>
-  execute(ctx: PhaseContext): Promise<TOutput>
+interface Phase<K extends PhaseKey> {
+  key: K
+  outputSchema: ZodType<PhaseOutputs[K]>
+  execute(ctx: PhaseContext): Promise<PhaseResult<PhaseOutputs[K]>>
 }
+// PhaseResult = { output, promptId?, model?, usage? }
 ```
 
-`PhaseContext` carries the run, the approved outputs of earlier phases (`editedOutput` when it exists, otherwise `output`) and the providers. A phase never writes to the database. The **phase runner** in `jobs/` does that: it marks the phase `RUNNING`, calls `execute`, validates the output, saves it with token usage and cost, and moves the state machine on.
+The output schemas live in `packages/shared` (`PHASE_OUTPUT_SCHEMAS`), so the approval panel validates edits with the same schema as the API. `PhaseContext` carries the brief, the finished outputs of earlier phases (`editedOutput` when a person approved one, otherwise `output`) and the LLM provider. A phase never writes to the database.
+
+The **phase runner** (`jobs/phase-runner.ts`) handles one job: it claims the phase run (`PENDING` → `RUNNING`, skipped if another delivery already took it), calls `execute`, validates the output and hands it to `PipelineService.complete`. A failed attempt goes back to `PENDING` and the queue retries it with backoff (2 retries); after the last one the phase is `FAILED` with the error. The **pipeline service** owns every status change; each change and the job it queues are one transaction.
 
 ## Job queue
 
@@ -72,12 +76,23 @@ Phases run as background jobs. The services and the phase runner depend on a sma
 interface JobQueue {
   start(): Promise<void>
   stop(): Promise<void>
-  send<T>(queue: string, data: T, options?: { tx?: Tx }): Promise<string>
-  work<T>(queue: string, handler: (data: T) => Promise<void>): Promise<void>
+  send<T>(
+    queue: string,
+    data: T,
+    options?: { tx?: TransactionClient },
+  ): Promise<void>
+  work<T>(
+    queue: string,
+    handler: (job: {
+      data: T
+      retryCount: number
+      retryLimit: number
+    }) => Promise<void>,
+  ): Promise<void>
 }
 ```
 
-`PgBossQueue` (`providers/queue/`) implements it on the existing Postgres ([ADR 0002](adr/0002-postgres-job-queue-with-pg-boss.md)). `send` can join the caller's transaction, so a phase status change and its job are committed together. Tests use an in-memory queue that runs jobs immediately.
+`PgBossQueue` (`providers/queue/`) implements it on the existing Postgres ([ADR 0002](adr/0002-postgres-job-queue-with-pg-boss.md)). `send` can join the caller's transaction, so a phase status change and its job are committed together. Tests use `MemoryQueue`, which runs jobs (and the jobs they send) when the test calls `drain()`.
 
 > [!TIP]
 > **Further scaling: BullMQ + Redis.** The queue can move to BullMQ on Redis by adding a `BullMqQueue` that implements `JobQueue`; nothing else changes. It needs a Redis service and an outbox table, because the database update and the Redis job are no longer one transaction. See the scaling path in ADR 0002.
@@ -91,7 +106,7 @@ interface JobQueue {
 | Models         | No model names in code. The prompt file's front matter sets the model; `.env` can override it.                                                                               |
 | Cost           | The phase runner checks `MAX_COST_USD_PER_RUN` before each call and fails the phase if the cap would be exceeded.                                                            |
 | Errors         | One error shape for every response: `{ "error": { "code", "message", "details?" } }`. Domain errors extend `AppError` and map to status codes in one `errorHandler`.         |
-| State changes  | Only `run.service` changes run and phase status. An illegal transition returns `409 Conflict`.                                                                               |
+| State changes  | Only `PipelineService` changes run and phase status. An illegal transition returns `409 Conflict`.                                                                           |
 | Logging        | Structured JSON logs with pino, with a request id on every line. Prompts and API keys are never logged.                                                                      |
 
-> **Current state:** config, logger, errors, the error handler, Prisma, all four repositories, the storage provider and the asset upload exist. Phases, jobs and the other providers follow from M4.
+> **Current state:** the pipeline runs end to end with `FakeLlmProvider`: phases 1–4 have their real shape, phases 5–8 are placeholders until M6–M8. OpenRouter, search and the cost cap arrive in M5.

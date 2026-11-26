@@ -78,4 +78,4 @@ The `useGetRunById` hook will poll every 2 seconds while any phase is `RUNNING` 
 
 The approval panel turns the phase JSON into an editable form (for example, one card per post in the content plan). Saving sends the edited version with the approval, so the original AI proposal stays untouched in `output`.
 
-> **Current state:** runs list, the brief wizard with uploads and the run details page (brief and references) exist. Phase views, approval and previews follow in M4–M7.
+> **Current state:** runs list, the brief wizard with uploads, and the run details page with the brief, references, the phase timeline (status, attempt, duration, cost, model, prompt, output) and the approval panel (JSON editor checked against the shared phase schema; approve, approve with edits, run again). The page polls every 2 seconds while the run is `RUNNING`. Phase-specific views (analysis, plan, previews) follow in M5–M7.

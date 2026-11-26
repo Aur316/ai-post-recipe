@@ -2,12 +2,10 @@ import { z } from 'zod'
 
 import { AssetDto } from './assets.js'
 import { paginated } from './pagination.js'
+import { PhaseRunDto, PostFormat } from './phases.js'
 
 export const OutputLanguage = z.enum(['hr', 'en'])
 export type OutputLanguage = z.infer<typeof OutputLanguage>
-
-export const PostFormat = z.enum(['IMAGE', 'CAROUSEL', 'STORY'])
-export type PostFormat = z.infer<typeof PostFormat>
 
 export const LinkType = z.enum(['WEBSITE', 'SHOP', 'CATALOG', 'OTHER'])
 export type LinkType = z.infer<typeof LinkType>
@@ -109,6 +107,8 @@ export type RunSummaryDto = z.infer<typeof RunSummaryDto>
 export const RunDetailDto = RunSummaryDto.extend({
   brief: Brief,
   assets: z.array(AssetDto),
+  /** The latest attempt of each phase that has started, in phase order. */
+  phases: z.array(PhaseRunDto),
 })
 export type RunDetailDto = z.infer<typeof RunDetailDto>
 

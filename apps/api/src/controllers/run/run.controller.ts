@@ -13,6 +13,7 @@ import type { Run } from '../../generated/prisma/client.js'
 import { validate } from '../../lib/validate.js'
 import type { RunService } from '../../services/run/run.service.js'
 import { toAssetDto } from '../asset/asset.controller.js'
+import { toPhaseRunDto } from '../pipeline/pipeline.controller.js'
 
 export class RunController {
   constructor(private readonly runs: RunService) {}
@@ -34,11 +35,12 @@ export class RunController {
 
   get = async (req: Request, res: Response) => {
     const { id } = validate(IdParams, req.params)
-    const { run, assets } = await this.runs.get(id)
+    const { run, assets, phases } = await this.runs.get(id)
     const body: RunDetailDto = {
       ...toRunSummaryDto(run),
       brief: Brief.parse(run.brief),
       assets: assets.map(toAssetDto),
+      phases: phases.map(toPhaseRunDto),
     }
     res.json(body)
   }

@@ -2,12 +2,14 @@ import type { Brief, ListQuery } from '@ai-post-recipe/shared'
 
 import { NotFoundError } from '../../lib/errors.js'
 import type { AssetRepo } from '../../repositories/asset/asset.repo.js'
+import type { PhaseRunRepo } from '../../repositories/phase-run/phase-run.repo.js'
 import type { RunRepo } from '../../repositories/run/run.repo.js'
 
 export class RunService {
   constructor(
     private readonly runs: RunRepo,
     private readonly assets: AssetRepo,
+    private readonly phaseRuns: PhaseRunRepo,
   ) {}
 
   create(brief: Brief) {
@@ -33,6 +35,10 @@ export class RunService {
   async get(id: string) {
     const run = await this.runs.findById(id)
     if (!run) throw new NotFoundError('Run', id)
-    return { run, assets: await this.assets.listByRun(id) }
+    const [assets, phases] = await Promise.all([
+      this.assets.listByRun(id),
+      this.phaseRuns.latestByRun(id),
+    ])
+    return { run, assets, phases }
   }
 }

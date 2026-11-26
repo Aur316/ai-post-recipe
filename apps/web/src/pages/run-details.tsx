@@ -1,15 +1,26 @@
 import { useParams } from 'react-router'
 
+import { PhaseTimeline } from '@/components/phase-timeline'
 import { RunStatusBadge } from '@/components/run-status-badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { assetsQueryFunctions } from '@/data/query-functions/assets'
 import { useGetRunById } from '@/hooks/queries/runs/useGetRunById'
+import { useStartRun } from '@/hooks/queries/runs/useStartRun'
 import { UPLOAD_KIND_LABELS } from '@/utils/uploads'
 
 export function RunDetails() {
   const { id = '' } = useParams()
-  const { data: run, isPending } = useGetRunById({ id })
+  const { data: run, isPending } = useGetRunById({
+    id,
+    queryOptions: {
+      // Poll while a phase is queued or running.
+      refetchInterval: (query) =>
+        query.state.data?.status === 'RUNNING' ? 2000 : false,
+    },
+  })
+  const startRun = useStartRun()
 
   if (isPending) return <p className="text-muted-foreground">Loading…</p>
   if (!run) return <p className="text-muted-foreground">Run not found.</p>
@@ -19,8 +30,28 @@ export function RunDetails() {
     <section className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{run.brandName}</h1>
-        <RunStatusBadge status={run.status} />
+        <div className="flex items-center gap-3">
+          <RunStatusBadge status={run.status} />
+          {(run.status === 'DRAFT' || run.status === 'FAILED') && (
+            <Button
+              type="button"
+              disabled={startRun.isPending}
+              onClick={() => startRun.mutate(run.id)}
+            >
+              {run.phases.length ? 'Continue' : 'Start'}
+            </Button>
+          )}
+        </div>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Phases</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PhaseTimeline runId={run.id} phases={run.phases} />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

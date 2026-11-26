@@ -1,8 +1,8 @@
-import type { Db } from '../../db/prisma.js'
+import type { DbClient } from '../../db/prisma.js'
 import type { Prisma } from '../../generated/prisma/client.js'
 
 export class AssetRepo {
-  constructor(private readonly db: Db) {}
+  constructor(private readonly db: DbClient) {}
 
   create(data: Prisma.AssetUncheckedCreateInput) {
     return this.db.asset.create({ data })
