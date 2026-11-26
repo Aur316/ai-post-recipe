@@ -45,6 +45,7 @@ export function createApp({ db, storage, queue, providers, slides }: AppDeps) {
       new PhaseRunRepo(db),
       new SourceRepo(db),
       new PostRepo(db),
+      storage,
     ),
   )
   const pipeline = new PipelineController(new PipelineService(db, queue))
@@ -72,6 +73,7 @@ export function createApp({ db, storage, queue, providers, slides }: AppDeps) {
   app.post('/api/runs', runs.create)
   app.get('/api/runs', runs.list)
   app.get('/api/runs/:id', runs.get)
+  app.delete('/api/runs/:id', runs.remove)
   app.put('/api/runs/:id', runs.update)
   app.post('/api/runs/:id/start', pipeline.start)
   app.post('/api/runs/:id/phases/:phase/approve', pipeline.approve)

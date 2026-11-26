@@ -123,6 +123,14 @@ export const hr: Translation = {
     noSearch:
       'Bez web pretrage (nema SERPER_API_KEY): pročitane su samo poveznice iz brifa.',
   },
+  deleteRun: {
+    button: 'Obriši pokretanje',
+    title: 'Obrisati pokretanje za {{brand}}?',
+    description:
+      'Brif, učitane reference, svi rezultati faza, generirane slike i objave trajno se brišu. Ovo se ne može poništiti.',
+    confirm: 'Obriši',
+    deleting: 'Brisanje…',
+  },
   common: {
     loading: 'Učitavanje…',
     remove: 'Ukloni',
@@ -312,6 +320,7 @@ export const hr: Translation = {
     RUN_COMPLETED: 'Sve su faze gotove.',
     PHASE_NOT_AWAITING_APPROVAL: 'Ova faza ne čeka odobrenje.',
     PHASE_NOT_RERUNNABLE: 'Ova se faza sada ne može ponovno pokrenuti.',
+    POST_NOT_FOUND: 'Objava ne postoji.',
     RUN_ALREADY_STARTED:
       'Pokretanje je već započelo; brif i reference više se ne mogu mijenjati.',
     ASSET_NOT_DELETABLE: 'Mogu se brisati samo učitane reference.',

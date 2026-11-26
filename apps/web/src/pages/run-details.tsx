@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router'
 
 import { AssetGrid } from '@/components/asset-grid'
 import { BackLink } from '@/components/back-link'
+import { DeleteRunButton } from '@/components/delete-run-button'
 import { PhaseTimeline } from '@/components/phase-timeline'
 import { RunStatusBadge } from '@/components/run-status-badge'
 import { SourcesList } from '@/components/sources-list'
@@ -42,6 +43,7 @@ export function RunDetails() {
         <h1 className="text-2xl font-semibold">{run.brandName}</h1>
         <div className="flex items-center gap-3">
           <RunStatusBadge status={run.status} />
+          <DeleteRunButton run={run} />
           {run.phases.length === 0 && (
             <Button asChild variant="outline">
               <Link to={localized(`/runs/${run.id}/edit`)}>
