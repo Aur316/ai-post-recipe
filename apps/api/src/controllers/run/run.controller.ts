@@ -6,10 +6,11 @@ import {
   type RunDetailDto,
   type RunListResponse,
   type RunSummaryDto,
+  type SourceDto,
 } from '@ai-post-recipe/shared'
 import type { Request, Response } from 'express'
 
-import type { Run } from '../../generated/prisma/client.js'
+import type { Run, Source } from '../../generated/prisma/client.js'
 import { validate } from '../../lib/validate.js'
 import type { RunService } from '../../services/run/run.service.js'
 import { toAssetDto } from '../asset/asset.controller.js'
@@ -49,12 +50,27 @@ function toRunDetailDto({
   run,
   assets,
   phases,
+  sources,
 }: Awaited<ReturnType<RunService['get']>>): RunDetailDto {
   return {
     ...toRunSummaryDto(run),
     brief: Brief.parse(run.brief),
     assets: assets.map(toAssetDto),
     phases: phases.map(toPhaseRunDto),
+    sources: sources.map(toSourceDto),
+  }
+}
+
+function toSourceDto(source: Source): SourceDto {
+  return {
+    id: source.id,
+    url: source.url,
+    title: source.title,
+    excerpt: source.excerpt,
+    reachable: source.reachable,
+    error: source.error,
+    origin: source.origin,
+    fetchedAt: source.fetchedAt.toISOString(),
   }
 }
 

@@ -8,11 +8,29 @@ import { server } from '@/test/server'
 const RUN_ID = '01a213f4-9d21-76ed-b4d4-2c2eb457302d'
 
 const analysis = {
+  summary: 'A sports nutrition shop',
   tone: 'Energetic',
   audience: 'Adults',
   themes: ['Tips'],
-  colors: ['#FF6600'],
-  claims: [],
+  visualStyle: 'Bold',
+  colors: [{ hex: '#FF6600', name: 'Orange', usage: 'Accents' }],
+  productPresentation: 'Packshots',
+  peoplePresentation: 'Athletes',
+  claims: [
+    {
+      text: 'Ships across Croatia',
+      status: 'verified',
+      sourceUrl: 'https://gymbeam.hr',
+      evidence: 'Dostava u cijeloj Hrvatskoj',
+    },
+    {
+      text: 'Mostly young buyers',
+      status: 'assumption',
+      sourceUrl: null,
+      evidence: null,
+    },
+  ],
+  gaps: ['No price list'],
 }
 
 const phaseRun = (phase: string, status: string, output: unknown = null) => ({
@@ -55,6 +73,7 @@ const run = (status: string, phases: Array<ReturnType<typeof phaseRun>>) => ({
   },
   assets: [],
   phases,
+  sources: [] as Array<unknown>,
 })
 
 describe('Run details', () => {
@@ -127,6 +146,82 @@ describe('Run details', () => {
     expect(
       await screen.findByRole('link', { name: 'GymBeam Hrvatska' }),
     ).toHaveAttribute('href', `/en/runs/${RUN_ID}`)
+  })
+
+  it('lists the sources, including those that could not be read', async () => {
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json({
+          ...run('RUNNING', [phaseRun('RESEARCH', 'DONE')]),
+          sources: [
+            {
+              id: crypto.randomUUID(),
+              url: 'https://gymbeam.hr',
+              title: 'GymBeam',
+              excerpt: 'Sports nutrition',
+              reachable: true,
+              error: null,
+              origin: 'BRIEF',
+              fetchedAt: '2026-11-26T10:00:00.000Z',
+            },
+            {
+              id: crypto.randomUUID(),
+              url: 'https://gymbeam.hr/gone',
+              title: null,
+              excerpt: null,
+              reachable: false,
+              error: 'HTTP 404',
+              origin: 'SEARCH',
+              fetchedAt: '2026-11-26T10:00:00.000Z',
+            },
+          ],
+        }),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    expect(await screen.findByText('Sources (2)')).toBeInTheDocument()
+    expect(screen.getByText('1 read, 1 could not be read')).toBeInTheDocument()
+    expect(screen.getByText('HTTP 404')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'GymBeam' })).toHaveAttribute(
+      'href',
+      'https://gymbeam.hr',
+    )
+  })
+
+  it('shows the analysis with claim labels and sources', async () => {
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(
+          run('RUNNING', [phaseRun('ANALYSIS', 'APPROVED', analysis)]),
+        ),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    expect(await screen.findByText('Ships across Croatia')).toBeInTheDocument()
+    expect(screen.getByText('Verified')).toBeInTheDocument()
+    expect(screen.getByText('Assumption')).toBeInTheDocument()
+    expect(screen.getByText('#FF6600')).toBeInTheDocument()
+    expect(screen.getByText('No price list')).toBeInTheDocument()
+  })
+
+  it('warns in demo mode', async () => {
+    server.use(
+      http.get('/api/health', () =>
+        HttpResponse.json({
+          status: 'ok',
+          checks: { database: true, storage: true },
+          providers: { llm: 'fake', search: 'none' },
+        }),
+      ),
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(run('DRAFT', [])),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Demo mode')
   })
 
   describe('references', () => {

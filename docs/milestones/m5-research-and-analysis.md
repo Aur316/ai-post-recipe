@@ -2,7 +2,7 @@
 
 **Goal:** the research phase collects real official sources, and the brand analysis is produced by a real model with every claim labelled and linked.
 
-**Status:** Not started
+**Status:** Done
 
 ## Requirements
 
@@ -30,35 +30,35 @@ FR-08, FR-09, NFR-03, NFR-05, NFR-06, NFR-10, NFR-12
 
 **Providers**
 
-- [ ] `LlmProvider` and `OpenRouterProvider`: text and vision, structured output, timeout, backoff, usage and cost
-- [ ] `SearchProvider`: `SerperProvider` and `NoopSearchProvider`
-- [ ] Fetcher: download with a timeout, respect `robots.txt`, HTML to clean text
-- [ ] `OPENROUTER_API_KEY`, `SERPER_API_KEY`, `MODEL_*` and `MAX_COST_USD_PER_RUN` in `config/env.ts` and `.env.example`
+- [x] `LlmProvider` and `OpenRouterProvider`: text and vision, structured output, timeout, backoff, usage and cost
+- [x] `SearchProvider`: `SerperProvider` and `NoopSearchProvider`
+- [x] Fetcher: download with a timeout, respect `robots.txt`, HTML to clean text
+- [x] `OPENROUTER_API_KEY`, `SERPER_API_KEY`, `MODEL_*` and `MAX_COST_USD_PER_RUN` in `config/env.ts` and `.env.example`
 
 **Prompts**
 
-- [ ] `packages/prompts`: markdown files with front matter (id, version, model, temperature)
-- [ ] Prompt loader with `.env` model overrides
-- [ ] Research and analysis prompts
+- [x] `packages/prompts`: markdown files with front matter (id, version, model, temperature)
+- [x] Prompt loader with `.env` model overrides
+- [x] Analysis prompt (research needs no prompt: its search queries are fixed); first plan and copy prompts so a real run reaches the end
 
 **Phases**
 
-- [ ] Research phase: search, fetch, save `Source` rows
-- [ ] Analysis phase: vision model over screenshots and source text; Zod schema with `verified` / `assumption`
-- [ ] One retry with the validation error on invalid output
-- [ ] Cost cap check in the phase runner
+- [x] Research phase: search, fetch, save `Source` rows
+- [x] Analysis phase: vision model over screenshots and source text; Zod schema with `verified` / `assumption`
+- [x] One retry with the validation error on invalid output
+- [x] Cost cap check in the phase runner
 
 **Web**
 
-- [ ] `BrandAnalysisView` with labels and source links, editable in the approval panel
-- [ ] Sources list on the run detail page
-- [ ] Prompt, model, tokens and cost on each phase card
+- [x] `AnalysisView` with labels, source links and quotes; shown as a live preview above the JSON editor in the approval panel
+- [x] Sources list on the run detail page
+- [x] Prompt, model, tokens and cost on each phase card
 
 **Tests**
 
-- [ ] Fetcher tests with recorded HTML
-- [ ] Analysis output schema tests, including the retry path
-- [ ] `pnpm test:live` script for one real run (not in CI)
+- [x] Fetcher tests with recorded HTML
+- [x] Analysis output schema tests, including the retry path
+- [x] `pnpm test:live` script for one real run (not in CI)
 
 ## Exit criteria
 
@@ -70,3 +70,9 @@ FR-08, FR-09, NFR-03, NFR-05, NFR-06, NFR-10, NFR-12
 | ------------------------------ | ------------------------------------------------------------------------------------ |
 | Sites block automated fetching | Record the source as unreachable and continue; the brief's links remain              |
 | The model invents facts        | Schema requires a source URL for `verified`; the review phase flags unsourced claims |
+
+## Notes
+
+- Research is deterministic: fixed search queries and fetch rules, no model call, so it costs nothing and gives the same sources for the same brief.
+- A `verified` claim that cites a page that was not read is turned into an `assumption` by the analysis phase, whatever the model says.
+- Without `OPENROUTER_API_KEY` the API runs in demo mode with recorded answers; the web app shows a banner.

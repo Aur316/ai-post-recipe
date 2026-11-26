@@ -37,13 +37,13 @@ apps/api/src/
 │  ├─ asset/                # asset.repo.ts
 │  └─ source/               # source.repo.ts
 ├─ providers/               # interface + implementation for each external system
-│  ├─ llm/                  # LlmProvider: FakeLlmProvider now, OpenRouterProvider in M5
+│  ├─ llm/                  # LlmProvider: OpenRouterProvider, FakeLlmProvider (no key, tests)
 │  ├─ search/               # SearchProvider: SerperProvider, NoopSearchProvider (no key)
 │  ├─ fetcher/              # downloads a page, HTML → clean text, respects robots.txt
 │  ├─ storage/              # StorageProvider: S3Storage, MemoryStorage (tests)
 │  ├─ queue/                # JobQueue: PgBossQueue (+ an in-memory queue for tests)
 │  └─ renderer/             # SlideRenderer: Playwright, slide templates → PNG
-├─ jobs/                    # phase-runner.ts (claim, execute, validate, retry), queue names
+├─ jobs/                    # phase-runner.ts (claim, execute, validate, retry), metered-llm.ts (usage, cost cap), queue names
 ├─ middleware/              # error handler, upload (multer)
 ├─ lib/                     # logger (pino), errors (AppError hierarchy), validate
 └─ test/                    # shared test helpers: test context, fixtures
@@ -109,4 +109,12 @@ interface JobQueue {
 | State changes  | Only `PipelineService` changes run and phase status. An illegal transition returns `409 Conflict`.                                                                           |
 | Logging        | Structured JSON logs with pino, with a request id on every line. Prompts and API keys are never logged.                                                                      |
 
-> **Current state:** the pipeline runs end to end with `FakeLlmProvider`: phases 1–4 have their real shape, phases 5–8 are placeholders until M6–M8. OpenRouter, search and the cost cap arrive in M5.
+## LLM calls
+
+Phases call the model through `runPrompt(ctx, promptId, schema, values, images?)`: the prompt comes from `packages/prompts` (Markdown with front matter: id, version, model, `maxTokens` (default 8000, which also bounds the cost of a call) and an optional `temperature`, sent only when set because many current models refuse it; `MODEL_<ID>` in the environment overrides the model) and its id with version (`analysis@v1`) is saved on the `PhaseRun`.
+
+`OpenRouterProvider` sends the system and user text, the images as data URLs, and a JSON schema built from the Zod schema (`response_format: json_schema`, strict; keywords some providers reject, such as `minItems` or `pattern`, are dropped from the schema (never from field names) and checked by Zod afterwards). It only routes to providers that support structured output, asks for usage with cost, and has a timeout (`LLM_TIMEOUT_MS`, 120 s). Network errors, 429 and 5xx are retried three times with backoff; 400/401/402 fail at once. An answer that is not valid JSON or does not match the schema is sent back once with the validation errors.
+
+The phase runner wraps the provider in `MeteredLlm` for each attempt: it adds up tokens and cost of every call (failed ones too) and refuses a call once the run has spent `MAX_COST_USD_PER_RUN`. Without `OPENROUTER_API_KEY` the API uses `FakeLlmProvider` with recorded answers, logs a warning, reports `llm: "fake"` in `/api/health`, and the web app shows a demo-mode banner.
+
+> **Current state:** research and analysis are real (fetcher, Serper, OpenRouter vision); plan and copy have first prompts that M6 refines; visuals, review and export are placeholders until M7–M8.

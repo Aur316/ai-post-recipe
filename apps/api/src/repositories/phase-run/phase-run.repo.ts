@@ -57,6 +57,15 @@ export class PhaseRunRepo {
     return this.db.phaseRun.update({ where: { id }, data })
   }
 
+  /** Sum of `costUsd` over every attempt of every phase of the run. */
+  async totalCost(runId: string) {
+    const { _sum } = await this.db.phaseRun.aggregate({
+      where: { runId },
+      _sum: { costUsd: true },
+    })
+    return Number(_sum.costUsd ?? 0)
+  }
+
   markStale(ids: Array<string>) {
     return this.db.phaseRun.updateMany({
       where: { id: { in: ids } },

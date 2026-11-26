@@ -4,7 +4,7 @@ AI Post Recipe turns an Instagram brand brief into three ready-to-publish posts 
 
 Every phase runs as a background job and stores its output in PostgreSQL, so a run can be paused, resumed or re-run from any finished phase. After the brand analysis and the content plan the run stops and waits for a person to approve or edit the result. The final export is a ZIP with the images, captions, sources and every intermediate result.
 
-> **Status:** milestones M1–M4 done. A run goes through all eight phases as background jobs and stops twice for approval; the AI answers are still fake until M5. See [the milestones](docs/milestones/README.md) for what comes next.
+> **Status:** milestones M1–M5 done. A run goes through all eight phases as background jobs and stops twice for approval; research reads real pages and the brand analysis comes from a real vision model (with an OpenRouter key). Visuals, review and export follow in M7–M8. See [the milestones](docs/milestones/README.md) for what comes next.
 
 ## Prerequisites
 
@@ -62,14 +62,19 @@ Run these from the repository root. Turborepo runs each one in every workspace t
 
 ## Configuration
 
-`pnpm install` creates `.env` from `.env.example` (see [Local development](#local-development)); for the Docker-only quick start, copy it by hand. API keys are never committed and never reach the browser.
+`pnpm install` creates `.env` from `.env.example` (see [Local development](#local-development)); for the Docker-only quick start, copy it by hand. API keys are never committed and never reach the browser. **Where to get the keys and how to add them: [docs/onboarding.md](docs/onboarding.md)** (the same steps are on the app's Setup page, linked from the demo-mode banner).
 
-| Variable       | Default                                      | Purpose                                                                                |
-| -------------- | -------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `PORT`         | `3000`                                       | API port                                                                               |
-| `DATABASE_URL` | `postgresql://app:app@localhost:5432/recipe` | PostgreSQL connection string. Compose overrides the host to `db` in the `full` profile |
+| Variable               | Default                                      | Purpose                                                                                                                        |
+| ---------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `PORT`                 | `3000`                                       | API port                                                                                                                       |
+| `DATABASE_URL`         | `postgresql://app:app@localhost:5432/recipe` | PostgreSQL connection string. Compose overrides the host to `db` in the `full` profile                                         |
+| `OPENROUTER_API_KEY`   | (empty)                                      | Key from [openrouter.ai/keys](https://openrouter.ai/keys). Without it the AI phases return recorded sample answers (demo mode) |
+| `SERPER_API_KEY`       | (empty)                                      | Optional key from [serper.dev](https://serper.dev). Without it research reads only the links in the brief                      |
+| `MAX_COST_USD_PER_RUN` | `2`                                          | No LLM call starts once a run has spent this much                                                                              |
+| `MODEL_<PROMPT ID>`    | (from the prompt file)                       | Overrides a prompt's model, e.g. `MODEL_ANALYSIS=google/gemini-3.5-flash`                                                      |
+| `LLM_TIMEOUT_MS`       | `120000`                                     | Timeout of one model request                                                                                                   |
 
-The `S3_*` variables configure object storage: SeaweedFS from Docker Compose by default, or Cloudflare R2. Later milestones add the OpenRouter and Serper API keys, the model overrides and a cost cap per run. See [Development and deployment](docs/architecture/10-development-and-deployment.md).
+The `S3_*` variables configure object storage: SeaweedFS from Docker Compose by default, or Cloudflare R2. See [Development and deployment](docs/architecture/10-development-and-deployment.md).
 
 ## Project structure
 
@@ -79,6 +84,7 @@ apps/
   web/        React single-page app
 packages/
   shared/         Zod schemas and types shared by the API and the web app
+  prompts/        The prompts of the recipe, as Markdown files with front matter
   tsconfig/       Shared TypeScript settings
   eslint-config/  Shared ESLint rules
 docker/       Dockerfiles and the nginx config for the web image

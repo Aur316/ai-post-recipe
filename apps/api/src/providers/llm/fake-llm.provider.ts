@@ -1,23 +1,43 @@
 import type { z } from 'zod'
 
-import type { LlmProvider, LlmRequest } from './llm.provider.js'
+import {
+  type LlmProvider,
+  type LlmRequest,
+  type LlmUsage,
+  NO_USAGE,
+} from './llm.provider.js'
 
-type Fixture = (input: unknown) => unknown
+type Fixture = (request: LlmRequest<z.ZodType>) => unknown
 
 const DEFAULT_FIXTURES: Record<string, Fixture> = {
   analysis: () => ({
+    summary:
+      'A Croatian sports nutrition shop with an energetic, practical voice.',
     tone: 'Energetic, motivating, direct',
     audience: 'Active adults who train regularly',
     themes: ['Training tips', 'Product highlights', 'Healthy recipes'],
-    colors: ['#FF6600', '#111111', '#FFFFFF'],
+    visualStyle: 'Bright product shots on clean backgrounds with bold text',
+    colors: [
+      { hex: '#FF6600', name: 'Orange', usage: 'Accents and calls to action' },
+      { hex: '#111111', name: 'Black', usage: 'Text and backgrounds' },
+    ],
+    productPresentation: 'Packshots and products in use at the gym',
+    peoplePresentation: 'Fit people training; no recurring faces',
     claims: [
       {
         text: 'Sells sports nutrition online',
         status: 'verified',
         sourceUrl: 'https://gymbeam.hr',
+        evidence: 'Sports nutrition and supplements',
       },
-      { text: 'Audience is mostly 18–35', status: 'assumption' },
+      {
+        text: 'Audience is mostly 18–35',
+        status: 'assumption',
+        sourceUrl: null,
+        evidence: null,
+      },
     ],
+    gaps: ['No price list was available'],
   }),
   plan: () => ({
     posts: [1, 2, 3].map((index) => ({
@@ -40,23 +60,31 @@ const DEFAULT_FIXTURES: Record<string, Fixture> = {
 }
 
 /**
- * Returns recorded, schema-valid answers per prompt (keyed by the part of the
- * prompt id before "@"). Used in tests and until OpenRouter is wired in M5.
+ * Returns recorded, schema-valid answers per prompt id, without a key or cost.
+ * Used in tests and when OPENROUTER_API_KEY is not set.
  */
 export class FakeLlmProvider implements LlmProvider {
+  readonly name = 'fake'
+  /** Every request, for assertions in tests. */
+  readonly requests: Array<LlmRequest<z.ZodType>> = []
+
   constructor(
     private readonly fixtures: Record<string, Fixture> = DEFAULT_FIXTURES,
+    /** Usage reported per call, e.g. to test the cost cap. */
+    private readonly usage: LlmUsage = NO_USAGE,
   ) {}
 
-  complete<T extends z.ZodType>({ promptId, schema, input }: LlmRequest<T>) {
-    const fixture = this.fixtures[promptId.split('@')[0] ?? '']
+  complete<T extends z.ZodType>(request: LlmRequest<T>) {
+    this.requests.push(request)
+    const id = request.prompt.promptId.split('@')[0] ?? ''
+    const fixture = this.fixtures[id]
     if (!fixture) {
-      return Promise.reject(new Error(`No fake answer for prompt ${promptId}`))
+      return Promise.reject(new Error(`No fake answer for prompt ${id}`))
     }
     return Promise.resolve({
-      output: schema.parse(fixture(input)),
+      output: request.schema.parse(fixture(request)),
       model: 'fake',
-      usage: { tokensIn: 0, tokensOut: 0, costUsd: 0 },
+      usage: this.usage,
     })
   }
 }

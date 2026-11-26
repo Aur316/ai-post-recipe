@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { RouterProvider, createMemoryRouter } from 'react-router'
@@ -8,6 +9,7 @@ import { ErrorBoundary } from '@/components/error-boundary'
 import { ErrorFallback } from '@/components/error-fallback'
 import { RouteError } from '@/components/route-error'
 
+import { createQueryClient } from '@/contexts/query-client'
 import { AppLayout } from '@/layouts/app-layout'
 
 let shouldThrow = true
@@ -94,7 +96,11 @@ describe('Error boundary', () => {
       ],
       { initialEntries: ['/en'] },
     )
-    render(<RouterProvider router={router} />)
+    render(
+      <QueryClientProvider client={createQueryClient()}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>,
+    )
 
     expect(screen.getByRole('alert')).toHaveTextContent('Something went wrong')
     expect(screen.getByRole('button', { name: 'HR' })).toBeInTheDocument()

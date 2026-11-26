@@ -1,22 +1,59 @@
+import { PromptLibrary } from '@ai-post-recipe/prompts'
 import sharp from 'sharp'
 import { afterAll } from 'vitest'
 
 import { createApp } from '../app.js'
 import { createDb } from '../db/prisma.js'
 import { registerWorkers } from '../jobs/phase-runner.js'
+import type {
+  FetchedPage,
+  PageFetcher,
+} from '../providers/fetcher/web-fetcher.js'
 import { FakeLlmProvider } from '../providers/llm/fake-llm.provider.js'
 import type { LlmProvider } from '../providers/llm/llm.provider.js'
 import { MemoryQueue } from '../providers/queue/memory.queue.js'
+import {
+  NoopSearchProvider,
+  type SearchProvider,
+} from '../providers/search/search.provider.js'
 import { MemoryStorage } from '../providers/storage/memory.storage.js'
 import { RunRepo } from '../repositories/run/run.repo.js'
 import { phases } from '../services/phases/index.js'
+
+/** Answers every URL with a small page, or with the given pages by URL. */
+export class FakeFetcher implements PageFetcher {
+  readonly requested: Array<string> = []
+
+  constructor(
+    private readonly pages: Record<string, Partial<FetchedPage>> = {},
+  ) {}
+
+  fetchPage(url: string): Promise<FetchedPage> {
+    this.requested.push(url)
+    return Promise.resolve({
+      url,
+      title: `Page ${url}`,
+      description: '',
+      text: `Text of ${url}`,
+      reachable: true,
+      error: null,
+      ...this.pages[url],
+    })
+  }
+}
 
 /** A valid UUID that no row has. */
 export const UNKNOWN_ID = '0193a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b'
 
 /** Real PostgreSQL, in-memory storage. Runs created here are deleted after the file. */
 export function createTestContext(
-  options: { llm?: LlmProvider; retryLimit?: number } = {},
+  options: {
+    llm?: LlmProvider
+    retryLimit?: number
+    search?: SearchProvider
+    fetcher?: PageFetcher
+    costCapUsd?: number
+  } = {},
 ) {
   const url = process.env.DATABASE_URL
   if (!url || !new URL(url).pathname.endsWith('_test')) {
@@ -30,7 +67,19 @@ export function createTestContext(
     retryDelaySeconds: 0,
   })
   const llm = options.llm ?? new FakeLlmProvider()
-  void registerWorkers({ db, queue, llm, phases })
+  const search = options.search ?? new NoopSearchProvider()
+  const fetcher = options.fetcher ?? new FakeFetcher()
+  void registerWorkers({
+    db,
+    queue,
+    phases,
+    llm,
+    prompts: PromptLibrary.load(),
+    search,
+    fetcher,
+    storage,
+    costCapUsd: options.costCapUsd ?? 100,
+  })
   const runs = new RunRepo(db)
   const created: Array<string> = []
 
@@ -43,7 +92,13 @@ export function createTestContext(
     db,
     storage,
     queue,
-    app: createApp({ db, storage, queue }),
+    llm,
+    app: createApp({
+      db,
+      storage,
+      queue,
+      providers: { llm: llm.name, search: search.name },
+    }),
     /** Deletes this run after the test file, e.g. one created through the API. */
     track(id: string) {
       created.push(id)

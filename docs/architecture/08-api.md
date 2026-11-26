@@ -6,10 +6,10 @@ The API is REST over JSON. Every request and response body has a Zod schema in `
 
 | Method | Path                                                  | Description                                                                                                                                                        |
 | ------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| GET    | `/api/health`                                         | Checks the database, the storage and whether an OpenRouter key is set                                                                                              |
+| GET    | `/api/health`                                         | Checks the database and the storage, and reports which providers are configured: `providers: { llm: "openrouter" \| "fake", search: "serper" \| "none" }`          |
 | POST   | `/api/runs`                                           | Creates a run from a brief (`DRAFT`)                                                                                                                               |
 | GET    | `/api/runs`                                           | Lists runs newest first, paginated: `?page=1&size=20` (defaults from `DEFAULT_PAGE_SIZE`, max `MAX_PAGE_SIZE`), returns `{ items, total, page, size, totalPages }` |
-| GET    | `/api/runs/:id`                                       | One run with its phases, sources and posts                                                                                                                         |
+| GET    | `/api/runs/:id`                                       | One run with its brief, uploads, the latest attempt of each phase and the sources of the latest research                                                           |
 | PUT    | `/api/runs/:id`                                       | Replaces the brief while no phase has started; `409 RUN_ALREADY_STARTED` afterwards                                                                                |
 | POST   | `/api/runs/:id/assets`                                | Uploads a file (multipart): screenshot, product photo, logo, other                                                                                                 |
 | POST   | `/api/runs/:id/start`                                 | Starts the first phase that is not finished                                                                                                                        |
@@ -60,4 +60,4 @@ Every error uses one shape:
 - Allowed types: PNG, JPEG, WebP, and SVG for logos. Size limit: 10 MB per file.
 - The API reads width and height with sharp and stores them on the `Asset`.
 
-> **Current state:** health, runs (create, list, detail with the latest attempt of each phase, brief edit and reference delete before the start), start, approve, re-run, asset upload and download exist. Start, approve and re-run answer `202 Accepted`: the work happens in the background. Slide regeneration and export follow in M7–M8.
+> **Current state:** health (with providers), runs (create, list, detail with the latest attempt of each phase, brief edit and reference delete before the start), start, approve, re-run, asset upload and download exist. Start, approve and re-run answer `202 Accepted`: the work happens in the background. Slide regeneration and export follow in M7–M8.

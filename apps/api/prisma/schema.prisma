@@ -38,6 +38,12 @@ enum PhaseStatus {
   STALE
 }
 
+/// A link from the brief, or a page found by web search.
+enum SourceOrigin {
+  BRIEF
+  SEARCH
+}
+
 enum AssetKind {
   UPLOAD_SCREENSHOT
   UPLOAD_PRODUCT
@@ -91,14 +97,17 @@ model PhaseRun {
 }
 
 model Source {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  runId     String   @db.Uuid
-  run       Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  id        String       @id @default(uuid(7)) @db.Uuid
+  runId     String       @db.Uuid
+  run       Run          @relation(fields: [runId], references: [id], onDelete: Cascade)
   url       String
   title     String?
   excerpt   String?
   reachable Boolean
-  fetchedAt DateTime @default(now())
+  /// Why the page could not be read, e.g. "HTTP 404".
+  error     String?
+  origin    SourceOrigin @default(BRIEF)
+  fetchedAt DateTime     @default(now())
 
   @@index([runId])
 }

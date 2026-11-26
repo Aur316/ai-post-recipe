@@ -8,10 +8,14 @@ export class SourceRepo {
     return this.db.source.createMany({ data })
   }
 
+  deleteByRun(runId: string) {
+    return this.db.source.deleteMany({ where: { runId } })
+  }
+
   listByRun(runId: string) {
     return this.db.source.findMany({
       where: { runId },
-      orderBy: { fetchedAt: 'asc' },
+      orderBy: [{ fetchedAt: 'asc' }, { id: 'asc' }],
     })
   }
 }

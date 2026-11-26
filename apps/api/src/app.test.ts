@@ -7,13 +7,14 @@ import { createTestContext } from './test/context.js'
 describe('GET /api/health', () => {
   const ctx = createTestContext()
 
-  it('reports database and storage as healthy', async () => {
+  it('reports database and storage as healthy, and which providers are set', async () => {
     const res = await request(ctx.app).get('/api/health')
 
     expect(res.status).toBe(200)
     expect(HealthResponse.parse(res.body)).toEqual({
       status: 'ok',
       checks: { database: true, storage: true },
+      providers: { llm: 'fake', search: 'none' },
     })
   })
 

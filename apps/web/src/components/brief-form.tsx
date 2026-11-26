@@ -493,6 +493,9 @@ export function BriefForm({ run }: BriefFormProps) {
           {step === 3 && (
             <>
               <FormField label={t('brief.outputLanguage')}>
+                <p className="text-sm text-muted-foreground">
+                  {t('brief.outputLanguageHint')}
+                </p>
                 <Controller
                   control={control}
                   name="language"

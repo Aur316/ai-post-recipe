@@ -1,10 +1,12 @@
 import {
+  AnalysisOutput,
   PHASE_ORDER,
   type PhaseKey,
   type PhaseRunDto,
 } from '@ai-post-recipe/shared'
 import { useTranslation } from 'react-i18next'
 
+import { AnalysisView } from '@/components/analysis-view'
 import { ApprovalPanel } from '@/components/approval-panel'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,6 +15,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
 
 import { useRerunPhase } from '@/hooks/queries/runs/useRerunPhase'
+import { formatPhaseOutput } from '@/utils/phase-json'
 import { formatDuration, isPhaseActive } from '@/utils/phases'
 import { phaseStatusTone } from '@/utils/status-tones'
 
@@ -65,6 +68,12 @@ function PhaseItem({
       phase.attempt > 1 &&
       t('phaseTimeline.attempt', { attempt: phase.attempt }),
     duration,
+    phase?.tokensIn != null &&
+      phase.tokensIn > 0 &&
+      t('phaseTimeline.tokens', {
+        in: phase.tokensIn,
+        out: phase.tokensOut ?? 0,
+      }),
     cost,
     phase?.model,
     phase?.promptId,
@@ -119,6 +128,9 @@ function PhaseItem({
         </div>
       )}
       {phase && (status === 'DONE' || status === 'APPROVED') && (
+        <PhaseOutputView phase={phase} />
+      )}
+      {phase && (status === 'DONE' || status === 'APPROVED') && (
         <details className="mt-3 text-sm">
           <summary className="cursor-pointer text-muted-foreground">
             {phase.editedOutput
@@ -126,10 +138,22 @@ function PhaseItem({
               : t('phaseTimeline.output')}
           </summary>
           <pre className="mt-2 scrollbar-thin max-h-80 overflow-auto rounded-md bg-muted p-3 text-xs">
-            {JSON.stringify(phase.editedOutput ?? phase.output, null, 2)}
+            {formatPhaseOutput(phase.phase, phase.editedOutput ?? phase.output)}
           </pre>
         </details>
       )}
     </li>
+  )
+}
+
+/** A readable view of the phases that have one; the JSON stays below it. */
+function PhaseOutputView({ phase }: { phase: PhaseRunDto }) {
+  if (phase.phase !== 'ANALYSIS') return null
+  const analysis = AnalysisOutput.safeParse(phase.editedOutput ?? phase.output)
+  if (!analysis.success) return null
+  return (
+    <div className="mt-4">
+      <AnalysisView analysis={analysis.data} />
+    </div>
   )
 }

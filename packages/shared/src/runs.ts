@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { AssetDto } from './assets.js'
 import { paginated } from './pagination.js'
 import { PhaseRunDto, PostFormat } from './phases.js'
+import { SourceDto } from './sources.js'
 
 export const OutputLanguage = z.enum(['hr', 'en'])
 export type OutputLanguage = z.infer<typeof OutputLanguage>
@@ -140,6 +141,8 @@ export const RunDetailDto = RunSummaryDto.extend({
   assets: z.array(AssetDto),
   /** The latest attempt of each phase that has started, in phase order. */
   phases: z.array(PhaseRunDto),
+  /** Sources of the latest research, in the order they were read. */
+  sources: z.array(SourceDto),
 })
 export type RunDetailDto = z.infer<typeof RunDetailDto>
 

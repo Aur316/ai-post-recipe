@@ -15,7 +15,7 @@ flowchart LR
 | [M2 · Data and storage](m2-data-and-storage.md)           | Prisma schema, repositories, object storage, uploads      | Done        |
 | [M3 · Brief](m3-brief.md)                                 | Create a run from a validated brief with uploads          | Done        |
 | [M4 · Pipeline engine](m4-pipeline-engine.md)             | Jobs, phase runner, state machine, approval and re-run    | Done        |
-| [M5 · Research and analysis](m5-research-and-analysis.md) | Real sources and a grounded brand analysis                | Not started |
+| [M5 · Research and analysis](m5-research-and-analysis.md) | Real sources and a grounded brand analysis                | Done        |
 | [M6 · Plan and copy](m6-plan-and-copy.md)                 | Three post plans and their copy, editable at approval     | Not started |
 | [M7 · Visuals](m7-visuals.md)                             | Slide templates, backgrounds, PNG rendering, preview      | Not started |
 | [M8 · Review and export](m8-review-and-export.md)         | Automatic checks, ZIP export, the three demo posts        | Not started |

@@ -1,14 +1,30 @@
+import type { PromptLibrary } from '@ai-post-recipe/prompts'
 import type { Brief, PhaseKey, PhaseOutputs } from '@ai-post-recipe/shared'
 import type { z } from 'zod'
 
-import type { LlmProvider, LlmUsage } from '../../providers/llm/llm.provider.js'
+import type { PageFetcher } from '../../providers/fetcher/web-fetcher.js'
+import type {
+  LlmImage,
+  LlmProvider,
+  LlmUsage,
+} from '../../providers/llm/llm.provider.js'
+import type { SearchProvider } from '../../providers/search/search.provider.js'
 
-export interface PhaseContext {
+/** What a phase may use; tests pass fakes. */
+export interface PhaseTools {
+  llm: LlmProvider
+  prompts: PromptLibrary
+  search: SearchProvider
+  fetcher: PageFetcher
+  /** The run's uploaded images, ready to send to a vision model. */
+  loadImages(): Promise<Array<LlmImage>>
+}
+
+export interface PhaseContext extends PhaseTools {
   runId: string
   brief: Brief
   /** Outputs of earlier finished phases; the edited version where a person approved one. */
   outputs: Partial<PhaseOutputs>
-  llm: LlmProvider
 }
 
 export interface PhaseResult<T> {
@@ -25,17 +41,20 @@ export interface Phase<K extends PhaseKey = PhaseKey> {
   execute(ctx: PhaseContext): Promise<PhaseResult<PhaseOutputs[K]>>
 }
 
-/** Runs an LLM prompt and maps its result to a phase result. */
+/** Renders a prompt from the library, calls the model and maps the result. */
 export async function runPrompt<T extends z.ZodType>(
   ctx: PhaseContext,
-  promptId: string,
-  outputSchema: T,
-  input: unknown,
+  promptName: string,
+  schema: T,
+  values: Record<string, unknown>,
+  images?: Array<LlmImage>,
 ): Promise<PhaseResult<z.infer<T>>> {
-  const result = await ctx.llm.complete({
-    promptId,
-    schema: outputSchema,
-    input,
-  })
-  return { ...result, promptId }
+  const prompt = ctx.prompts.render(promptName, values)
+  const result = await ctx.llm.complete({ prompt, schema, images })
+  return { ...result, promptId: prompt.promptId }
+}
+
+export const LANGUAGE_NAMES: Record<Brief['language'], string> = {
+  hr: 'Croatian',
+  en: 'English',
 }
