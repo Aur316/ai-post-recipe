@@ -1,0 +1,35 @@
+{
+  "post": 1,
+  "format": "CAROUSEL",
+  "goal": "Edukacija i više spremanja",
+  "concept": "Karusel od 5 slika pod naslovom 'Kreatin: koliko, kada i kako?'. Slajd 1: naslov velikim crnim slovima na bijeloj pozadini s narančastim akcentom (#FF4F1A) i pakiranjem Kreatin monohidrata. Slajd 2: 'Preporučeni dnevni unos: 3 g kreatina' kao velika brojka. Slajd 3: 'Uzimaj redovito, svaki dan' uz jednostavnu ilustraciju dnevne rutine (jutro, nakon treninga, večer), bez navođenja točnog broja tjedana. Slajd 4: mini podsjetnik 'Ne zaboravi piti dovoljno vode' u prijateljskom tonu, bez zdravstvenih obećanja. Slajd 5: poziv na akciju 'Spremi objavu za podsjetnik i napiši u komentar: uzimaš li kreatin već?' uz link na shop u opisu. Ne navoditi okuse, mikronizaciju ni udio čistog kreatina po mjerici jer nisu provjereni.",
+  "rationale": "Kratki praktični savjet s jasnom brojkom (3 g) odgovara inspiraciji brenda i traženom cilju spremanja i komentara. Karusel potiče listanje i spremanje kao podsjetnik, početnici dobivaju jasne upute, a redoviti vježbači pitanje za komentar. Koristimo samo provjerenu tvrdnju o 3 g dnevno, a ton ostaje prijateljski i praktičan.",
+  "product": "Kreatin monohidrat",
+  "slides": [
+    {
+      "order": 1,
+      "text": "Kreatin: koliko, kada i kako?",
+      "file": "slide-1.png"
+    },
+    {
+      "order": 2,
+      "text": "Preporučeni dnevni unos: 3 g kreatina",
+      "file": "slide-2.png"
+    },
+    {
+      "order": 3,
+      "text": "Uzimaj redovito, svaki dan. Jutro, nakon treninga ili večer: odaberi što ti odgovara.",
+      "file": "slide-3.png"
+    },
+    {
+      "order": 4,
+      "text": "Mali podsjetnik: ne zaboravi piti dovoljno vode 💧",
+      "file": "slide-4.png"
+    },
+    {
+      "order": 5,
+      "text": "Spremi objavu za podsjetnik i napiši u komentar: uzimaš li kreatin već?",
+      "file": "slide-5.png"
+    }
+  ]
+}

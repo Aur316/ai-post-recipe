@@ -44,7 +44,7 @@ async function check(ctx: PhaseContext, slides: Array<SlideUnderReview>) {
     uploads.some((u) => u.kind === 'UPLOAD_LOGO') &&
       'the logo in the header of every slide',
     uploads.some((u) => u.kind === 'UPLOAD_PRODUCT') &&
-      'the product photo on the first slide of each post',
+      "the post's product standing in the scene, with its real label",
   ].filter(Boolean)
   const analysis = ctx.outputs.ANALYSIS
   return runPrompt(

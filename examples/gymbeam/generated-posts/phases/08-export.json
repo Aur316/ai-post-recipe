@@ -1,0 +1,15 @@
+{
+  "phase": "EXPORT",
+  "status": "DONE",
+  "attempt": 2,
+  "promptId": null,
+  "model": null,
+  "tokensIn": null,
+  "tokensOut": null,
+  "costUsd": null,
+  "output": {
+    "files": 27,
+    "assetId": "01a218e4-eb2c-7672-b55e-4c5e2a64f1ad"
+  },
+  "editedOutput": null
+}

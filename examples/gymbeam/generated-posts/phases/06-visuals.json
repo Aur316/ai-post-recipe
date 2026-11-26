@@ -1,0 +1,75 @@
+{
+  "phase": "VISUALS",
+  "status": "DONE",
+  "attempt": 2,
+  "promptId": "background@v6",
+  "model": "google/gemini-3.1-flash-image",
+  "tokensIn": 5932,
+  "tokensOut": 3360,
+  "costUsd": 0.204566,
+  "output": {
+    "slides": [
+      {
+        "order": 1,
+        "assetId": "01a218e3-17ce-7136-b018-62edc59522a7",
+        "postIndex": 1,
+        "backgroundAssetId": "01a218e3-13ed-74dc-a098-e0cdf16b28e3"
+      },
+      {
+        "order": 2,
+        "assetId": "01a218e3-1af8-730a-8c99-4c63bc0ade6e",
+        "postIndex": 1,
+        "backgroundAssetId": "01a218e3-13ed-74dc-a098-e0cdf16b28e3"
+      },
+      {
+        "order": 3,
+        "assetId": "01a218e3-1e80-7139-873d-425e0b0a9e1a",
+        "postIndex": 1,
+        "backgroundAssetId": "01a218e3-13ed-74dc-a098-e0cdf16b28e3"
+      },
+      {
+        "order": 4,
+        "assetId": "01a218e3-21ba-75a2-a340-217979838717",
+        "postIndex": 1,
+        "backgroundAssetId": "01a218e3-13ed-74dc-a098-e0cdf16b28e3"
+      },
+      {
+        "order": 5,
+        "assetId": "01a218e3-2532-72e9-873b-12b068167646",
+        "postIndex": 1,
+        "backgroundAssetId": "01a218e3-13ed-74dc-a098-e0cdf16b28e3"
+      },
+      {
+        "order": 1,
+        "assetId": "01a218e3-49a9-7711-a554-421ea71a38cb",
+        "postIndex": 2,
+        "backgroundAssetId": "01a218e3-464a-72e6-8be8-3837c5e57df8"
+      },
+      {
+        "order": 1,
+        "assetId": "01a218e3-733f-72b7-9f59-0b3f64710784",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218e3-6e99-765a-952a-18f674ce7153"
+      },
+      {
+        "order": 2,
+        "assetId": "01a218e3-77b2-75f3-8d19-d72b13682101",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218e3-6e99-765a-952a-18f674ce7153"
+      },
+      {
+        "order": 3,
+        "assetId": "01a218e3-7be2-7552-bafd-2a6ab3e0f0a8",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218e3-6e99-765a-952a-18f674ce7153"
+      },
+      {
+        "order": 4,
+        "assetId": "01a218e3-8086-7762-b88a-c5a8c477f068",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218e3-6e99-765a-952a-18f674ce7153"
+      }
+    ]
+  },
+  "editedOutput": null
+}

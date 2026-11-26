@@ -1,0 +1,98 @@
+{
+  "phase": "COPY",
+  "status": "DONE",
+  "attempt": 1,
+  "promptId": "copy@v2",
+  "model": "anthropic/claude-sonnet-5.5",
+  "tokensIn": 7064,
+  "tokensOut": 2119,
+  "costUsd": 0.035318,
+  "output": {
+    "posts": [
+      {
+        "index": 1,
+        "slides": [
+          {
+            "text": "Kreatin: koliko, kada i kako?",
+            "order": 1
+          },
+          {
+            "text": "Preporučeni dnevni unos: 3 g kreatina",
+            "order": 2
+          },
+          {
+            "text": "Uzimaj redovito, svaki dan. Jutro, nakon treninga ili večer: odaberi što ti odgovara.",
+            "order": 3
+          },
+          {
+            "text": "Mali podsjetnik: ne zaboravi piti dovoljno vode 💧",
+            "order": 4
+          },
+          {
+            "text": "Spremi objavu za podsjetnik i napiši u komentar: uzimaš li kreatin već?",
+            "order": 5
+          }
+        ],
+        "caption": "Kreatin: koliko, kada i kako? 💪 Preporučeni dnevni unos je 3 g kreatina. Najvažnije je da ga uzimaš redovito, svaki dan, i da ga uklopiš u svoju rutinu. Listaj kroz objavu i spremi je kao podsjetnik. A sad nas zanima: uzimaš li kreatin već? Napiši nam u komentar! Kreatin monohidrat pronađeš na linku našeg shopa u opisu profila.",
+        "hashtags": [
+          "#gymbeam",
+          "#gymbeamhr",
+          "#kreatin",
+          "#suplementi",
+          "#trening",
+          "#fitnesssavjeti"
+        ]
+      },
+      {
+        "index": 2,
+        "slides": [
+          {
+            "text": "Tri izvora sirutke. Jedna mjerica. · 22 g bjelančevina* · 6,5 g BCAA* · Cologne List® · *u dozi od 30 g, najmanje",
+            "order": 1
+          }
+        ],
+        "caption": "Tri izvora sirutke. Jedna mjerica. 🥛 Just Whey Grass-Fed Protein objedinjuje koncentrat, izolat i hidrolizat sirutke, a napravljen je od mlijeka krava koje pasu travu. U dozi od 30 g sadrži najmanje 22 g bjelančevina i 6,5 g BCAA. Dodali smo i probavne enzime iz kompleksa DigeZyme®. Uz to je uvršten na Cologne List®, popis dodataka prehrani s minimaliziranim dopinškim rizikom. Koji ti je okus favorit? Napiši u komentar, a protein pronađi na linku našeg shopa u opisu profila.",
+        "hashtags": [
+          "#gymbeam",
+          "#gymbeamhr",
+          "#justwhey",
+          "#protein",
+          "#sirutka",
+          "#suplementi"
+        ]
+      },
+      {
+        "index": 3,
+        "slides": [
+          {
+            "text": "Što ti je prioritet u suplementaciji? Protein ili Kreatin",
+            "order": 1
+          },
+          {
+            "text": "Just Whey Grass-Fed Protein: 66 doza u pakiranju od 2000 g. Ocjena 4,7 (8517 recenzija). Cijena počinje od 26,95 €.",
+            "order": 2
+          },
+          {
+            "text": "Kreatin: dnevno 3 g – jednostavna rutina. Koja ti je najveća nedoumica oko kreatina? Pošalji nam pitanje!",
+            "order": 3
+          },
+          {
+            "text": "Pogledaj ponudu u shopu, link je ovdje 👆 Besplatna dostava za narudžbe iznad 50 €.",
+            "order": 4
+          }
+        ],
+        "caption": "Protein ili kreatin? Danas biramo prioritete, a ti nam javi svoje. 😄 Pogledaj story, glasaj u anketi i pošalji nam pitanje o kreatinu. Link na shop je u zadnjem frameu.",
+        "hashtags": [
+          "#gymbeam",
+          "#gymbeamhr",
+          "#protein",
+          "#kreatin",
+          "#suplementi",
+          "#fitnesszajednica"
+        ]
+      }
+    ],
+    "unsupported": []
+  },
+  "editedOutput": null
+}

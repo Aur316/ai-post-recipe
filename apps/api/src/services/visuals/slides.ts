@@ -52,6 +52,7 @@ export async function makeBackground(
 ) {
   const story = post.format === 'STORY'
   const shot = referenceShot(tools.websiteShots, post.index)
+  const { product } = brandImages(tools.uploads, post)
   const prompt = tools.prompts.render('background', {
     brand: post.brief.brandName,
     colors:
@@ -64,19 +65,33 @@ export async function makeBackground(
     reference: shot
       ? "Reference: the attached screenshot of the brand's website."
       : '',
+    product: product
+      ? `Product: ${post.product || 'the product'}, from the attached product photo.`
+      : '',
     instruction: instruction ? `Extra instruction: ${instruction}` : '',
   })
-  const image = await tools.images.generate({
-    prompt,
-    aspectRatio: aspectRatioFor(post.format),
-    images: shot
+  const images = [
+    ...(product
+      ? [
+          {
+            label: 'Product photo (place this exact product in the scene)',
+            ...(await shrinkImage(product.data, true)),
+          },
+        ]
+      : []),
+    ...(shot
       ? [
           {
             label: "Screenshot of the brand's website (input only)",
             ...(await shrinkImage(shot.data)),
           },
         ]
-      : undefined,
+      : []),
+  ]
+  const image = await tools.images.generate({
+    prompt,
+    aspectRatio: aspectRatioFor(post.format),
+    images: images.length ? images : undefined,
   })
   const assetId = await tools.saveAsset(
     'GENERATED_BACKGROUND',
@@ -86,11 +101,18 @@ export async function makeBackground(
   return { assetId, image, promptId: prompt.promptId }
 }
 
-export function brandImages(uploads: Array<Upload>, postIndex: number) {
+export function brandImages(
+  uploads: Array<Upload>,
+  post: Pick<PostDesign, 'brief' | 'index' | 'product'>,
+) {
   const logo = uploads.find((u) => u.kind === 'UPLOAD_LOGO')
   const products = uploads.filter((u) => u.kind === 'UPLOAD_PRODUCT')
+  const featured = (post.product ?? '').toLowerCase()
+  const named = post.brief.products.findIndex(
+    (p) => featured !== '' && featured.includes(p.name.toLowerCase()),
+  )
   const product = products.length
-    ? products[(postIndex - 1) % products.length]
+    ? products[named >= 0 ? named : (post.index - 1) % products.length]
     : undefined
   return { logo, product }
 }
@@ -105,7 +127,7 @@ export async function renderSlide(
     background: { data: Buffer; mimeType: string }
   },
 ) {
-  const { logo, product } = brandImages(tools.uploads, input.post.index)
+  const { logo } = brandImages(tools.uploads, input.post)
   const png = await tools.renderer.render({
     format: input.post.format,
     layout: input.total === 1 ? 'cover' : layoutFor(input.order, input.total),
@@ -115,7 +137,6 @@ export async function renderSlide(
     brandName: input.post.brief.brandName,
     tokens: tokensFor(input.post.analysis),
     backgroundUrl: await toDataUrl(input.background),
-    productImageUrl: product ? await toDataUrl(product) : undefined,
     logoUrl: logo ? await toDataUrl(logo) : undefined,
   })
   return tools.saveAsset('RENDERED_SLIDE', png, 'image/png')

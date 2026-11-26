@@ -1,0 +1,30 @@
+{
+  "post": 3,
+  "format": "STORY",
+  "goal": "Interes za kupnju i angažman",
+  "concept": "Serija od 4 story framea na tamnoj pozadini s narančastim naglascima. Frame 1: anketa 'Što ti je prioritet u suplementaciji?' s opcijama 'Protein' i 'Kreatin'. Frame 2: Just Whey s brojkom '66 doza u pakiranju od 2000 g' i ocjenom '4,7 (8517 recenzija)' uz tekst 'Cijena od 26,95 €' i naznaku da se cijena odnosi na najmanje pakiranje na webu. Frame 3: kreatin s porukom 'Dnevno 3 g – jednostavna rutina' i stickerom pitanja 'Koja ti je najveća nedoumica oko kreatina?'. Frame 4: poziv na akciju s linkom na shop i podsjetnikom 'Besplatna dostava za narudžbe iznad 50 €'. Ton lagan i motivirajući, s pokojom šalom.",
+  "rationale": "Story format s anketom i pitanjem potiče izravnu interakciju, a brojke (66 doza, ocjena 4,7 iz 8517 recenzija, besplatna dostava iznad 50 €) su provjerene i potiču interes za kupnju. Povezuje oba proizvoda iz brifa i vodi publiku prema shopu, dok odgovori na pitanja daju ideje za budući sadržaj.",
+  "product": "Just Whey Grass-Fed Protein i Kreatin monohidrat",
+  "slides": [
+    {
+      "order": 1,
+      "text": "Što ti je prioritet u suplementaciji? Protein ili Kreatin",
+      "file": "slide-1.png"
+    },
+    {
+      "order": 2,
+      "text": "Just Whey Grass-Fed Protein: 66 doza u pakiranju od 2000 g. Ocjena 4,7 (8517 recenzija). Cijena počinje od 26,95 €.",
+      "file": "slide-2.png"
+    },
+    {
+      "order": 3,
+      "text": "Kreatin: dnevno 3 g – jednostavna rutina. Koja ti je najveća nedoumica oko kreatina? Pošalji nam pitanje!",
+      "file": "slide-3.png"
+    },
+    {
+      "order": 4,
+      "text": "Pogledaj ponudu u shopu, link je ovdje 👆 Besplatna dostava za narudžbe iznad 50 €.",
+      "file": "slide-4.png"
+    }
+  ]
+}

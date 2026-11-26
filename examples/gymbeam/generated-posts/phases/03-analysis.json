@@ -1,0 +1,173 @@
+{
+  "phase": "ANALYSIS",
+  "status": "APPROVED",
+  "attempt": 1,
+  "promptId": "analysis@v3",
+  "model": "anthropic/claude-sonnet-5.5",
+  "tokensIn": 32278,
+  "tokensOut": 3750,
+  "costUsd": 0.102056,
+  "output": {
+    "gaps": [
+      "Nisu dostupni podaci o angažmanu (lajkovi, komentari, spremanja) pa se ne može procijeniti koji formati najbolje rade.",
+      "Prikazan je samo dio Instagram mreže (screenshotovi), bez opisa objava, hashtagova i učestalosti objavljivanja.",
+      "Nisu navedene službene hex boje s weba pa su boje procijenjene iz slika i logotipa.",
+      "Stranica kreatina na gymbeam.hr/kreatin-monohydrat-gymbeam.html nema još recenzija (0), a dio teksta stranica je skraćen, pa nisu provjereni svi detalji.",
+      "Nema ton-of-voice smjernica ni brand priručnika; ton je procijenjen iz sadržaja.",
+      "Nije vidljivo koliko su sadržaji brenda na Instagramu usklađeni s tvrdnjama sa stranica proizvoda (npr. zdravstvene tvrdnje o kreatinu), što treba pažljivo formulirati u objavama."
+    ],
+    "tone": "Prijateljski, motivirajući i praktičan, uz mjestimičan humor i blagdanski ton (npr. 'Merry Fitmas'). Na webu je stručniji i činjeničan, s brojkama, dozama i pozivanjem na studije.",
+    "claims": [
+      {
+        "text": "Web trgovina navodi više od 9000 proizvoda i najširi asortiman na tržištu.",
+        "status": "verified",
+        "evidence": "9000+ proizvoda najširi asortiman na tržištu",
+        "sourceUrl": "https://gymbeam.hr"
+      },
+      {
+        "text": "Besplatna dostava vrijedi za narudžbe iznad 50 €.",
+        "status": "verified",
+        "evidence": "Besplatna dostava za narudžbe iznad 50€",
+        "sourceUrl": "https://gymbeam.hr"
+      },
+      {
+        "text": "Just Whey sadrži najmanje 22 g bjelančevina i 6,5 g BCAA u dozi od 30 g.",
+        "status": "verified",
+        "evidence": "U dozi od 30 g sadrži najmanje 22 g bjelančevina i 6,5 g BCAA.",
+        "sourceUrl": "https://gymbeam.hr/protein-just-whey-gymbeam.html"
+      },
+      {
+        "text": "Just Whey je napravljen od mlijeka krava koje pasu travu i kombinira koncentrat, izolat i hidrolizat sirutke.",
+        "status": "verified",
+        "evidence": "Objedinjuje tri izvora bjelančevina sirutke: koncentrat (WPC), izolat (WPI) i hidrolizat (WPH)",
+        "sourceUrl": "https://gymbeam.hr/protein-just-whey-gymbeam.html"
+      },
+      {
+        "text": "Just Whey sadrži probavne enzime iz kompleksa DigeZyme®.",
+        "status": "verified",
+        "evidence": "Dodali smo šest probavnih enzima s kompleksom DigeZyme®, cink, magnezij i vitamine B6 i E.",
+        "sourceUrl": "https://gymbeam.hr/protein-just-whey-gymbeam.html"
+      },
+      {
+        "text": "Just Whey je uvršten na Cologne List®, popis dodataka s minimaliziranim dopinškim rizikom.",
+        "status": "verified",
+        "evidence": "Proizvod je također uvršten na Cologne List®, popis dodataka prehrani s minimaliziranim dopinškim rizikom.",
+        "sourceUrl": "https://gymbeam.hr/protein-just-whey-gymbeam.html"
+      },
+      {
+        "text": "Just Whey u 2000 g pakiranju ima 66 doza, a cijena počinje od 26,95 €.",
+        "status": "verified",
+        "evidence": "2000 g66 doza1000 g33 doze500 g16 doza",
+        "sourceUrl": "https://gymbeam.hr/protein-just-whey-gymbeam.html"
+      },
+      {
+        "text": "Just Whey ima ocjenu 4,7 na temelju 8517 recenzija.",
+        "status": "verified",
+        "evidence": "4.7(8517)",
+        "sourceUrl": "https://gymbeam.hr/protein-just-whey-gymbeam.html"
+      },
+      {
+        "text": "Mjerica od 5 g kreatin monohidrata osigurava 3,41 g čistog kreatina.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      },
+      {
+        "text": "Kreatin je mikroniziran na 200 mesh, a najmanje 70 % prolazi kroz sito.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      },
+      {
+        "text": "Kreatin monohidrat dostupan je u tri voćna okusa i zaslađen je stevijom.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      },
+      {
+        "text": "Za učinak kreatina preporučuje se dnevni unos od 3 g.",
+        "status": "verified",
+        "evidence": "Povoljan učinak postiže se dnevnim unosom od 3 g kreatina",
+        "sourceUrl": "https://gymbeam.hr/kreatin-monohydrat-gymbeam.html"
+      },
+      {
+        "text": "Kreatinu je potrebno otprilike 3–4 tjedna redovitog uzimanja da se zalihe u mišićima popune.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      },
+      {
+        "text": "GymBeam je osnovan 2014. i prisutan je u 15 zemalja.",
+        "status": "verified",
+        "evidence": "Od osnivanja 2014. godine... Trenutno smo dostupni u čak 15 zemalja.",
+        "sourceUrl": "https://benefitsystems.hr/objekti/gym-beam-web-trgovina/"
+      },
+      {
+        "text": "Instagram profil gymbeamhr ima oko 42,2 tisuće pratitelja i istaknute storyje (Zajednica, Novosti, Članci, Recepti, Outfiti).",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      },
+      {
+        "text": "Instagram sadržaj kombinira kratke videe (Reels), karusele i kampanje s influencerima, uz tekst preko videa na hrvatskom.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      },
+      {
+        "text": "Vizualni identitet temelji se na narančastoj boji uz crni logotip i bijela pakiranja.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      }
+    ],
+    "colors": [
+      {
+        "hex": "#FF4F1A",
+        "name": "GymBeam narančasta",
+        "usage": "Avatar profila, G logotip, šejkeri, akcenti na pakiranju i istaknuti tekst u videima"
+      },
+      {
+        "hex": "#111111",
+        "name": "Crna",
+        "usage": "Logotip GymBeam (wordmark) i naslovi na pakiranju Just Whey"
+      },
+      {
+        "hex": "#FFFFFF",
+        "name": "Bijela",
+        "usage": "Pozadina proizvodnih fotografija i etikete na pakiranjima"
+      },
+      {
+        "hex": "#6B6E70",
+        "name": "Siva",
+        "usage": "Natpis 'Creatine Monohydrate' i logotip na pakiranju kreatina"
+      },
+      {
+        "hex": "#0B0D12",
+        "name": "Tamna pozadina profila",
+        "usage": "Pozadina Instagram sučelja u kojem se mreža prikazuje (nije brend boja, vidljiva samo u screenshotu)"
+      },
+      {
+        "hex": "#C8B49C",
+        "name": "Bež (čokoladni milkshake)",
+        "usage": "Posuda proteina Just Whey u okusu čokoladnog milkshakea"
+      }
+    ],
+    "themes": [
+      "Praktični savjeti o suplementima i dnevnim vitaminima",
+      "Proteini, kreatin i proteinski snackovi",
+      "Recepti i zdrava prehrana",
+      "Blagdanske i akcijske kampanje (Black Friday, adventski kalendar)",
+      "Fitness odjeća i outfiti",
+      "Treninzi i motivacija (teretana, boks)",
+      "Raspakiravanje narudžbi i dostava (BOX NOW)",
+      "Zajednica i influenceri"
+    ],
+    "summary": "GymBeam Hrvatska je velika trgovina sportske prehrane, opreme i odjeće sa 9000+ proizvoda. Instagram profil je energičan i raznolik: Reels videi s influencerima, praktični savjeti, blagdanske kampanje (Black Friday, adventski kalendar), a uz to i glossy kreativni vizuali. Proizvodne stranice naglašavaju brojke, doze, laboratorijska ispitivanja i ocjene kupaca.",
+    "audience": "Aktivni odrasli u Hrvatskoj (oko 18–35 godina) koji treniraju u teretani ili kod kuće: početnici koji traže jasne upute i redoviti vježbači koji uspoređuju dodatke prehrani. Profil privlači i žensku publiku zainteresiranu za fitness odjeću i lifestyle.",
+    "visualStyle": "Tamna Instagram mreža s vrlo raznolikim sadržajem: snažne narančaste i crvene akcente, svijetli studijski kadrovi s proizvodima, dinamične teretane i ilustrirani/AI vizuali u neonskim bojama. Dominiraju vertikalni videi s tekstom preko slike (naslovi poput 'Suplementi koje uzimam i čemu služe'). Proizvodne fotografije su čiste, na bijeloj pozadini, s minimalističkim bijelim pakiranjima.",
+    "peoplePresentation": "Ljudi su prikazani kao fit, nasmijani i pristupačni influenceri i treneri, često u GymBeam odjeći, u teretani ili domaćem ambijentu (kuhinja, dnevni boravak). Vidljivi su ženski i muški modeli, u treningu, kao i u izravnom obraćanju kameri u lifestyle videima.",
+    "productPresentation": "Na webu su proizvodi prikazani na čistoj bijeloj pozadini, frontalno, uz jasan naziv, okus i gramažu. Na Instagramu se pojavljuju u kontekstu: u rukama influencera, na kuhinjskom pultu, u raspakiravanju narudžbe, u adventskim kalendarima te u stiliziranim studijskim kadrovima (npr. med na narančastoj pozadini)."
+  },
+  "editedOutput": null
+}
