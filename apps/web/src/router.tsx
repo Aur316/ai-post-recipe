@@ -7,6 +7,7 @@ import { AppLayout } from '@/layouts/app-layout'
 import { AddRun } from '@/pages/add-run'
 import { EditRun } from '@/pages/edit-run'
 import { NotFound } from '@/pages/not-found'
+import { Onboarding } from '@/pages/onboarding'
 import { RunDetails } from '@/pages/run-details'
 import { Runs } from '@/pages/runs'
 
@@ -25,6 +26,7 @@ export const routes: Array<RouteObject> = [
           { path: 'runs/new', element: <AddRun /> },
           { path: 'runs/:id', element: <RunDetails /> },
           { path: 'runs/:id/edit', element: <EditRun /> },
+          { path: 'onboarding', element: <Onboarding /> },
           { path: '*', element: <NotFound /> },
         ],
       },

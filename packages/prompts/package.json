@@ -1,0 +1,32 @@
+{
+  "name": "@ai-post-recipe/prompts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "files": [
+    "dist",
+    "prompts"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@ai-post-recipe/eslint-config": "workspace:*",
+    "@ai-post-recipe/tsconfig": "workspace:*",
+    "@types/node": "^24.19.4",
+    "eslint": "^10.15.0",
+    "globals": "^17.14.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.2"
+  }
+}

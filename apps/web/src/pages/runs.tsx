@@ -7,8 +7,11 @@ import { InfiniteScrollSpinner } from '@/components/infinite-scroll-spinner'
 import { RunStatusBadge } from '@/components/run-status-badge'
 import { Button } from '@/components/ui/button'
 
+import { cn } from '@/lib/utils'
+
 import { useGetRunsInfinite } from '@/hooks/queries/runs/useGetRunsInfinite'
 import { useLocalizedPath } from '@/hooks/useLocalizedPath'
+import { PAGE_WIDTH } from '@/utils/layout'
 
 export function Runs() {
   const { t, i18n } = useTranslation()
@@ -23,7 +26,7 @@ export function Runs() {
   })
 
   return (
-    <section className="flex h-full flex-col gap-6">
+    <section className={cn(PAGE_WIDTH, 'flex h-full flex-col gap-6')}>
       <div className="flex shrink-0 items-center justify-between">
         <h1 className="text-2xl font-semibold">{t('runs.title')}</h1>
         <Button asChild>

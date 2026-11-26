@@ -33,7 +33,11 @@ erDiagram
     string id PK
     string runId FK
     string url
+    string title
+    string excerpt
     boolean reachable
+    string error
+    SourceOrigin origin
   }
   Post {
     string id PK

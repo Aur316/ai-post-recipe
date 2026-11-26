@@ -20,6 +20,62 @@ export const hr: Translation = {
       'Ova adresa ne postoji ili je ono na što je upućivala obrisano.',
     backToRuns: 'Natrag na pokretanja',
   },
+  demoMode:
+    'Demo način: OPENROUTER_API_KEY nije postavljen pa AI faze vraćaju snimljene primjere odgovora.',
+  analysis: {
+    tone: 'Ton komunikacije',
+    audience: 'Publika',
+    visualStyle: 'Vizualni stil',
+    productPresentation: 'Prikaz proizvoda',
+    peoplePresentation: 'Prikaz osoba',
+    themes: 'Teme',
+    colors: 'Boje brenda',
+    claims: 'Tvrdnje',
+    gaps: 'Nije pronađeno ili provjereno',
+    status: { verified: 'Provjereno', assumption: 'Pretpostavka' },
+    preview: 'Pregled JSON-a ispod',
+  },
+  sources: {
+    title: 'Izvori ({{count}})',
+    summary: 'Pročitano: {{read}}, nedostupno: {{unreachable}}',
+    read: 'Pročitano',
+    unreachable: 'Nedostupno',
+    origin: { BRIEF: 'Brif', SEARCH: 'Pretraga' },
+  },
+  demoModeLink: 'Postavi ključeve',
+  onboarding: {
+    title: 'Postavljanje: API ključevi',
+    intro:
+      'Bez ključeva aplikacija radi u demo načinu. Za stvarne rezultate dodaj OpenRouter ključ; Serper ključ nije obavezan. Ključevi idu u datoteku .env u korijenu repozitorija i nikad ne dolaze do preglednika.',
+    status: 'Stanje',
+    set: 'Postavljeno',
+    notSet: 'Nije postavljeno',
+    notSetOptional: 'Nije postavljeno (neobavezno)',
+    addToEnv: 'Dodaj ga u .env u korijenu repozitorija:',
+    openrouter: {
+      title: '1. OpenRouter (obavezno za stvarne rezultate)',
+      purpose:
+        'Jedan API za mnoge AI modele; koristi se za analizu brenda, plan sadržaja i tekstove.',
+      signIn: 'Prijavi se na',
+      credits:
+        'Uplati nekoliko dolara kredita (jedno pokretanje stoji znatno manje od 1 $; aplikacija zaustavlja pokretanje na MAX_COST_USD_PER_RUN):',
+      key: 'Stvori ključ i kopiraj ga; prikazuje se samo jednom:',
+    },
+    serper: {
+      title: '2. Serper (neobavezno, web pretraga)',
+      purpose:
+        'Google rezultati pretrage za fazu istraživanja. Bez njega istraživanje čita samo poveznice iz brifa.',
+      signUp: 'Registriraj se na',
+      key: 'Kopiraj svoj ključ:',
+    },
+    restart: {
+      title: '3. Ponovno pokreni API',
+      intro: 'API čita .env pri pokretanju.',
+      dev: 'Zaustavi ga s Ctrl+C i ponovno pokreni pnpm dev.',
+      check:
+        'Zatim osvježi ovu stranicu: stanje iznad prikazuje ključeve kao postavljene, a traka demo načina nestaje.',
+    },
+  },
   common: {
     loading: 'Učitavanje…',
     remove: 'Ukloni',
@@ -64,7 +120,7 @@ export const hr: Translation = {
     inspiration: 'Inspiracija:',
     inspirationLinks: 'Poveznice za inspiraciju',
     preferredFormats: 'Željeni formati:',
-    language: 'Jezik:',
+    language: 'Jezik pokretanja:',
     references: 'Reference ({{count}})',
   },
   outputLanguage: { hr: 'Hrvatski', en: 'Engleski' },
@@ -90,6 +146,7 @@ export const hr: Translation = {
   },
   phaseTimeline: {
     attempt: '{{attempt}}. pokušaj',
+    tokens: '{{in}} → {{out}} tokena',
     runAgain: 'Pokreni ponovno',
     output: 'Rezultat',
     outputEdited: 'Rezultat (uređen pri odobrenju)',
@@ -167,7 +224,9 @@ export const hr: Translation = {
     inspirationLinks: 'Poveznice za inspiraciju (neobavezno)',
     inspirationLink: 'Poveznica za inspiraciju {{n}}',
     addInspirationLink: 'Dodaj poveznicu za inspiraciju',
-    outputLanguage: 'Jezik rezultata',
+    outputLanguage: 'Jezik pokretanja',
+    outputLanguageHint:
+      'Analiza, plan sadržaja i objave pišu se na ovom jeziku. Nakon pokretanja ne može se promijeniti.',
     formats: 'Željeni formati (neobavezno)',
     formatTypes: {
       IMAGE: 'Jedna slika',

@@ -3,7 +3,10 @@ import { Link } from 'react-router'
 
 import { Button } from '@/components/ui/button'
 
+import { cn } from '@/lib/utils'
+
 import { useLocalizedPath } from '@/hooks/useLocalizedPath'
+import { PAGE_WIDTH } from '@/utils/layout'
 
 interface NotFoundProps {
   /** Overrides the generic text, e.g. for a run that does not exist. */
@@ -16,7 +19,12 @@ export function NotFound({ title }: NotFoundProps) {
   const localized = useLocalizedPath()
 
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+    <section
+      className={cn(
+        PAGE_WIDTH,
+        'flex flex-col items-center justify-center gap-4 py-16 text-center',
+      )}
+    >
       {/* Keeps search engines from indexing the error page. */}
       <meta name="robots" content="noindex" />
       <p className="text-6xl font-semibold text-muted-foreground tabular-nums">

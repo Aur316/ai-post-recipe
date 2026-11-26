@@ -6,6 +6,7 @@ import {
   type PhaseKey,
   type PhaseOutputs,
   type PhaseStatus,
+  ResearchOutput,
 } from '@ai-post-recipe/shared'
 
 import type { Db, DbClient } from '../../db/prisma.js'
@@ -20,6 +21,7 @@ import type { LlmUsage } from '../../providers/llm/llm.provider.js'
 import type { JobQueue } from '../../providers/queue/job-queue.js'
 import { PhaseRunRepo } from '../../repositories/phase-run/phase-run.repo.js'
 import { RunRepo } from '../../repositories/run/run.repo.js'
+import { SourceRepo } from '../../repositories/source/source.repo.js'
 import { deriveRunStatus, nextPhaseToRun } from './run-status.js'
 
 const ACTIVE: ReadonlyArray<PhaseStatus> = ['PENDING', 'RUNNING']
@@ -169,11 +171,12 @@ export class PipelineService {
         output: result.output as Prisma.InputJsonValue,
         promptId: result.promptId,
         model: result.model,
-        tokensIn: result.usage?.tokensIn,
-        tokensOut: result.usage?.tokensOut,
-        costUsd: result.usage?.costUsd,
+        ...usageColumns(result.usage),
         finishedAt: new Date(),
       })
+      if (done.phase === 'RESEARCH') {
+        await this.saveSources(tx, done.runId, result.output)
+      }
       if (done.status === 'DONE') {
         const next = PHASE_ORDER[PHASE_ORDER.indexOf(done.phase) + 1]
         if (next) await this.enqueue(tx, done.runId, next)
@@ -183,25 +186,55 @@ export class PipelineService {
   }
 
   /** Puts the phase back in the queue's hands for another try. */
-  async release(phaseRunId: string, error: string) {
+  async release(phaseRunId: string, error: string, usage?: LlmUsage) {
     await new PhaseRunRepo(this.db).update(phaseRunId, {
       status: 'PENDING',
       error,
+      ...usageColumns(usage),
     })
   }
 
-  fail(phaseRunId: string, error: string) {
+  fail(phaseRunId: string, error: string, usage?: LlmUsage) {
     return this.db.$transaction(async (tx) => {
       const failed = await new PhaseRunRepo(tx).update(phaseRunId, {
         status: 'FAILED',
         error,
         finishedAt: new Date(),
+        ...usageColumns(usage),
       })
       await this.refreshStatus(tx, failed.runId)
     })
   }
 
+  /** Everything the run has spent on LLM calls, over all attempts. */
+  costOfRun(runId: string) {
+    return new PhaseRunRepo(this.db).totalCost(runId)
+  }
+
   // ── Helpers ───────────────────────────────────────────────────────────────
+
+  /** The latest research replaces the run's sources. */
+  private async saveSources(
+    tx: Prisma.TransactionClient,
+    runId: string,
+    output: unknown,
+  ) {
+    const { sources } = ResearchOutput.parse(output)
+    const repo = new SourceRepo(tx)
+    await repo.deleteByRun(runId)
+    await repo.createMany(
+      sources.map((s) => ({
+        runId,
+        url: s.url,
+        title: s.title,
+        excerpt: s.excerpt,
+        reachable: s.reachable,
+        error: s.error,
+        origin: s.origin,
+        fetchedAt: new Date(s.fetchedAt),
+      })),
+    )
+  }
 
   private latest(client: DbClient, runId: string) {
     return new PhaseRunRepo(client).latestByRun(runId)
@@ -231,6 +264,16 @@ export class PipelineService {
   private async refreshStatus(tx: Prisma.TransactionClient, runId: string) {
     const latest = await this.latest(tx, runId)
     await new RunRepo(tx).setStatus(runId, deriveRunStatus(latest))
+  }
+}
+
+/** Usage columns; a phase without LLM calls leaves them empty. */
+function usageColumns(usage?: LlmUsage) {
+  if (!usage) return {}
+  return {
+    tokensIn: usage.tokensIn,
+    tokensOut: usage.tokensOut,
+    costUsd: usage.costUsd,
   }
 }
 

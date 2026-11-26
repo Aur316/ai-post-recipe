@@ -18,6 +18,62 @@ export const en = {
       'This address does not exist, or what it pointed to was deleted.',
     backToRuns: 'Back to the runs',
   },
+  demoMode:
+    'Demo mode: no OPENROUTER_API_KEY is set, so the AI phases return recorded sample answers.',
+  analysis: {
+    tone: 'Tone of voice',
+    audience: 'Audience',
+    visualStyle: 'Visual style',
+    productPresentation: 'How products are shown',
+    peoplePresentation: 'How people are shown',
+    themes: 'Themes',
+    colors: 'Brand colours',
+    claims: 'Claims',
+    gaps: 'Not found or not verified',
+    status: { verified: 'Verified', assumption: 'Assumption' },
+    preview: 'Preview of the JSON below',
+  },
+  sources: {
+    title: 'Sources ({{count}})',
+    summary: '{{read}} read, {{unreachable}} could not be read',
+    read: 'Read',
+    unreachable: 'Unreachable',
+    origin: { BRIEF: 'Brief', SEARCH: 'Search' },
+  },
+  demoModeLink: 'Set up the keys',
+  onboarding: {
+    title: 'Setup: API keys',
+    intro:
+      'The app runs without keys in demo mode. For real results add an OpenRouter key; a Serper key is optional. Keys go in the .env file in the repository root and never reach the browser.',
+    status: 'Status',
+    set: 'Set',
+    notSet: 'Not set',
+    notSetOptional: 'Not set (optional)',
+    addToEnv: 'Add it to .env in the repository root:',
+    openrouter: {
+      title: '1. OpenRouter (required for real results)',
+      purpose:
+        'One API for many AI models; used for the brand analysis, the content plan and the copy.',
+      signIn: 'Sign in at',
+      credits:
+        'Add a few dollars of credit (one run costs well under $1; the app stops a run at MAX_COST_USD_PER_RUN):',
+      key: 'Create a key and copy it; it is shown only once:',
+    },
+    serper: {
+      title: '2. Serper (optional, web search)',
+      purpose:
+        'Google search results for the research phase. Without it, research reads only the links in the brief.',
+      signUp: 'Sign up at',
+      key: 'Copy your key:',
+    },
+    restart: {
+      title: '3. Restart the API',
+      intro: 'The API reads .env when it starts.',
+      dev: 'Stop it with Ctrl+C and run pnpm dev again.',
+      check:
+        'Then reload this page: the status above shows the keys as set, and the demo-mode banner disappears.',
+    },
+  },
   common: {
     loading: 'Loading…',
     remove: 'Remove',
@@ -62,7 +118,7 @@ export const en = {
     inspiration: 'Inspiration:',
     inspirationLinks: 'Inspiration links',
     preferredFormats: 'Preferred formats:',
-    language: 'Language:',
+    language: 'Language of the run:',
     references: 'References ({{count}})',
   },
   outputLanguage: { hr: 'Croatian', en: 'English' },
@@ -88,6 +144,7 @@ export const en = {
   },
   phaseTimeline: {
     attempt: 'attempt {{attempt}}',
+    tokens: '{{in}} → {{out}} tokens',
     runAgain: 'Run again',
     output: 'Output',
     outputEdited: 'Output (edited at approval)',
@@ -165,7 +222,9 @@ export const en = {
     inspirationLinks: 'Inspiration links (optional)',
     inspirationLink: 'Inspiration link {{n}}',
     addInspirationLink: 'Add inspiration link',
-    outputLanguage: 'Output language',
+    outputLanguage: 'Language of the run',
+    outputLanguageHint:
+      'The analysis, the content plan and the posts are written in this language. It cannot be changed once the run has started.',
     formats: 'Preferred formats (optional)',
     formatTypes: {
       IMAGE: 'Single image',

@@ -49,36 +49,39 @@ export function AssetGrid({ runId, assets, removable }: AssetGridProps) {
 
   return (
     <>
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {assets.map((asset) => (
-          <li key={asset.id} className="space-y-1">
-            <div className="relative">
-              <img
-                src={assetsQueryFunctions.url(asset.id)}
-                alt={kindLabel(asset.kind)}
-                className="aspect-square w-full rounded-md border object-cover"
-              />
-              {removable && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  aria-label={t('assets.removeLabel', {
-                    kind: kindLabel(asset.kind).toLowerCase(),
-                  })}
-                  onClick={() => setToRemove(asset)}
-                >
-                  <Trash2Icon />
-                </Button>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {kindLabel(asset.kind)}
-            </p>
-          </li>
-        ))}
-      </ul>
+      {/* Columns follow the space of the card, not the screen. */}
+      <div className="@container">
+        <ul className="grid grid-cols-2 gap-4 @lg:grid-cols-3 @2xl:grid-cols-4">
+          {assets.map((asset) => (
+            <li key={asset.id} className="space-y-1">
+              <div className="relative">
+                <img
+                  src={assetsQueryFunctions.url(asset.id)}
+                  alt={kindLabel(asset.kind)}
+                  className="aspect-square w-full rounded-md border object-cover"
+                />
+                {removable && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon"
+                    className="absolute top-2 right-2"
+                    aria-label={t('assets.removeLabel', {
+                      kind: kindLabel(asset.kind).toLowerCase(),
+                    })}
+                    onClick={() => setToRemove(asset)}
+                  >
+                    <Trash2Icon />
+                  </Button>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {kindLabel(asset.kind)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <AlertDialog
         open={!!toRemove}

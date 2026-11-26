@@ -8,8 +8,9 @@ import {
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
 
+import { LlmOutputError, LlmRequestError } from '../../lib/phase-errors.js'
 import { FakeLlmProvider } from '../../providers/llm/fake-llm.provider.js'
-import { createTestContext } from '../../test/context.js'
+import { FakeFetcher, createTestContext } from '../../test/context.js'
 import { gymbeamBrief } from '../../test/fixtures.js'
 
 const setup = (options?: Parameters<typeof createTestContext>[0]) => {
@@ -71,7 +72,7 @@ describe('pipeline', () => {
       status: 'APPROVED',
       editedOutput: { tone: 'Friendly and expert' },
       output: { tone: analysis.tone },
-      promptId: 'analysis@v0',
+      promptId: 'analysis@v2',
       model: 'fake',
     })
   })
@@ -178,12 +179,117 @@ describe('pipeline retries', () => {
 
     expect(await phase(id, 'ANALYSIS')).toMatchObject({
       status: 'FAILED',
-      error: 'No fake answer for prompt analysis@v0',
+      error: 'No fake answer for prompt analysis',
     })
     expect((await get(id)).status).toBe('FAILED')
 
     // Start resumes from the failed phase.
     expect((await post(`/api/runs/${id}/start`)).status).toBe(202)
     expect((await phase(id, 'ANALYSIS'))?.attempt).toBe(2)
+  })
+})
+
+describe('research, costs and errors', () => {
+  it('saves the research sources and returns them with the run', async () => {
+    const { ctx, createRun, get, post } = setup({
+      fetcher: new FakeFetcher({
+        'https://gymbeam.hr/true-whey': {
+          reachable: false,
+          error: 'HTTP 404',
+          text: '',
+        },
+      }),
+    })
+
+    const id = await createRun()
+    await post(`/api/runs/${id}/start`)
+    await ctx.queue.drain()
+
+    const run = await get(id)
+    expect(
+      run.sources.map((s) => [s.url, s.origin, s.reachable, s.error]),
+    ).toEqual([
+      ['https://gymbeam.hr', 'BRIEF', true, null],
+      ['https://gymbeam.hr/true-whey', 'BRIEF', false, 'HTTP 404'],
+    ])
+
+    // Running research again replaces the sources instead of adding to them.
+    await post(`/api/runs/${id}/phases/RESEARCH/rerun`)
+    await ctx.queue.drain()
+    expect((await get(id)).sources).toHaveLength(2)
+  })
+
+  it('stops before an LLM call once the run has spent MAX_COST_USD_PER_RUN', async () => {
+    const llm = new FakeLlmProvider(undefined, {
+      tokensIn: 10,
+      tokensOut: 5,
+      costUsd: 1,
+    })
+    const { ctx, createRun, get, phase, post } = setup({ llm, costCapUsd: 1.5 })
+
+    const id = await createRun()
+    await post(`/api/runs/${id}/start`)
+    await ctx.queue.drain()
+    expect(await phase(id, 'ANALYSIS')).toMatchObject({
+      status: 'AWAITING_APPROVAL',
+      costUsd: 1,
+      tokensIn: 10,
+    })
+    await post(`/api/runs/${id}/phases/ANALYSIS/approve`)
+    await ctx.queue.drain()
+    await post(`/api/runs/${id}/phases/PLAN/approve`)
+    await ctx.queue.drain()
+
+    // $2 spent after the plan: the copy phase may not call the model.
+    const copy = await phase(id, 'COPY')
+    expect(copy).toMatchObject({ status: 'FAILED', attempt: 1 })
+    expect(copy?.error).toContain('Cost cap reached')
+    expect(llm.requests).toHaveLength(2)
+    expect((await get(id)).status).toBe('FAILED')
+  })
+
+  it('does not retry an error that a retry cannot fix', async () => {
+    const llm = new FakeLlmProvider()
+    let calls = 0
+    llm.complete = () => {
+      calls++
+      return Promise.reject(
+        new LlmRequestError('OpenRouter 401: No auth credentials found'),
+      )
+    }
+    const { ctx, createRun, phase, post } = setup({ llm, retryLimit: 2 })
+
+    const id = await createRun()
+    await post(`/api/runs/${id}/start`)
+    await ctx.queue.drain()
+
+    expect(await phase(id, 'ANALYSIS')).toMatchObject({
+      status: 'FAILED',
+      error: 'OpenRouter 401: No auth credentials found',
+    })
+    expect(calls).toBe(1)
+  })
+
+  it('keeps the cost of a failed attempt', async () => {
+    const llm = new FakeLlmProvider()
+    llm.complete = () =>
+      Promise.reject(
+        new LlmOutputError('Invalid answer', {
+          tokensIn: 50,
+          tokensOut: 10,
+          costUsd: 0.25,
+        }),
+      )
+    const { ctx, createRun, phase, post } = setup({ llm, retryLimit: 0 })
+
+    const id = await createRun()
+    await post(`/api/runs/${id}/start`)
+    await ctx.queue.drain()
+
+    expect(await phase(id, 'ANALYSIS')).toMatchObject({
+      status: 'FAILED',
+      costUsd: 0.25,
+      tokensIn: 50,
+    })
   })
 })

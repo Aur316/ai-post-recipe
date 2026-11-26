@@ -52,7 +52,7 @@ Dark is the default (`class="dark"` on `<html>`). The header toggle switches to 
 
 ## Languages
 
-The interface is in English and Croatian (`react-i18next`). The language is the first segment of every URL (`/en/runs/…`, `/hr/runs/…`), so each language version has its own address that search engines can index and people can share. This is separate from the brief's output language, which sets the language of the generated posts.
+The interface is in English and Croatian (`react-i18next`). The language is the first segment of every URL (`/en/runs/…`, `/hr/runs/…`), so each language version has its own address that search engines can index and people can share. This is separate from the language of the run (set in the brief), which is the language of everything the AI writes for that run.
 
 - **Routing:** every page sits under `/:lang` (`LanguageRoute`). A path without a valid language (`/`, or an old link such as `/runs/1`) redirects to the same page in the preferred language: the last choice (kept in `localStorage`), else Croatian for a Croatian browser, else English. Links are built with `useLocalizedPath()`.
 - **Switching:** the **EN | HR** buttons in the header open the same page under the other language's URL.
@@ -73,18 +73,19 @@ The interface is in English and Croatian (`react-i18next`). The language is the 
 
 ## Layout and scrolling
 
-The app fills the screen: the header stays put and `main` scrolls pages that are taller than the screen. List pages (runs) fill `main` and scroll only their list, with the `scrollbar-thin` utility from `index.css` (thin, theme-aware). The infinite scroll observes that list container (`rootRef`).
+The app fills the screen: the header stays put and `main` scrolls pages that are taller than the screen. List pages (runs) fill `main` and scroll only their list, with the `scrollbar-thin` utility from `index.css` (thin, theme-aware). The infinite scroll observes that list container (`rootRef`). The app shell is up to 1536 px wide (`max-w-screen-2xl`); the run page uses it for two columns on large screens (phases on the left; brief, references and sources on the right), and single-column pages (runs, brief wizard, setup, 404) stay at `PAGE_WIDTH` (1152 px). The references grid sizes its columns to its card with a container query.
 
 ## Pages
 
 Every path below sits under the language prefix (`/en`, `/hr`).
 
-| Page                          | Purpose                                                                                                                                         |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Runs (`/`)                    | Lists earlier runs with their status; starts a new run                                                                                          |
-| New run (`/runs/new`)         | Collects the brief in a multi-step wizard and uploads the reference files                                                                       |
-| Edit brief (`/runs/:id/edit`) | The same wizard, filled with the saved brief, where uploads can be added or removed; only while the run has not started                         |
-| Run details (`/runs/:id`)     | Shows the brief and uploads; later the phase timeline and each phase result; hosts the approval panel, the slide previews and the export button |
+| Page                          | Purpose                                                                                                                                                                                                                                                 |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Runs (`/`)                    | Lists earlier runs with their status; starts a new run                                                                                                                                                                                                  |
+| New run (`/runs/new`)         | Collects the brief in a multi-step wizard and uploads the reference files                                                                                                                                                                               |
+| Edit brief (`/runs/:id/edit`) | The same wizard, filled with the saved brief, where uploads can be added or removed; only while the run has not started                                                                                                                                 |
+| Run details (`/runs/:id`)     | Shows the brief and uploads; later the phase timeline and each phase result; hosts the approval panel, the slide previews and the export button                                                                                                         |
+| Setup (`/onboarding`)         | Where to get the OpenRouter and Serper keys and how to add them, with the live status of each; linked from the demo-mode banner. Shown in every environment: the banner appears only while the key is missing, and then whoever runs the app can add it |
 
 ## Brief form fields
 
@@ -93,7 +94,7 @@ Every path below sits under the language prefix (`/en`, `/hr`).
 3. Products to promote (name and product page URL).
 4. Target audience, goals, role models and inspiration (text and links).
 5. Uploads: Instagram screenshots, product photos, logo (PNG or SVG), other references.
-6. Output language (Croatian or English) and preferred formats (optional preselection).
+6. Language of the run (Croatian or English): the analysis, the plan and the posts are written in it; locked once the run starts. Preferred formats (optional preselection).
 
 ## Status updates
 
@@ -103,4 +104,4 @@ The `useGetRunById` hook will poll every 2 seconds while any phase is `RUNNING` 
 
 The approval panel turns the phase JSON into an editable form (for example, one card per post in the content plan). Saving sends the edited version with the approval, so the original AI proposal stays untouched in `output`.
 
-> **Current state:** runs list, the brief wizard with uploads (also used to edit the brief until the run starts), and the run details page with the brief, references, the phase timeline (status, attempt, duration, cost, model, prompt, output) and the approval panel (JSON editor checked against the shared phase schema; approve, approve with edits, run again). The page polls every 2 seconds while the run is `RUNNING`. Phase-specific views (analysis, plan, previews) follow in M5–M7.
+> **Current state:** runs list, the brief wizard with uploads (also used to edit the brief until the run starts), and the run details page with the phase timeline (status, attempt, duration, tokens, cost, model, prompt), the approval panel (JSON editor checked against the shared phase schema, with a readable preview for the analysis), the brand analysis view (colours, claims labelled verified or assumption with source and quote, gaps), the sources list (read or unreachable with the reason) and the references. A banner says when the API runs without an OpenRouter key and links to the Setup page. Plan, copy and slide previews follow in M6–M7.

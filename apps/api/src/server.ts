@@ -1,10 +1,18 @@
+import { PromptLibrary } from '@ai-post-recipe/prompts'
+
 import { createApp } from './app.js'
 import { loadEnv } from './config/env.js'
 import { createDb } from './db/prisma.js'
 import { registerWorkers } from './jobs/phase-runner.js'
 import { logger } from './lib/logger.js'
+import { WebFetcher } from './providers/fetcher/web-fetcher.js'
 import { FakeLlmProvider } from './providers/llm/fake-llm.provider.js'
+import type { LlmProvider } from './providers/llm/llm.provider.js'
+import { OpenRouterProvider } from './providers/llm/openrouter.provider.js'
 import { PgBossQueue } from './providers/queue/pg-boss.queue.js'
+import { NoopSearchProvider } from './providers/search/search.provider.js'
+import type { SearchProvider } from './providers/search/search.provider.js'
+import { SerperProvider } from './providers/search/serper.provider.js'
 import { S3Storage } from './providers/storage/s3.storage.js'
 import { phases } from './services/phases/index.js'
 
@@ -23,13 +31,43 @@ const queue = new PgBossQueue(env.DATABASE_URL, {
   retryLimit: 2,
   retryDelaySeconds: 5,
 })
-// The fake provider answers until OpenRouter is wired in M5.
-const llm = new FakeLlmProvider()
+
+const llm: LlmProvider = env.OPENROUTER_API_KEY
+  ? new OpenRouterProvider({
+      apiKey: env.OPENROUTER_API_KEY,
+      timeoutMs: env.LLM_TIMEOUT_MS,
+    })
+  : new FakeLlmProvider()
+if (llm.name === 'fake') {
+  logger.warn('OPENROUTER_API_KEY is not set: phases use recorded fake answers')
+}
+
+const search: SearchProvider = env.SERPER_API_KEY
+  ? new SerperProvider(env.SERPER_API_KEY)
+  : new NoopSearchProvider()
+
+// MODEL_<PROMPT ID> in the environment overrides a prompt's model.
+const prompts = PromptLibrary.load(process.env)
 
 await storage.ensureBucket()
 await queue.start()
-await registerWorkers({ db, queue, llm, phases })
+await registerWorkers({
+  db,
+  queue,
+  phases,
+  llm,
+  prompts,
+  search,
+  fetcher: new WebFetcher(),
+  storage,
+  costCapUsd: env.MAX_COST_USD_PER_RUN,
+})
 
-createApp({ db, storage, queue }).listen(env.PORT, () => {
+createApp({
+  db,
+  storage,
+  queue,
+  providers: { llm: llm.name, search: search.name },
+}).listen(env.PORT, () => {
   logger.info(`api: http://localhost:${env.PORT}`)
 })

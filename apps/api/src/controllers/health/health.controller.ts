@@ -8,6 +8,7 @@ export class HealthController {
   constructor(
     private readonly db: Db,
     private readonly storage: StorageProvider,
+    private readonly providers: HealthResponse['providers'],
   ) {}
 
   check = async (_req: Request, res: Response) => {
@@ -22,6 +23,7 @@ export class HealthController {
     const body: HealthResponse = {
       status: ok ? 'ok' : 'degraded',
       checks: { database, storage },
+      providers: this.providers,
     }
     res.status(ok ? 200 : 503).json(body)
   }

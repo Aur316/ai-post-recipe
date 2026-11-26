@@ -32,33 +32,72 @@ export const PhaseStatus = z.enum([
 ])
 export type PhaseStatus = z.infer<typeof PhaseStatus>
 
-/** Phase outputs. Phases 5–8 are placeholders until M6–M8 fill them in. */
+/**
+ * Phase outputs. Visuals, review and export are placeholders until M7–M8.
+ * AI outputs use `nullable` rather than `optional`, because structured output
+ * needs every field in the JSON schema.
+ */
 export const BriefOutput = z.object({ accepted: z.literal(true) })
 
+/** Where a source came from: a link in the brief, or a web search. */
+export const SourceOrigin = z.enum(['BRIEF', 'SEARCH'])
+export type SourceOrigin = z.infer<typeof SourceOrigin>
+
+export const ResearchSource = z.object({
+  url: z.string(),
+  title: z.string(),
+  /** The start of the page's text; the analysis reads up to `text`. */
+  excerpt: z.string(),
+  /** Clean page text, shortened; empty when the page could not be read. */
+  text: z.string(),
+  reachable: z.boolean(),
+  /** Why the page could not be read, e.g. "HTTP 404" or "Blocked by robots.txt". */
+  error: z.string().nullable(),
+  origin: SourceOrigin,
+  fetchedAt: z.iso.datetime(),
+})
+export type ResearchSource = z.infer<typeof ResearchSource>
+
 export const ResearchOutput = z.object({
-  sources: z.array(
-    z.object({
-      url: z.string(),
-      title: z.string(),
-      excerpt: z.string(),
-      reachable: z.boolean(),
-    }),
-  ),
+  sources: z.array(ResearchSource),
+  /** The search queries that were run; empty without a search key. */
+  queries: z.array(z.string()),
 })
 
+export const Claim = z
+  .object({
+    text: z.string().min(1),
+    status: z.enum(['verified', 'assumption']),
+    sourceUrl: z.string().nullable(),
+    /** A short quote from the source that supports a verified claim. */
+    evidence: z.string().nullable(),
+  })
+  .refine((c) => c.status === 'assumption' || !!c.sourceUrl, {
+    message: 'A verified claim needs a sourceUrl',
+    path: ['sourceUrl'],
+  })
+export type Claim = z.infer<typeof Claim>
+
 export const AnalysisOutput = z.object({
+  summary: z.string(),
   tone: z.string(),
   audience: z.string(),
   themes: z.array(z.string()),
-  colors: z.array(z.string()),
-  claims: z.array(
+  visualStyle: z.string(),
+  colors: z.array(
     z.object({
-      text: z.string(),
-      status: z.enum(['verified', 'assumption']),
-      sourceUrl: z.string().optional(),
+      hex: z.string().regex(/^#[0-9a-f]{6}$/i, 'A hex colour like #FF6600'),
+      name: z.string(),
+      usage: z.string(),
     }),
   ),
+  productPresentation: z.string(),
+  peoplePresentation: z.string(),
+  claims: z.array(Claim),
+  /** What could not be found or verified, including unreachable sources. */
+  gaps: z.array(z.string()),
 })
+export type AnalysisOutput = z.infer<typeof AnalysisOutput>
 
 export const PlanOutput = z.object({
   posts: z

@@ -1,3 +1,4 @@
+import type { RenderedPrompt } from '@ai-post-recipe/prompts'
 import type { z } from 'zod'
 
 export interface LlmUsage {
@@ -6,11 +7,26 @@ export interface LlmUsage {
   costUsd: number
 }
 
+export const NO_USAGE: LlmUsage = { tokensIn: 0, tokensOut: 0, costUsd: 0 }
+
+export const addUsage = (a: LlmUsage, b: LlmUsage): LlmUsage => ({
+  tokensIn: a.tokensIn + b.tokensIn,
+  tokensOut: a.tokensOut + b.tokensOut,
+  costUsd: a.costUsd + b.costUsd,
+})
+
+/** An image sent with the prompt, e.g. an Instagram screenshot. */
+export interface LlmImage {
+  /** Shown to the model before the image, e.g. "Image 1: Instagram screenshot". */
+  label: string
+  mimeType: string
+  data: Buffer
+}
+
 export interface LlmRequest<T extends z.ZodType> {
-  /** Prompt id and version, e.g. analysis@v1; stored on the phase run. */
-  promptId: string
+  prompt: RenderedPrompt
   schema: T
-  input: unknown
+  images?: Array<LlmImage>
 }
 
 export interface LlmResult<T> {
@@ -19,8 +35,9 @@ export interface LlmResult<T> {
   usage: LlmUsage
 }
 
-/** Structured-output LLM calls. OpenRouterProvider arrives in M5. */
+/** Structured-output LLM calls; the answer is validated against `schema`. */
 export interface LlmProvider {
+  readonly name: 'openrouter' | 'fake'
   complete<T extends z.ZodType>(
     request: LlmRequest<T>,
   ): Promise<LlmResult<z.infer<T>>>
