@@ -125,7 +125,8 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    /* Also under the app, e.g. while a high-density screen redraws a scrolled layer. */
+    @apply bg-background font-sans;
   }
 }
 
