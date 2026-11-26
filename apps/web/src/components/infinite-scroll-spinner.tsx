@@ -10,7 +10,6 @@ interface InfiniteScrollSpinnerProps extends ComponentProps<'div'> {
   hasNextPage: boolean
 }
 
-/** Sits after the last item; scrolling it into view loads the next page. */
 export const InfiniteScrollSpinner = ({
   sentryRef,
   isFetchingNextPage,

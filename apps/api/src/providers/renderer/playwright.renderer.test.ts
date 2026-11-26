@@ -5,7 +5,6 @@ import { afterAll, describe, expect, it } from 'vitest'
 import { PlaywrightRenderer } from './playwright.renderer.js'
 import { slideHtml } from './slide-html.js'
 
-/** A logo that is pure red, easy to find in the PNG. */
 const RED_LOGO = `data:image/png;base64,${(
   await sharp({
     create: { width: 300, height: 100, channels: 3, background: '#FF0000' },
@@ -46,7 +45,6 @@ describe('PlaywrightRenderer', () => {
     for (let i = 0; i < data.length; i += info.channels) {
       if (data[i] > 240 && data[i + 1] < 15 && data[i + 2] < 15) red++
     }
-    // The logo is 64 px high in the header: thousands of red pixels.
     expect(red).toBeGreaterThan(5000)
   })
 }, 30_000)

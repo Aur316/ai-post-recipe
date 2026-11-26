@@ -27,7 +27,6 @@ interface AssetUploaderProps {
   uploads: Array<PendingUpload>
   onChange: (uploads: Array<PendingUpload>) => void
   disabled?: boolean
-  /** In website mode only logo and product photos can be chosen. */
   styleSource?: StyleSource
 }
 

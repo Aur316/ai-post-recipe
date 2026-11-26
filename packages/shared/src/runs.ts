@@ -9,15 +9,9 @@ import { SourceDto } from './sources.js'
 export const OutputLanguage = z.enum(['hr', 'en'])
 export type OutputLanguage = z.infer<typeof OutputLanguage>
 
-/**
- * Where the analysis reads the brand's look from: the uploaded screenshots,
- * or screenshots and colours the app takes from the brand's website. Logo and
- * product photos are uploaded in both cases; they go on the slides.
- */
 export const StyleSource = z.enum(['UPLOADS', 'WEBSITE'])
 export type StyleSource = z.infer<typeof StyleSource>
 
-/** "@gymbeamhr" from an Instagram profile URL, or undefined. */
 export function instagramHandle(url: string) {
   const match = /instagram\.com\/([^/?#]+)/i.exec(url)
   return match?.[1] ? `@${match[1]}` : undefined
@@ -26,11 +20,6 @@ export function instagramHandle(url: string) {
 export const LinkType = z.enum(['WEBSITE', 'SHOP', 'CATALOG', 'OTHER'])
 export type LinkType = z.infer<typeof LinkType>
 
-/**
- * Maximum lengths for brief text fields. The API, the form (maxLength and the
- * character counters) and the database constraints all use these numbers; an
- * API test checks that the database matches them.
- */
 export const BRIEF_LIMITS = {
   brandName: 120,
   url: 2048,
@@ -41,7 +30,6 @@ export const BRIEF_LIMITS = {
   inspiration: 2000,
 } as const
 
-/** Validation messages of the brief; the web app passes translated ones. */
 export interface BriefMessages {
   url: string
   tooLong: (max: number) => string
@@ -68,7 +56,6 @@ export const BRIEF_MESSAGES_EN: BriefMessages = {
   goalsRequired: 'Describe the goals',
 }
 
-/** The brief schema with the given messages; the rules are the same in every language. */
 export const createBriefSchema = (m: BriefMessages) => {
   const httpUrl = z
     .url({ protocol: /^https?$/, error: m.url })
@@ -80,7 +67,6 @@ export const createBriefSchema = (m: BriefMessages) => {
       .trim()
       .min(1, m.brandNameRequired)
       .max(BRIEF_LIMITS.brandName, m.tooLong(BRIEF_LIMITS.brandName)),
-    /** Optional: not every brand has one, and it is never downloaded. */
     instagramUrl: httpUrl
       .regex(/^https?:\/\/(www\.)?instagram\.com\/[^/?#]+/i, m.instagramProfile)
       .or(z.literal(''))
@@ -127,7 +113,6 @@ export const createBriefSchema = (m: BriefMessages) => {
   })
 }
 
-/** The brief as the API validates it, with English messages. */
 export const Brief = createBriefSchema(BRIEF_MESSAGES_EN)
 
 export type Brief = z.infer<typeof Brief>
@@ -142,7 +127,6 @@ export const RunStatus = z.enum([
 ])
 export type RunStatus = z.infer<typeof RunStatus>
 
-/** Tokens and cost of AI calls, over every attempt (re-runs and regenerated slides included). */
 export const Usage = z.object({
   costUsd: z.number(),
   tokensIn: z.number().int(),
@@ -152,7 +136,6 @@ export type Usage = z.infer<typeof Usage>
 
 export const PhaseUsage = Usage.extend({
   phase: z.string(),
-  /** How many times the phase ran. */
   attempts: z.number().int(),
 })
 export type PhaseUsage = z.infer<typeof PhaseUsage>
@@ -172,13 +155,9 @@ export type RunSummaryDto = z.infer<typeof RunSummaryDto>
 export const RunDetailDto = RunSummaryDto.extend({
   brief: Brief,
   assets: z.array(AssetDto),
-  /** The latest attempt of each phase that has started, in phase order. */
   phases: z.array(PhaseRunDto),
-  /** Sources of the latest research, in the order they were read. */
   sources: z.array(SourceDto),
-  /** The three posts, once the plan is approved. */
   posts: z.array(PostDto),
-  /** Usage per phase, in phase order; `usage` is their sum. */
   usageByPhase: z.array(PhaseUsage),
 })
 export type RunDetailDto = z.infer<typeof RunDetailDto>

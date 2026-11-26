@@ -18,7 +18,6 @@ export interface S3StorageConfig {
   secretAccessKey: string
 }
 
-/** Works with any S3-compatible service: SeaweedFS locally, Cloudflare R2 or AWS S3. */
 export class S3Storage implements StorageProvider {
   private readonly client: S3Client
   private readonly bucket: string

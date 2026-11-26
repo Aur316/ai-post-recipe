@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge'
 
 import { assetsQueryFunctions } from '@/data/query-functions/assets'
 
-/** What research looked for and which pages it could read. */
 export function ResearchView({
   research,
 }: {

@@ -23,7 +23,6 @@ import { MemoryStorage } from '../providers/storage/memory.storage.js'
 import { RunRepo } from '../repositories/run/run.repo.js'
 import { phases } from '../services/phases/index.js'
 
-/** Answers every URL with a small page, or with the given pages by URL. */
 export class FakeFetcher implements PageFetcher {
   readonly requested: Array<string> = []
 
@@ -45,10 +44,8 @@ export class FakeFetcher implements PageFetcher {
   }
 }
 
-/** A valid UUID that no row has. */
 export const UNKNOWN_ID = '0193a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b'
 
-/** Real PostgreSQL, in-memory storage. Runs created here are deleted after the file. */
 export function createTestContext(
   options: {
     llm?: LlmProvider
@@ -116,7 +113,6 @@ export function createTestContext(
       },
       providers: { llm: llm.name, search: search.name },
     }),
-    /** Deletes this run after the test file, e.g. one created through the API. */
     track(id: string) {
       created.push(id)
     },

@@ -20,7 +20,6 @@ import { Button } from '@/components/ui/button'
 import { useDeleteRun } from '@/hooks/queries/runs/useDeleteRun'
 import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 
-/** Deletes the whole run after a confirmation; not possible while a phase runs. */
 export function DeleteRunButton({ run }: { run: RunDetailDto }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
@@ -62,7 +61,6 @@ export function DeleteRunButton({ run }: { run: RunDetailDto }) {
               variant="destructive"
               disabled={deleteRun.isPending}
               onClick={(e) => {
-                // Keep the dialog open until the run is gone.
                 e.preventDefault()
                 deleteRun.mutate(run.id, {
                   onSuccess: () =>

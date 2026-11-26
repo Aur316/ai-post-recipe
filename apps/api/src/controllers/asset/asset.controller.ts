@@ -39,7 +39,6 @@ export class AssetController {
     res.setHeader('Content-Type', asset.mimeType)
     res.setHeader('Content-Length', String(asset.sizeBytes))
     res.setHeader('Cache-Control', 'private, max-age=3600')
-    // SVG uploads could carry scripts; never let them run in the app origin.
     res.setHeader(
       'Content-Security-Policy',
       "default-src 'none'; style-src 'unsafe-inline'",

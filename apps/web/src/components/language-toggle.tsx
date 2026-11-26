@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 
 import { LANGUAGES, setLanguage, withLanguage } from '@/i18n'
 
-/** EN | HR switch: opens the same page under the other language's URL. */
 export function LanguageToggle() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()

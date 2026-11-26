@@ -64,7 +64,6 @@ export class AssetService {
     }
   }
 
-  /** Removes a reference the operator uploaded, while the run has not started. */
   async remove(id: string) {
     const asset = await this.assets.findById(id)
     if (!asset) throw new NotFoundError('Asset', id)
@@ -77,7 +76,6 @@ export class AssetService {
     if (!(await this.assets.deleteIfRunNotStarted(id))) {
       throw runAlreadyStarted()
     }
-    // The database row is gone, so a leftover file is only wasted space.
     await this.storage.delete(asset.storageKey).catch((error: unknown) => {
       logger.warn(
         { err: error, storageKey: asset.storageKey },

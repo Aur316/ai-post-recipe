@@ -20,18 +20,6 @@ export const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '') || 'run'
 
-/**
- * Builds the hand-over ZIP from the run's current state, so caption edits and
- * regenerated slides are included:
- *
- *   README.md                    what is inside
- *   brief.json
- *   post-1-carousel/slide-1.png  …every rendered slide, in order
- *   post-1-carousel/caption.txt  caption, then the hashtags
- *   post-1-carousel/meta.json    format, goal, concept, rationale, product, slide texts
- *   sources.md                   every source, read or not, with the reason
- *   phases/03-analysis.json      each phase: prompt, model, usage, output and edited output
- */
 export class ExportService {
   constructor(
     private readonly db: Db,
@@ -159,7 +147,6 @@ interface UsageRow {
 const usd = (n: number) => `$${n.toFixed(4)}`
 const count = (n: number) => n.toLocaleString('en-US')
 
-/** What the AI calls cost, per phase and in total, over every attempt. */
 function usageTable(rows: Array<UsageRow>) {
   const total = rows.reduce(
     (t, r) => ({

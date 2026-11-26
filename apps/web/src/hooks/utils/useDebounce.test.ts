@@ -20,7 +20,6 @@ describe('useDebounce', () => {
     act(() => {
       vi.advanceTimersByTime(150)
     })
-    // Each keystroke restarts the wait.
     expect(result.current).toBe('r')
 
     act(() => {

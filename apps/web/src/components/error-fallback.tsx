@@ -7,13 +7,10 @@ import { cn } from '@/lib/utils'
 
 interface ErrorFallbackProps {
   error: unknown
-  /** Tries to render again; without it the button reloads the page. */
   reset?: () => void
-  /** Fills the screen when the whole app failed, not just one page. */
   fullScreen?: boolean
 }
 
-/** What a person sees after a render error, with a way out. */
 export function ErrorFallback({
   error,
   reset,
@@ -42,7 +39,6 @@ export function ErrorFallback({
         >
           {t('errorPage.tryAgain')}
         </Button>
-        {/* A full page load, so the app starts from a clean state. */}
         <Button asChild variant="outline">
           <a href="/">{t('errorPage.backToRuns')}</a>
         </Button>

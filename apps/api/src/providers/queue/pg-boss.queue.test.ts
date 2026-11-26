@@ -3,7 +3,6 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createDb } from '../../db/prisma.js'
 import { PgBossQueue } from './pg-boss.queue.js'
 
-/** Against the real test database: a job commits or rolls back with the transaction. */
 describe('PgBossQueue', () => {
   const url = process.env.DATABASE_URL ?? ''
   const db = createDb(url)

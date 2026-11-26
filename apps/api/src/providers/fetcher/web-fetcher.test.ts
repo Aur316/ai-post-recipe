@@ -16,7 +16,6 @@ interface Route {
   headers?: Record<string, string>
 }
 
-/** A fetch that answers from a table of URLs; unknown URLs are 404. */
 function fakeFetch(routes: Record<string, Route>) {
   const calls: Array<string> = []
   const fn = (input: string) => {

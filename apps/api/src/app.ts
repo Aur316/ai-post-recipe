@@ -30,9 +30,7 @@ export interface AppDeps {
   db: Db
   storage: StorageProvider
   queue: JobQueue
-  /** Which providers are configured, for the health check. */
   providers: HealthResponse['providers']
-  /** Image model and renderer, for regenerating one slide. */
   slides: SlideDeps
 }
 

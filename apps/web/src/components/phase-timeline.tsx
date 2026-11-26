@@ -23,7 +23,6 @@ interface PhaseTimelineProps {
   run: RunDetailDto
 }
 
-/** All eight phases in order, with the latest attempt of each that has started. */
 export function PhaseTimeline({ run }: PhaseTimelineProps) {
   const { id: runId, phases } = run
   const anyActive = phases.some((p) => isPhaseActive(p.status))

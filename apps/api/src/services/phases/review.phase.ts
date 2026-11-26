@@ -17,7 +17,6 @@ import { makeBackground, renderSlide } from '../visuals/slides.js'
 import { type Phase, type PhaseContext, runPrompt } from './phase.js'
 import { websiteShots } from './visuals.phase.js'
 
-/** A failing slide is made again at most this often. */
 export const MAX_REGENERATIONS = 1
 
 interface SlideUnderReview {
@@ -29,7 +28,6 @@ interface SlideUnderReview {
   assetId: string | null
 }
 
-/** Small JPEGs are enough to judge a slide and keep the review cheap. */
 const preview = async (data: Buffer) =>
   sharp(data).resize({ width: 540 }).jpeg({ quality: 80 }).toBuffer()
 
@@ -77,12 +75,6 @@ const findCheck = (
   s: { postIndex: number; order: number },
 ) => checks.find((c) => c.postIndex === s.postIndex && c.order === s.order)
 
-/**
- * Checks every slide with fixed rules (image present, exact size) and a vision
- * model (readable text, no stray text or faces in the background, logo and
- * product visible). A failing slide is made again once, with its issues as the
- * instruction, and checked again.
- */
 export const reviewPhase: Phase<'REVIEW'> = {
   key: 'REVIEW',
   outputSchema: ReviewOutput,
@@ -119,7 +111,6 @@ export const reviewPhase: Phase<'REVIEW'> = {
     if (first?.usage) usage = addUsage(usage, first.usage)
     const checks = first?.output.slides ?? []
 
-    // Make failing slides again, once, with the issues as the instruction.
     const failing = rendered.filter(
       (s) => findCheck(checks, s)?.passed === false,
     )
@@ -164,7 +155,6 @@ export const reviewPhase: Phase<'REVIEW'> = {
         })
         s.assetId = assetId
       }
-      // The new slides are checked once more; their result is final.
       const second = await check(ctx, failing)
       usage = addUsage(usage, second.usage ?? NO_USAGE)
       for (const c of second.output.slides) {

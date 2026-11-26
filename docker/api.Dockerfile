@@ -1,9 +1,5 @@
-# The Playwright image ships Node, the system libraries and a headless Chromium
-# that match the `playwright` version in apps/api (ADR 0004). Both stages use it,
-# so native modules such as sharp are built for the same system they run on.
 FROM mcr.microsoft.com/playwright:v1.65.1-noble AS build
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-# This image has no corepack; install the pnpm version from package.json.
 RUN npm install -g pnpm@10.34.9
 WORKDIR /repo
 COPY . .

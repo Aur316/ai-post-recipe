@@ -11,7 +11,6 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 const require = createRequire(import.meta.url)
 
-/** Geist, embedded, so the PNG uses the same font as the app on any machine. */
 function fontFace() {
   const file = (subset: string) =>
     readFileSync(
@@ -33,7 +32,6 @@ function fontFace() {
 
 let fonts: string | undefined
 
-/** A complete HTML page with one slide; images are data URLs, so nothing loads from the network. */
 export function slideHtml(props: SlideProps) {
   fonts ??= fontFace()
   const { width, height } = sizeFor(props.format)

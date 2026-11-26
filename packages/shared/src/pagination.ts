@@ -1,10 +1,8 @@
 import { z } from 'zod'
 
-/** Items per page for every paginated list; the infinite lists load this many at a time. */
 export const DEFAULT_PAGE_SIZE = 20
 export const MAX_PAGE_SIZE = 100
 
-/** Query string of a paginated list. Pages start at 1. */
 export const ListQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   size: z.coerce
@@ -16,7 +14,6 @@ export const ListQuery = z.object({
 })
 export type ListQuery = z.infer<typeof ListQuery>
 
-/** The runs list can also be filtered by brand name or Instagram profile. */
 export const RunListQuery = ListQuery.extend({
   search: z
     .string()
@@ -44,6 +41,5 @@ export interface Paginated<T> {
   totalPages: number
 }
 
-/** Route parameter of every `/:id` endpoint. */
 export const IdParams = z.object({ id: z.uuid('Not a valid id') })
 export type IdParams = z.infer<typeof IdParams>

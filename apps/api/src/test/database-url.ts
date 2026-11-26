@@ -1,4 +1,5 @@
-/** Points the given connection string at a separate `<name>_test` database. */
+import { existsSync } from 'node:fs'
+
 export function testDatabaseUrl(databaseUrl: string) {
   const url = new URL(databaseUrl)
   const name = url.pathname.slice(1)
@@ -7,11 +8,7 @@ export function testDatabaseUrl(databaseUrl: string) {
 }
 
 export function loadDotEnv() {
-  try {
-    process.loadEnvFile('../../.env')
-  } catch {
-    // CI provides the variables directly.
-  }
+  if (existsSync('../../.env')) process.loadEnvFile('../../.env')
 }
 
 export function requireDatabaseUrl() {

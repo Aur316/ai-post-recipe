@@ -2,7 +2,6 @@ import type { PhaseOutputs } from '@ai-post-recipe/shared'
 import { TriangleAlertIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-/** Caption, hashtags and slide texts per post, with the facts no source contains. */
 export function CopyView({ copy }: { copy: PhaseOutputs['COPY'] }) {
   const { t } = useTranslation()
 

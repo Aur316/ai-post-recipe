@@ -1,4 +1,3 @@
-/** English UI texts. `hr.ts` must have the same keys (checked by its type). */
 export const en = {
   meta: {
     description:

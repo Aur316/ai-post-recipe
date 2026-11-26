@@ -47,7 +47,6 @@ import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 import { getApiErrorMessage } from '@/utils/helpers'
 import { type PendingUpload, rejectReason } from '@/utils/uploads'
 
-/** The shared brief rules with messages in the interface language. */
 const briefMessages = (t: TFunction): BriefMessages => ({
   url: t('validation.url'),
   tooLong: (max) => t('validation.tooLong', { max }),
@@ -61,7 +60,6 @@ const briefMessages = (t: TFunction): BriefMessages => ({
   goalsRequired: t('validation.goalsRequired'),
 })
 
-/** Field arrays need objects, so the form keeps inspiration links as { url }. */
 const createFormSchema = (t: TFunction) =>
   createBriefSchema(briefMessages(t)).extend({
     inspirationLinks: z.array(
@@ -100,7 +98,6 @@ const DEFAULT_VALUES: FormInput = {
   styleSource: 'UPLOADS',
 }
 
-/** The saved brief in the shape the form edits. */
 function toFormValues(brief: Brief): FormInput {
   return {
     ...brief,
@@ -110,14 +107,12 @@ function toFormValues(brief: Brief): FormInput {
 }
 
 interface BriefFormProps {
-  /** A run that has not started yet; the form then edits its brief. */
   run?: RunDetailDto
 }
 
 export function BriefForm({ run }: BriefFormProps) {
   const [step, setStep] = useState(0)
   const [uploads, setUploads] = useState<Array<PendingUpload>>([])
-  // Set once the brief is saved, so a retry only uploads the failed files.
   const [runId, setRunId] = useState<string>()
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
@@ -134,7 +129,6 @@ export function BriefForm({ run }: BriefFormProps) {
   const form = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: run ? toFormValues(run.brief) : DEFAULT_VALUES,
-    // Validate a field when it loses focus, then live while it is corrected.
     mode: 'onTouched',
   })
   const {
@@ -142,7 +136,6 @@ export function BriefForm({ run }: BriefFormProps) {
     control,
     formState: { errors, isSubmitting },
   } = form
-  // Shown errors follow a language switch.
   useEffect(() => {
     const invalid = Object.keys(form.formState.errors) as Array<
       FieldPath<FormInput>
@@ -168,7 +161,6 @@ export function BriefForm({ run }: BriefFormProps) {
   const patchUpload = (id: string, patch: Partial<PendingUpload>) =>
     setUploads((all) => all.map((u) => (u.id === id ? { ...u, ...patch } : u)))
 
-  /** Saves the brief once, then uploads every file that is not uploaded yet. */
   const submit = form.handleSubmit(async ({ inspirationLinks, ...values }) => {
     const brief = {
       ...values,

@@ -35,7 +35,6 @@ const ImageCompletion = z.object({
 
 const DATA_URL = /^data:(image\/[\w+.-]+);base64,(.+)$/
 
-/** Image models on OpenRouter (e.g. Gemini image) through chat completions. */
 export class OpenRouterImageProvider implements ImageProvider {
   readonly name = 'openrouter'
   private readonly client: OpenRouterClient

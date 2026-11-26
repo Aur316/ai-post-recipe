@@ -7,7 +7,6 @@ import type { ExportService } from '../../services/export/export.service.js'
 export class ExportController {
   constructor(private readonly exports: ExportService) {}
 
-  /** A fresh ZIP of the run's current posts, sources and phase outputs. */
   download = async (req: Request, res: Response) => {
     const { id } = validate(IdParams, req.params)
     const zip = await this.exports.build(id)

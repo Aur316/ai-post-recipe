@@ -94,7 +94,6 @@ describe('analysis phase', () => {
     ])
     const request = llm.requests[0]
     expect(request?.images?.map((i) => i.label)).toEqual(['Image 1: Logo'])
-    // The brief is Croatian, so the whole analysis is asked for in Croatian.
     expect(request?.prompt.system).toContain(
       'Write every text value in Croatian',
     )

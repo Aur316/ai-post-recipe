@@ -1,9 +1,3 @@
-/**
- * Runs in the page: counts the colours that visible elements use for their
- * background, text and borders (weighted by area for backgrounds) and the
- * `theme-color` meta tag, and returns the most used ones. Greys, black and
- * white are left out: they say little about a brand.
- */
 export const PAGE_COLORS_SCRIPT = `(() => {
   const counts = new Map()
   // Any CSS colour (rgb, oklch, color(), hex) to sRGB: paint one pixel and read it back.

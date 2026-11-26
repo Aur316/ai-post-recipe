@@ -26,7 +26,6 @@ export function RunDetails() {
   const { data: run, isPending } = useGetRunById({
     id,
     queryOptions: {
-      // Poll while a phase is queued or running.
       refetchInterval: (query) =>
         query.state.data?.status === 'RUNNING' ? 2000 : false,
     },
@@ -38,12 +37,10 @@ export function RunDetails() {
   if (!run) return <NotFound title={t('common.runNotFound')} />
 
   const { brief } = run
-  // References are the person's uploads; generated backgrounds and slides show in the posts.
   const uploads = run.assets.filter((a) => a.kind.startsWith('UPLOAD_'))
   return (
     <section className="space-y-6">
       <BackLink to={runsListPath()} label={t('runs.title')} />
-      {/* On a narrow screen the actions wrap under the brand name. */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="min-w-0 text-2xl font-semibold break-words">
           {run.brandName}
@@ -78,14 +75,12 @@ export function RunDetails() {
         </div>
       </div>
 
-      {/* Two columns on large screens: the phases on the left; the brief, uploads and sources they work from on the right. */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
         <div className="min-w-0 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>{t('runDetails.phases')}</CardTitle>
             </CardHeader>
-            {/* Less side padding on a phone: the phases nest cards in cards. */}
             <CardContent className="px-2 sm:px-(--card-spacing)">
               <PhaseTimeline run={run} />
             </CardContent>

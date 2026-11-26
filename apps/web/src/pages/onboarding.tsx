@@ -11,7 +11,6 @@ import { useGetHealth } from '@/hooks/queries/health/useGetHealth'
 import { PAGE_WIDTH } from '@/utils/layout'
 import { runsListPath } from '@/utils/runs-search'
 
-/** Where to get the API keys and how to add them; the same steps as docs/onboarding.md. */
 export function Onboarding() {
   const { t } = useTranslation()
   const { data: health } = useGetHealth()

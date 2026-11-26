@@ -4,11 +4,6 @@ import { Link } from 'react-router'
 import { useGetHealth } from '@/hooks/queries/health/useGetHealth'
 import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 
-/**
- * Says so when the API answers with recorded samples instead of a real model,
- * and links to the setup steps. It shows in every environment, because it only
- * appears when the key is missing, and then whoever runs the app can add it.
- */
 export function DemoModeBanner() {
   const { t } = useTranslation()
   const localized = useLocalizedPath()

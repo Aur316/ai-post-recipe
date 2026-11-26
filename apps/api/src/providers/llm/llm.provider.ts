@@ -15,9 +15,7 @@ export const addUsage = (a: LlmUsage, b: LlmUsage): LlmUsage => ({
   costUsd: a.costUsd + b.costUsd,
 })
 
-/** An image sent with the prompt, e.g. an Instagram screenshot. */
 export interface LlmImage {
-  /** Shown to the model before the image, e.g. "Image 1: Instagram screenshot". */
   label: string
   mimeType: string
   data: Buffer
@@ -35,7 +33,6 @@ export interface LlmResult<T> {
   usage: LlmUsage
 }
 
-/** Structured-output LLM calls; the answer is validated against `schema`. */
 export interface LlmProvider {
   readonly name: 'openrouter' | 'fake'
   complete<T extends z.ZodType>(

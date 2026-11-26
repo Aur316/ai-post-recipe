@@ -1,6 +1,5 @@
 import type { Translation } from '@/i18n/locales/en'
 
-/** Croatian UI texts. */
 export const hr: Translation = {
   meta: {
     description:

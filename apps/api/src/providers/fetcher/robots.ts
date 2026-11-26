@@ -4,7 +4,6 @@ interface Rule {
   length: number
 }
 
-/** robots.txt path pattern: `*` matches anything, `$` anchors the end. */
 const toRegExp = (path: string) =>
   new RegExp(
     '^' +
@@ -14,10 +13,6 @@ const toRegExp = (path: string) =>
         .replace(/\\\$$|\$$/, '$'),
   )
 
-/**
- * The rules of a robots.txt that apply to `agent`: its own group when there is
- * one, else the `*` group. The longest matching rule wins; Allow wins a tie.
- */
 export function parseRobots(text: string, agent: string) {
   const groups: Array<{ agents: Array<string>; rules: Array<Rule> }> = []
   let current: (typeof groups)[number] | undefined
@@ -41,7 +36,6 @@ export function parseRobots(text: string, agent: string) {
     }
     lastWasAgent = false
     if (!current || (key !== 'allow' && key !== 'disallow')) continue
-    // An empty Disallow allows everything.
     if (!value) continue
     current.rules.push({
       allow: key === 'allow',

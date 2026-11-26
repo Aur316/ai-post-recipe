@@ -31,14 +31,8 @@ export function AppLayout() {
         </div>
       </header>
       <DemoModeBanner />
-      {/* Pages taller than the screen scroll here; the runs page fills it and scrolls its own list.
-          The bottom padding sits on the page itself, so it stays below content that overflows.
-          The shell is wide for the two-column run page; other pages narrow themselves (PAGE_WIDTH).
-          `main` paints its own background: on high-density screens Chrome draws the scrolling area
-          as a separate layer, and a transparent one showed up darker than the page. */}
       <main className="scrollbar-thin min-h-0 flex-1 overflow-y-auto bg-background">
         <div className="mx-auto h-full max-w-screen-2xl px-4 pt-8 *:pb-8 lg:px-6">
-          {/* A page that fails keeps the header; another page clears the error. */}
           <ErrorBoundary
             resetKey={pathname}
             fallback={(props) => <ErrorFallback {...props} />}

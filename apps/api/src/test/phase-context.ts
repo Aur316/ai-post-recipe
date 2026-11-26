@@ -10,7 +10,6 @@ import type { PhaseContext } from '../services/phases/phase.js'
 import { FakeFetcher } from './context.js'
 import { gymbeamBrief } from './fixtures.js'
 
-/** A phase context with fakes; override what a test needs. */
 export function phaseContext(
   overrides: Partial<PhaseContext> = {},
 ): PhaseContext {

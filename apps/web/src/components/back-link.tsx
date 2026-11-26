@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 
 interface BackLinkProps {
-  /** The parent page, without the language; not the browser history, so a shared link works too. */
   to: string
   label: string
 }

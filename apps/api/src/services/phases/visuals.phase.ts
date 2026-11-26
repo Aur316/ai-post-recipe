@@ -5,11 +5,6 @@ import { makeBackground, renderSlide } from '../visuals/slides.js'
 import { captureAssetIds } from './images.js'
 import type { Phase, PhaseContext } from './phase.js'
 
-/**
- * One AI background per post, then every slide rendered from the template
- * with the real logo, product photo and text. A single-image post uses only
- * its first slide text.
- */
 export const visualsPhase: Phase<'VISUALS'> = {
   key: 'VISUALS',
   outputSchema: VisualsOutput,
@@ -72,7 +67,6 @@ export const visualsPhase: Phase<'VISUALS'> = {
   },
 }
 
-/** In website mode, the screenshots the research took: input for the backgrounds. */
 export async function websiteShots(ctx: PhaseContext) {
   if (ctx.brief.styleSource !== 'WEBSITE') return []
   const ids = captureAssetIds(ctx.outputs.RESEARCH?.captures ?? [])

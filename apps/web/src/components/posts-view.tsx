@@ -2,7 +2,6 @@ import { type RunDetailDto, instagramHandle } from '@ai-post-recipe/shared'
 
 import { PostPreview } from '@/components/post-preview'
 
-/** The finished posts of the run, as Instagram-like previews. */
 export function PostsView({ run }: { run: RunDetailDto }) {
   return (
     <div className="@container">

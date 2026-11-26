@@ -13,7 +13,6 @@ const LABELS: Record<UploadAssetKind, string> = {
   UPLOAD_OTHER: 'Other reference',
 }
 
-/** Long side in pixels; larger images cost tokens without helping the analysis. */
 const MAX_SIDE = 1280
 const MAX_IMAGES = 12
 
@@ -24,7 +23,6 @@ export interface Upload {
   data: Buffer
 }
 
-/** The person's uploads, as stored. */
 export async function loadUploads(
   assets: AssetRepo,
   storage: StorageProvider,
@@ -50,10 +48,6 @@ export async function loadUploads(
   )
 }
 
-/**
- * Uploads as images a vision model accepts: SVG logos become PNG, large
- * photos are scaled down, and each gets a numbered label.
- */
 export async function toLlmImages(
   uploads: Array<Upload>,
   firstNumber = 1,
@@ -66,7 +60,6 @@ export async function toLlmImages(
   )
 }
 
-/** Scales an image to at most 1280 px; logos stay PNG for their transparency. */
 export async function shrinkImage(data: Buffer, keepAlpha = false) {
   const image = sharp(data).resize({
     width: MAX_SIDE,
@@ -82,7 +75,6 @@ export async function shrinkImage(data: Buffer, keepAlpha = false) {
       }
 }
 
-/** An upload as a data URL for a slide; SVG logos are turned into PNG. */
 export async function toDataUrl(upload: Pick<Upload, 'mimeType' | 'data'>) {
   const png =
     upload.mimeType === 'image/svg+xml'
@@ -100,7 +92,6 @@ const EXTENSIONS: Record<string, string> = {
   'application/zip': 'zip',
 }
 
-/** Saves a file the pipeline made (a background, a slide) as an asset of the run. */
 export async function saveGeneratedAsset(
   assets: AssetRepo,
   storage: StorageProvider,
@@ -127,7 +118,6 @@ export async function saveGeneratedAsset(
   })
 }
 
-/** Every website screenshot of the research, top to bottom; also reads runs made before pages had several. */
 export const captureAssetIds = (
   captures: Array<{ assetIds?: Array<string>; assetId?: string | null }>,
 ) =>
@@ -135,7 +125,6 @@ export const captureAssetIds = (
     c.assetIds?.length ? c.assetIds : c.assetId ? [c.assetId] : [],
   )
 
-/** Stored files by id, e.g. the website screenshots. */
 export async function readAssets(
   assets: AssetRepo,
   storage: StorageProvider,

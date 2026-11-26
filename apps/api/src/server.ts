@@ -35,7 +35,6 @@ const storage = new S3Storage({
 const queue = new PgBossQueue(env.DATABASE_URL, {
   retryLimit: 2,
   retryDelaySeconds: 5,
-  // The slowest phase (review with remade slides) takes about two minutes.
   expireInSeconds: 300,
 })
 
@@ -91,11 +90,6 @@ createApp({
   logger.info(`api: http://localhost:${env.PORT}`)
 })
 
-/**
- * Stop the queue first and let a running phase finish; exiting at once would
- * leave its job active until it expires, and the run would stall meanwhile.
- * Then close the browsers that render slides and take screenshots.
- */
 async function shutdown() {
   logger.info('Stopping: waiting for running phases to finish')
   await queue.stop().catch((error: unknown) => {

@@ -14,7 +14,6 @@ export const AssetKind = z.enum([
   'GENERATED_BACKGROUND',
   'RENDERED_SLIDE',
   'EXPORT_ZIP',
-  /** A screenshot the research phase took of the brand's website. */
   'CAPTURED_SCREENSHOT',
 ])
 

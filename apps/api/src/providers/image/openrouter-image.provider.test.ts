@@ -11,7 +11,6 @@ const prompt: RenderedPrompt = {
   user: 'User text',
 }
 
-/** Answers with one generated image and records the request body. */
 function stub() {
   const bodies: Array<Record<string, unknown>> = []
   const fn = (_url: unknown, init?: RequestInit) => {

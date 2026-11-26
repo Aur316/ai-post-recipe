@@ -9,11 +9,9 @@ import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 import { PAGE_WIDTH } from '@/utils/layout'
 
 interface NotFoundProps {
-  /** Overrides the generic text, e.g. for a run that does not exist. */
   title?: string
 }
 
-/** 404: an unknown address, or a page whose record does not exist. */
 export function NotFound({ title }: NotFoundProps) {
   const { t } = useTranslation()
   const localized = useLocalizedPath()
@@ -25,7 +23,6 @@ export function NotFound({ title }: NotFoundProps) {
         'flex flex-col items-center justify-center gap-4 py-16 text-center',
       )}
     >
-      {/* Keeps search engines from indexing the error page. */}
       <meta name="robots" content="noindex" />
       <p className="text-6xl font-semibold text-muted-foreground tabular-nums">
         404

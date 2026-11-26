@@ -7,7 +7,6 @@ interface AnalysisViewProps {
   analysis: AnalysisOutput
 }
 
-/** The brand analysis as a person reads it; every claim shows its label and source. */
 export function AnalysisView({ analysis }: AnalysisViewProps) {
   const { t } = useTranslation()
 
@@ -28,7 +27,6 @@ export function AnalysisView({ analysis }: AnalysisViewProps) {
         <Field label={t('analysis.themes')}>
           <span className="flex flex-wrap gap-1">
             {analysis.themes.map((theme) => (
-              // A long theme wraps instead of running off a phone screen.
               <Badge
                 key={theme}
                 variant="neutral"

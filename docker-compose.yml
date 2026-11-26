@@ -47,8 +47,8 @@ services:
         storage: { condition: service_healthy },
       }
     ports: ['3000:3000']
-    healthcheck: {
-        # The Playwright base image has no wget; Node can do the check.
+    healthcheck:
+      {
         test:
           [
             'CMD',

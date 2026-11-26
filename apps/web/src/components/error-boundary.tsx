@@ -2,9 +2,7 @@ import { Component, type ErrorInfo, type ReactNode } from 'react'
 
 interface ErrorBoundaryProps {
   children: ReactNode
-  /** Rendered instead of the children after a render error. */
   fallback: (props: { error: unknown; reset: () => void }) => ReactNode
-  /** When this value changes (e.g. the page path), a shown error is cleared. */
   resetKey?: unknown
 }
 
@@ -14,10 +12,6 @@ interface ErrorBoundaryState {
   resetKey?: unknown
 }
 
-/**
- * Catches errors thrown while rendering its children. React only offers this
- * as a class component; it is the one class in the web app.
- */
 export class ErrorBoundary extends Component<
   ErrorBoundaryProps,
   ErrorBoundaryState
@@ -36,7 +30,6 @@ export class ErrorBoundary extends Component<
     props: ErrorBoundaryProps,
     state: ErrorBoundaryState,
   ): Partial<ErrorBoundaryState> | null {
-    // Navigating to another page clears the error.
     if (props.resetKey !== state.resetKey) {
       return { error: undefined, hasError: false, resetKey: props.resetKey }
     }

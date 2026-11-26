@@ -1,39 +1,17 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
-/**
- * Prompts are Markdown files in `prompts/`, one per prompt:
- *
- *   ---
- *   id: analysis
- *   version: 1
- *   model: anthropic/claude-sonnet-5.5
- *   maxTokens: 8000      # optional, default 8000
- *   temperature: 0.2     # optional; many current models do not accept it
- *   ---
- *   # System
- *   …
- *   # User
- *   … {{brief}} …
- *
- * `{{name}}` is replaced with a value when the prompt is rendered (objects as
- * JSON). The model can be overridden per prompt with `MODEL_<ID>` in the
- * environment, e.g. `MODEL_ANALYSIS`.
- */
 export interface Prompt {
   id: string
   version: number
   model: string
-  /** Sent only when set: models that do not support it would refuse the request. */
   temperature?: number
-  /** Upper bound of the answer, which also bounds the cost of a call. */
   maxTokens: number
   system: string
   user: string
 }
 
 export interface RenderedPrompt {
-  /** `id@vVersion`, stored on the phase run. */
   promptId: string
   model: string
   temperature?: number
@@ -47,7 +25,6 @@ const PROMPTS_DIR = fileURLToPath(new URL('../prompts/', import.meta.url))
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/
 const SECTION = /^#\s+(System|User)\s*$/im
 
-/** Parses one prompt file; throws with the file name on any problem. */
 export function parsePrompt(text: string, file = 'prompt'): Prompt {
   const match = FRONT_MATTER.exec(text)
   if (!match) throw new Error(`${file}: missing front matter`)
@@ -65,7 +42,6 @@ export function parsePrompt(text: string, file = 'prompt'): Prompt {
   }
 
   const parts = body.split(SECTION)
-  // ['', 'System', text, 'User', text]
   const sections = new Map<string, string>()
   for (let i = 1; i < parts.length; i += 2) {
     sections.set((parts[i] ?? '').toLowerCase(), (parts[i + 1] ?? '').trim())
@@ -102,7 +78,6 @@ export function parsePrompt(text: string, file = 'prompt'): Prompt {
   }
 }
 
-/** Replaces every `{{name}}`; a placeholder without a value is an error. */
 export function fill(template: string, values: Record<string, unknown>) {
   return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, name: string) => {
     if (!(name in values)) throw new Error(`Missing prompt value "${name}"`)
@@ -116,13 +91,11 @@ export class PromptLibrary {
 
   constructor(
     prompts: Array<Prompt>,
-    /** Model overrides by prompt id, e.g. from MODEL_ANALYSIS. */
     private readonly modelOverrides: Record<string, string | undefined> = {},
   ) {
     this.prompts = new Map(prompts.map((p) => [p.id, p]))
   }
 
-  /** Reads every `.md` file in the package's `prompts/` folder. */
   static load(env: Record<string, string | undefined> = {}, dir = PROMPTS_DIR) {
     const prompts = readdirSync(dir)
       .filter((file) => file.endsWith('.md'))
@@ -156,7 +129,6 @@ export class PromptLibrary {
     }
   }
 
-  /** The prompt ids, for checks and documentation. */
   ids() {
     return [...this.prompts.keys()]
   }

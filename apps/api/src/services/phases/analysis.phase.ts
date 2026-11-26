@@ -4,11 +4,6 @@ import { captureAssetIds, shrinkImage, toLlmImages } from './images.js'
 import { LANGUAGE_NAMES, type Phase, runPrompt } from './phase.js'
 import { normalizeUrl } from './research.phase.js'
 
-/**
- * A vision model reads the screenshots, product photos and logo together with
- * the fetched pages. A verified claim must cite a page that was actually read;
- * anything else becomes an assumption.
- */
 export const analysisPhase: Phase<'ANALYSIS'> = {
   key: 'ANALYSIS',
   outputSchema: AnalysisOutput,
@@ -16,7 +11,6 @@ export const analysisPhase: Phase<'ANALYSIS'> = {
     const sources = ctx.outputs.RESEARCH?.sources ?? []
     const website = ctx.brief.styleSource === 'WEBSITE'
     const uploads = await ctx.loadUploads()
-    // Website mode: the look comes from the website; logo and products still help.
     const fromUploads = website
       ? uploads.filter(
           (u) => u.kind === 'UPLOAD_LOGO' || u.kind === 'UPLOAD_PRODUCT',

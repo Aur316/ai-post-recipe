@@ -7,7 +7,6 @@ import type {
   ImageResult,
 } from './image.provider.js'
 
-/** A plain gradient instead of a generated image: no key, no cost. */
 export class FakeImageProvider implements ImageProvider {
   readonly name = 'fake'
   readonly requests: Array<ImageRequest> = []

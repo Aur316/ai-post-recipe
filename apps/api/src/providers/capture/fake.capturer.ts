@@ -2,7 +2,6 @@ import sharp from 'sharp'
 
 import type { PageCapture, PageCapturer } from './page-capturer.js'
 
-/** A grey screenshot and fixed colours; tests use it instead of a browser. */
 export class FakeCapturer implements PageCapturer {
   readonly captured: Array<string> = []
 

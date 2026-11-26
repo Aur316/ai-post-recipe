@@ -20,17 +20,13 @@ import { useDebounce } from '@/hooks/utils/useDebounce'
 import { PAGE_WIDTH } from '@/utils/layout'
 import { rememberRunsSearch } from '@/utils/runs-search'
 
-/** Pause in typing before the runs list is searched. */
 const SEARCH_DELAY_MS = 200
 
 export function Runs() {
   const { t, i18n } = useTranslation()
   const localized = useLocalizedPath()
-  // The search lives in the URL (?search=…), so reloading, sharing and the
-  // browser's back button keep it.
   const [searchParams, setSearchParams] = useSearchParams()
   const [search, setSearch] = useState(() => searchParams.get('search') ?? '')
-  // Ask the API only when typing has paused for a moment.
   const debouncedSearch = useDebounce({
     value: search.trim(),
     delay: SEARCH_DELAY_MS,
@@ -39,7 +35,6 @@ export function Runs() {
   useEffect(() => {
     rememberRunsSearch(debouncedSearch)
     if ((searchParams.get('search') ?? '') === debouncedSearch) return
-    // Replace, not push: one history entry for the list, not one per pause in typing.
     setSearchParams(debouncedSearch ? { search: debouncedSearch } : {}, {
       replace: true,
     })
@@ -93,7 +88,6 @@ export function Runs() {
       )}
       {runs.length > 0 && (
         <div
-          // As tall as its items, at most down to the bottom of the screen; then it scrolls.
           ref={rootRef}
           className="scrollbar-thin min-h-0 overflow-y-auto rounded-lg border"
         >
@@ -102,7 +96,6 @@ export function Runs() {
               <li key={run.id}>
                 <Link
                   to={localized(`/runs/${run.id}`)}
-                  // On a phone the badges go under the name instead of squeezing it.
                   className="flex flex-col gap-2 p-4 hover:bg-muted sm:flex-row sm:items-center sm:justify-between sm:gap-4"
                 >
                   <div className="min-w-0">

@@ -41,18 +41,12 @@ const Completion = z.object({
     .optional(),
 })
 
-/** Models sometimes wrap JSON in a Markdown code fence. */
 const unfence = (text: string) =>
   text
     .trim()
     .replace(/^```(?:json)?\s*/i, '')
     .replace(/\s*```$/, '')
 
-/**
- * Calls a model through OpenRouter's chat completions API with a JSON schema
- * response format. Network errors, 429 and 5xx are retried with backoff; an
- * answer that does not match the schema is sent back once with the errors.
- */
 export class OpenRouterProvider implements LlmProvider {
   readonly name = 'openrouter'
   private readonly client: OpenRouterClient
@@ -95,18 +89,15 @@ export class OpenRouterProvider implements LlmProvider {
 
     let usage = NO_USAGE
     let problem = ''
-    // The first answer, and one correction with the validation errors.
     for (let round = 0; round < 2; round++) {
       const completion = await this.request({
         model: prompt.model,
-        // Only when the prompt sets it: many models refuse a temperature.
         ...(prompt.temperature === undefined
           ? {}
           : { temperature: prompt.temperature }),
         max_tokens: prompt.maxTokens,
         messages,
         response_format: responseFormat,
-        // Only route to providers that support structured output.
         provider: { require_parameters: true },
         usage: { include: true },
       })
@@ -136,7 +127,6 @@ export class OpenRouterProvider implements LlmProvider {
     )
   }
 
-  /** One chat completion through the shared client. */
   private async request(body: object) {
     const completion = Completion.parse(await this.client.post(body))
     return {
@@ -155,7 +145,6 @@ function toUsage(usage: z.infer<typeof Completion>['usage']): LlmUsage {
   }
 }
 
-/** Empty when the text is JSON that matches the schema, else what is wrong. */
 function validationProblem(schema: z.ZodType, content: string) {
   let value: unknown
   try {

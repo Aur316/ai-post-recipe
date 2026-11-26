@@ -26,7 +26,6 @@ import { UsageTable } from '@/components/usage-summary'
 
 import { findChanges } from '@/utils/changes'
 
-/** The readable view of a phase output, or null for phases without one. */
 export function OutputView({
   phase,
   value,
@@ -34,11 +33,9 @@ export function OutputView({
 }: {
   phase: PhaseKey
   value: unknown
-  /** Needed for the brief summary, which reads the brief itself. */
   run?: RunDetailDto
 }) {
   if (phase === 'BRIEF') return run ? <BriefSummaryView run={run} /> : null
-  // The rendered slides live on the posts, with their current text.
   if (phase === 'REVIEW') {
     const parsed = ReviewOutput.safeParse(value)
     return parsed.success ? <ReviewView review={parsed.data} /> : null
@@ -83,11 +80,6 @@ export const hasOutputView = (phase: PhaseKey) =>
     'EXPORT',
   ].includes(phase)
 
-/**
- * A finished phase as it reads. When the person edited it at approval, the
- * edited version is shown, with a list of the changes and the AI proposal one
- * click away: the "own correction" the hand-in asks for.
- */
 export function PhaseOutputView({
   phase,
   run,

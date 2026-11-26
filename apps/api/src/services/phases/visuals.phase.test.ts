@@ -86,7 +86,6 @@ describe('visuals phase', () => {
       }),
     )
 
-    // A single image uses only its first slide text.
     expect(result.output.slides.map((s) => [s.postIndex, s.order])).toEqual([
       [1, 1],
       [2, 1],
@@ -101,7 +100,6 @@ describe('visuals phase', () => {
       '4:5',
       '9:16',
     ])
-    // The scene theme, not the concept, which may describe stickers or text.
     expect(images.requests[1]?.prompt.user).toContain('Kreatin')
     expect(images.requests[1]?.prompt.user).not.toContain('c2')
     expect(result).toMatchObject({ promptId: 'background@v5', model: 'fake' })
@@ -112,7 +110,6 @@ describe('visuals phase', () => {
     expect(first?.logoUrl).toBe(
       `data:image/png;base64,${Buffer.from('logo').toString('base64')}`,
     )
-    // Post 2 shows the second product photo.
     expect(secondPost?.productImageUrl).toBe(
       `data:image/png;base64,${Buffer.from('p2').toString('base64')}`,
     )
@@ -169,7 +166,6 @@ describe('visuals phase', () => {
       ])
       expect(request.prompt.user).toContain('attached screenshot')
     }
-    // The slides show no screenshot: without a product photo there is no product.
     expect(renderer.rendered.every((r) => !r.productImageUrl)).toBe(true)
   })
 })

@@ -12,7 +12,6 @@ import {
 
 import { formatCost, formatTokens, totalTokens } from '@/utils/usage'
 
-/** "$0.76 · 115k tokens": what the run's AI calls cost, re-runs included. */
 export function UsageBadge({ usage }: { usage: Usage }) {
   const { t, i18n } = useTranslation()
   return (
@@ -25,7 +24,6 @@ export function UsageBadge({ usage }: { usage: Usage }) {
   )
 }
 
-/** The total, with a breakdown per phase on click. */
 export function UsageButton({
   usage,
   byPhase,
@@ -47,7 +45,6 @@ export function UsageButton({
           <UsageText usage={usage} />
         </Button>
       </PopoverTrigger>
-      {/* On a phone it stays on screen, and the table scrolls sideways inside it. */}
       <PopoverContent
         align="end"
         collisionPadding={16}
@@ -71,7 +68,6 @@ function UsageText({ usage }: { usage: Usage }) {
   )
 }
 
-/** Attempts, input and output tokens and cost per phase, and the total. */
 export function UsageTable({
   usage,
   byPhase,

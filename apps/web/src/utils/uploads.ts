@@ -17,7 +17,6 @@ export interface PendingUpload {
   error?: string
 }
 
-/** In website mode the look comes from the website: only logo and product photos are uploaded. */
 export const WEBSITE_MODE_KINDS: ReadonlyArray<UploadAssetKind> = [
   'UPLOAD_LOGO',
   'UPLOAD_PRODUCT',

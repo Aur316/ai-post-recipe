@@ -3,7 +3,6 @@ import { z } from 'zod'
 export const PostFormat = z.enum(['IMAGE', 'CAROUSEL', 'STORY'])
 export type PostFormat = z.infer<typeof PostFormat>
 
-/** The eight phases of the recipe, in order. */
 export const PhaseKey = z.enum([
   'BRIEF',
   'RESEARCH',
@@ -18,7 +17,6 @@ export type PhaseKey = z.infer<typeof PhaseKey>
 
 export const PHASE_ORDER = PhaseKey.options
 
-/** Phases after which the run waits for a person to approve or edit the result. */
 export const APPROVAL_PHASES: ReadonlyArray<PhaseKey> = ['ANALYSIS', 'PLAN']
 
 export const PhaseStatus = z.enum([
@@ -32,40 +30,27 @@ export const PhaseStatus = z.enum([
 ])
 export type PhaseStatus = z.infer<typeof PhaseStatus>
 
-/**
- * Phase outputs. Visuals, review and export are placeholders until M7–M8.
- * AI outputs use `nullable` rather than `optional`, because structured output
- * needs every field in the JSON schema.
- */
 export const BriefOutput = z.object({ accepted: z.literal(true) })
 
-/** Where a source came from: a link in the brief, or a web search. */
 export const SourceOrigin = z.enum(['BRIEF', 'SEARCH'])
 export type SourceOrigin = z.infer<typeof SourceOrigin>
 
 export const ResearchSource = z.object({
   url: z.string(),
   title: z.string(),
-  /** The start of the page's text; the analysis reads up to `text`. */
   excerpt: z.string(),
-  /** Clean page text, shortened; empty when the page could not be read. */
   text: z.string(),
   reachable: z.boolean(),
-  /** Why the page could not be read, e.g. "HTTP 404" or "Blocked by robots.txt". */
   error: z.string().nullable(),
   origin: SourceOrigin,
   fetchedAt: z.iso.datetime(),
 })
 export type ResearchSource = z.infer<typeof ResearchSource>
 
-/** A website screenshot for the analysis, when the style comes from the website. */
 export const WebsiteCapture = z.object({
   url: z.string(),
-  /** Screenshots of the page from top to bottom; empty when it could not be captured. */
   assetIds: z.array(z.string()).default([]),
-  /** The first screenshot; kept for runs made before pages had several. */
   assetId: z.string().nullable().optional(),
-  /** Colours the page's own styles use most, as hex codes. */
   colors: z.array(z.string()),
   error: z.string().nullable(),
 })
@@ -74,7 +59,6 @@ export type WebsiteCapture = z.infer<typeof WebsiteCapture>
 export const ResearchOutput = z.object({
   sources: z.array(ResearchSource),
   captures: z.array(WebsiteCapture).default([]),
-  /** The search queries that were run; empty without a search key. */
   queries: z.array(z.string()),
 })
 
@@ -83,7 +67,6 @@ export const Claim = z
     text: z.string().min(1),
     status: z.enum(['verified', 'assumption']),
     sourceUrl: z.string().nullable(),
-    /** A short quote from the source that supports a verified claim. */
     evidence: z.string().nullable(),
   })
   .refine((c) => c.status === 'assumption' || !!c.sourceUrl, {
@@ -108,7 +91,6 @@ export const AnalysisOutput = z.object({
   productPresentation: z.string(),
   peoplePresentation: z.string(),
   claims: z.array(Claim),
-  /** What could not be found or verified, including unreachable sources. */
   gaps: z.array(z.string()),
 })
 export type AnalysisOutput = z.infer<typeof AnalysisOutput>
@@ -140,20 +122,13 @@ export const PostCopy = z.object({
 })
 export type PostCopy = z.infer<typeof PostCopy>
 
-/** What the copy model writes: one entry per planned post. */
 export const CopyDraft = z.object({ posts: z.array(PostCopy).length(3) })
 
-/**
- * A number or quote in the copy that no source contains. Found by a fixed
- * check after the model has answered, not by the model.
- */
 export const UnsupportedFact = z.object({
   postIndex: z.number().int(),
-  /** `caption`, or the slide's order number. */
   place: z.union([z.literal('caption'), z.number().int()]),
   kind: z.enum(['number', 'quote']),
   value: z.string(),
-  /** The words around it, to find it quickly. */
   context: z.string(),
 })
 export type UnsupportedFact = z.infer<typeof UnsupportedFact>
@@ -162,7 +137,6 @@ export const CopyOutput = CopyDraft.extend({
   unsupported: z.array(UnsupportedFact),
 })
 
-/** One rendered slide: the PNG and the AI background it was drawn on. */
 export const RenderedSlide = z.object({
   postIndex: z.number().int(),
   order: z.number().int(),
@@ -173,39 +147,30 @@ export type RenderedSlide = z.infer<typeof RenderedSlide>
 
 export const VisualsOutput = z.object({ slides: z.array(RenderedSlide) })
 
-/** What the vision model reports for one slide. */
 export const SlideCheck = z.object({
   postIndex: z.number().int(),
   order: z.number().int(),
   passed: z.boolean(),
-  /** Short, concrete problems, e.g. "text overlaps the product". */
   issues: z.array(z.string()),
 })
 export type SlideCheck = z.infer<typeof SlideCheck>
 
-/** What the review model writes. */
 export const ReviewDraft = z.object({ slides: z.array(SlideCheck) })
 
 export const ReviewOutput = z.object({
-  /** Share of slides that passed, 0–1, after the regenerated ones were checked again. */
   score: z.number().min(0).max(1),
   slides: z.array(
     SlideCheck.extend({
-      /** Rule checks (size, missing image) rather than the model. */
       ruleIssues: z.array(z.string()),
-      /** The slide failed and was made again once, with its issues as the instruction. */
       regenerated: z.boolean(),
     }),
   ),
-  /** Run-wide findings: numbers or quotes in the text that no source contains. */
   issues: z.array(z.string()),
-  /** Slides that were made again; they replace the earlier PNGs on the posts. */
   replaced: z.array(RenderedSlide),
 })
 export type ReviewOutput = z.infer<typeof ReviewOutput>
 
 export const ExportOutput = z.object({
-  /** The ZIP as built when the phase ran; GET /export always builds a fresh one. */
   assetId: z.string(),
   files: z.number().int(),
 })
@@ -225,7 +190,6 @@ export type PhaseOutputs = {
   [K in PhaseKey]: z.infer<(typeof PHASE_OUTPUT_SCHEMAS)[K]>
 }
 
-/** The latest attempt of a phase, as the API returns it. */
 export const PhaseRunDto = z.object({
   id: z.uuid(),
   phase: PhaseKey,

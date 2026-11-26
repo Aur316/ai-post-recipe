@@ -3,11 +3,9 @@ import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
 
-/** The three planned posts as cards. */
 export function PlanView({ plan }: { plan: PhaseOutputs['PLAN'] }) {
   const { t } = useTranslation()
   return (
-    // Three columns when the card is wide enough, whatever the screen.
     <div className="@container">
       <ol className="grid grid-cols-1 gap-3 @3xl:grid-cols-3">
         {plan.posts.map((post) => (

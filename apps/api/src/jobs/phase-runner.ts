@@ -30,17 +30,9 @@ export interface RunnerTools {
   images: ImageProvider
   renderer: SlideRenderer
   capturer: PageCapturer
-  /** MAX_COST_USD_PER_RUN: no LLM call starts once a run has spent this much. */
   costCapUsd: number
 }
 
-/**
- * Runs one phase per job: claim it, execute it, validate the output, and hand
- * the result to the pipeline. A failed attempt goes back to the queue until its
- * retries run out, then the phase is FAILED. Errors no retry can fix (a rejected
- * key, the cost cap) fail the phase at once. Every attempt's LLM usage is saved,
- * successful or not, so the run's cost is complete.
- */
 export class PhaseRunner {
   constructor(
     private readonly db: Db,

@@ -1,24 +1,12 @@
-/**
- * Development seed: draft runs for trying the runs list and its pagination.
- *
- *   pnpm seed        # 30 runs
- *   pnpm seed 50     # any other number
- *
- * Re-running replaces the earlier seed runs (brand names starting with
- * "Seed brand"); other runs are left alone.
- */
 import { Brief } from '@ai-post-recipe/shared'
+import { existsSync } from 'node:fs'
 
 import { createDb } from '../src/db/prisma.js'
 
 const PREFIX = 'Seed brand'
 const count = Number(process.argv[2] ?? 30)
 
-try {
-  process.loadEnvFile('../../.env')
-} catch {
-  // Variables come from the environment.
-}
+if (existsSync('../../.env')) process.loadEnvFile('../../.env')
 
 const url = process.env.DATABASE_URL
 if (!url) throw new Error('DATABASE_URL is not set')
@@ -56,7 +44,6 @@ try {
         instagram: value.instagramUrl,
         language: value.language,
         brief: value,
-        // One minute apart, so "Seed brand 01" is the oldest.
         createdAt: new Date(now - (count - i) * 60_000),
       }
     }),

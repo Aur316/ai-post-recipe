@@ -7,7 +7,6 @@ import {
   testDatabaseUrl,
 } from './database-url.js'
 
-/** Runs once before all API tests: creates the test database and migrates it. */
 export default async function setup() {
   loadDotEnv()
   const baseUrl = requireDatabaseUrl()

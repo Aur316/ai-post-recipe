@@ -11,18 +11,12 @@ import type { ImageProvider } from '../../providers/image/image.provider.js'
 import type { SlideRenderer } from '../../providers/renderer/slide-renderer.js'
 import { type Upload, shrinkImage, toDataUrl } from '../phases/images.js'
 
-/** What making a slide needs; the visuals phase and slide regeneration share it. */
 export interface SlideTools {
   images: ImageProvider
   renderer: SlideRenderer
   prompts: PromptLibrary
   uploads: Array<Upload>
-  /**
-   * Website screenshots (website mode). The image model gets one per post as
-   * input for the background; they are never placed on the slide as they are.
-   */
   websiteShots: Array<{ data: Buffer; mimeType: string }>
-  /** Stores a file of the run and returns its asset id. */
   saveAsset(
     kind: 'GENERATED_BACKGROUND' | 'RENDERED_SLIDE' | 'EXPORT_ZIP',
     data: Buffer,
@@ -37,15 +31,12 @@ export interface PostDesign {
   format: PostFormat
   goal: string
   concept: string
-  /** The product the post features, for the scene. */
   product?: string
 }
 
-/** The analysis colours, or a neutral accent when there is no analysis. */
 export const tokensFor = (analysis?: AnalysisOutput): BrandTokens =>
   brandTokens(analysis?.colors ?? [])
 
-/** The website screenshot a post's background is drawn from: a different part of the site per post. */
 export const referenceShot = (
   websiteShots: SlideTools['websiteShots'],
   postIndex: number,
@@ -54,7 +45,6 @@ export const referenceShot = (
     ? websiteShots[(postIndex - 1) % websiteShots.length]
     : undefined
 
-/** Asks the image model for a background (no text, logo or product) and saves it. */
 export async function makeBackground(
   tools: SlideTools,
   post: PostDesign,
@@ -69,8 +59,6 @@ export async function makeBackground(
         .map((c) => `${c.name} ${c.hex}`)
         .join(', ') || 'not known',
     visualStyle: post.analysis?.visualStyle ?? 'clean, modern',
-    // A scene, not the post concept: concepts mention stickers, buttons and
-    // text, and image models then draw them.
     theme: `${post.product ? `${post.product}, ` : ''}${post.goal}`,
     textArea: story ? 'lower third' : 'bottom third',
     reference: shot
@@ -98,10 +86,6 @@ export async function makeBackground(
   return { assetId, image, promptId: prompt.promptId }
 }
 
-/**
- * What a slide shows besides the text: the logo, and the post's product photo,
- * one per post in upload order. Without product photos the slide shows none.
- */
 export function brandImages(uploads: Array<Upload>, postIndex: number) {
   const logo = uploads.find((u) => u.kind === 'UPLOAD_LOGO')
   const products = uploads.filter((u) => u.kind === 'UPLOAD_PRODUCT')
@@ -111,7 +95,6 @@ export function brandImages(uploads: Array<Upload>, postIndex: number) {
   return { logo, product }
 }
 
-/** Renders one slide with the real logo, product photo and text, and saves the PNG. */
 export async function renderSlide(
   tools: SlideTools,
   input: {

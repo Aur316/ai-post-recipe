@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { Stat } from '@/components/brief-summary-view'
 import { Badge } from '@/components/ui/badge'
 
-/** The review result: score, every slide's verdict, and run-wide findings. */
 export function ReviewView({ review }: { review: PhaseOutputs['REVIEW'] }) {
   const { t } = useTranslation()
   const passed = review.slides.filter((s) => s.passed).length

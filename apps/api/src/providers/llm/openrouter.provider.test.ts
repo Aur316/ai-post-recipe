@@ -24,7 +24,6 @@ const completion = (content: string, cost = 0.01) =>
     { status: 200 },
   )
 
-/** Answers each call with the next response; records the request bodies. */
 function scripted(...responses: Array<Response | Error>) {
   const bodies: Array<Record<string, unknown>> = []
   const fn = (_url: unknown, init?: RequestInit) => {

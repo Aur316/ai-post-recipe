@@ -1,12 +1,9 @@
 import type { PostCopy, UnsupportedFact } from '@ai-post-recipe/shared'
 
-/** "6,5" and "6.5" are the same number; thousands separators are dropped. */
 const normalizeNumber = (raw: string) =>
   raw.replace(/(\d)[.\s](?=\d{3}\b)/g, '$1').replace(',', '.')
 
-/** Numbers with at least two digits, or with a decimal part: "22", "6,5", "1000". */
 const NUMBER = /\d+(?:[.,\s]\d+)*/g
-/** Text in straight or typographic quotes, at least three words long. */
 const QUOTE = /["“„«»”]([^"“„«»”]{12,})["“”»«]/g
 
 const around = (text: string, index: number, length: number) =>
@@ -15,15 +12,8 @@ const around = (text: string, index: number, length: number) =>
     .replace(/\s+/g, ' ')
     .trim()
 
-/** Small numbers (1–9) are too common to check: list items, "3 tips". */
 const isTrivial = (normalized: string) => /^\d$/.test(normalized)
 
-/**
- * Lists the numbers and quotes in the copy that appear in none of the
- * material the run had: the source pages, the analysis's evidence quotes
- * and the brief. A fixed check, so the result does not depend on the model.
- * A listed item is not necessarily wrong, but a person should check it.
- */
 export function findUnsupportedFacts(
   posts: Array<PostCopy>,
   corpus: Array<string>,

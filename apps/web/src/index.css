@@ -125,12 +125,10 @@
     @apply bg-background text-foreground;
   }
   html {
-    /* Also under the app, e.g. while a high-density screen redraws a scrolled layer. */
     @apply bg-background font-sans;
   }
 }
 
-/* Thin, theme-aware scrollbar for scrollable lists: `scrollbar-thin`. */
 @utility scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in oklch, var(--muted-foreground) 40%, transparent)

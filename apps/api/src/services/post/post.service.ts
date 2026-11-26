@@ -31,7 +31,6 @@ export interface SlideDeps {
   costCapUsd: number
 }
 
-/** Changes a person makes to finished posts: their text, or one slide. */
 export class PostService {
   constructor(
     private readonly db: Db,
@@ -54,10 +53,6 @@ export class PostService {
     return new PostRepo(this.db).updateText(post.id, text)
   }
 
-  /**
-   * A new background (with the person's instruction) and a new PNG for one
-   * slide; the other slides stay. Its cost is added to the visuals phase.
-   */
   async regenerateSlide(
     runId: string,
     index: number,

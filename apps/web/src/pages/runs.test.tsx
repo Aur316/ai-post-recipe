@@ -109,7 +109,6 @@ describe('Runs page', () => {
     )
 
     expect(await screen.findByText('No runs match “zzz”.')).toBeInTheDocument()
-    // The first load, then one search: not one request per keystroke.
     expect(searches).toEqual([null, 'zzz'])
   })
 
@@ -124,7 +123,6 @@ describe('Runs page', () => {
     )
     const router = renderRoute('/en?search=rev')
 
-    // Opened with ?search=: the field and the first request use it.
     expect(
       await screen.findByRole('searchbox', { name: 'Search runs' }),
     ).toHaveValue('rev')

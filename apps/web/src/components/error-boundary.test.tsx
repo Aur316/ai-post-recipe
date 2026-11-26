@@ -21,7 +21,6 @@ function Boom() {
 describe('Error boundary', () => {
   beforeEach(() => {
     shouldThrow = true
-    // React logs caught render errors; keep the test output clean.
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
   })
   afterEach(() => vi.restoreAllMocks())

@@ -3,7 +3,6 @@ import sharp from 'sharp'
 
 import type { SlideRenderer } from './slide-renderer.js'
 
-/** A blank PNG of the right size; tests use it instead of a browser. */
 export class FakeRenderer implements SlideRenderer {
   readonly rendered: Array<SlideProps> = []
 

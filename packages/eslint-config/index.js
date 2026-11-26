@@ -49,5 +49,4 @@ export const typescript = {
   },
 }
 
-// Must come last: turns off rules that conflict with Prettier.
 export const prettier = eslintConfigPrettier

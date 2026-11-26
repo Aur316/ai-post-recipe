@@ -26,7 +26,6 @@ export interface WebFetcherOptions {
 const MAX_REDIRECTS = 5
 const TEXT_TYPES = /^(text\/html|application\/xhtml\+xml|text\/plain)/i
 
-/** Loopback, private, link-local and unique-local addresses. */
 const PRIVATE_V4 = [
   /^127\./,
   /^10\./,
@@ -36,7 +35,6 @@ const PRIVATE_V4 = [
   /^0\./,
 ]
 
-/** Only public http(s) hosts: the API must not be used to reach its own network. */
 export function isPublicUrl(raw: string) {
   let url: URL
   try {
@@ -65,11 +63,6 @@ export function isPublicUrl(raw: string) {
   return true
 }
 
-/**
- * Downloads a page and returns its readable text. Respects robots.txt, follows
- * up to five redirects (each checked), stops at a size limit, and never throws:
- * a page that cannot be read comes back with `reachable: false` and the reason.
- */
 export class WebFetcher implements PageFetcher {
   private readonly fetchFn: typeof fetch
   private readonly timeoutMs: number
@@ -150,7 +143,6 @@ export class WebFetcher implements PageFetcher {
     return check.then((isAllowed) => isAllowed(pathname + search))
   }
 
-  /** A missing robots.txt (4xx) allows everything; a server error (5xx) allows nothing. */
   private async loadRobots(origin: string) {
     try {
       const response = await this.fetchFn(`${origin}/robots.txt`, {
@@ -165,13 +157,11 @@ export class WebFetcher implements PageFetcher {
     }
   }
 
-  /** Reads the body up to the size limit, in the charset the server names. */
   private async readText(response: Response, type: string) {
     const charset = /charset=([\w-]+)/i.exec(type)?.[1] ?? 'utf-8'
     if (!response.body) return ''
     const chunks: Array<Uint8Array> = []
     let size = 0
-    // Leaving the loop early cancels the download.
     for await (const chunk of response.body as AsyncIterable<Uint8Array>) {
       chunks.push(chunk)
       size += chunk.length
@@ -181,7 +171,6 @@ export class WebFetcher implements PageFetcher {
     try {
       return new TextDecoder(charset).decode(bytes)
     } catch {
-      // An unknown charset name.
       return new TextDecoder('utf-8').decode(bytes)
     }
   }

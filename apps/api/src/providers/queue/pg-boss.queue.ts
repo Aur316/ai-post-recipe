@@ -7,7 +7,6 @@ import type {
   SendOptions,
 } from './job-queue.js'
 
-/** JobQueue on pg-boss, in the pgboss schema of the app database. */
 export class PgBossQueue implements JobQueue {
   private readonly boss: PgBoss
   private readonly created = new Set<string>()
@@ -23,7 +22,6 @@ export class PgBossQueue implements JobQueue {
     await this.boss.start()
   }
 
-  /** Waits for running jobs to finish (up to `timeoutMs`), so none is cut off half way. */
   async stop(timeoutMs = 60_000) {
     await this.boss.stop({ graceful: true, timeout: timeoutMs })
   }
@@ -44,7 +42,6 @@ export class PgBossQueue implements JobQueue {
     handler: (job: QueueJob<T>) => Promise<void>,
   ) {
     await this.ensureQueue(queue)
-    // Poll every half second so a run moves to its next phase without a visible pause.
     await this.boss.work<T>(
       queue,
       { pollingIntervalSeconds: 0.5 },
@@ -66,10 +63,8 @@ export class PgBossQueue implements JobQueue {
   }
 }
 
-/** pg-boss does not export its database adapter type, so take it from send(). */
 type PgBossDb = NonNullable<NonNullable<Parameters<PgBoss['send']>[2]>['db']>
 
-/** Lets pg-boss run its insert inside a Prisma interactive transaction. */
 function asPgBossDb(tx: NonNullable<SendOptions['tx']>): PgBossDb {
   return {
     executeSql: async (text: string, values: Array<unknown> = []) => ({

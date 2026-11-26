@@ -2,7 +2,6 @@ import { ExportOutput } from '@ai-post-recipe/shared'
 
 import type { Phase } from './phase.js'
 
-/** Builds the hand-over ZIP and keeps it as an asset of the run. */
 export const exportPhase: Phase<'EXPORT'> = {
   key: 'EXPORT',
   outputSchema: ExportOutput,

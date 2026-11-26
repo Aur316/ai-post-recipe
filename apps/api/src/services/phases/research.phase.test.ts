@@ -67,7 +67,6 @@ describe('research phase', () => {
       'GymBeam Hrvatska True Whey': [
         'https://gymbeam.hr/true-whey#reviews',
         'https://gymbeam.hr/true-whey?review-page=3',
-        // Names neither the brand nor its site: an unrelated company.
         'https://other-company.example/true-whey',
         'https://review.example/gymbeam-true-whey',
       ],
@@ -83,7 +82,6 @@ describe('research phase', () => {
       language: 'hr',
       country: 'hr',
     })
-    // The brand's own pages first, without tracking parameters.
     expect(output.sources.map((s) => [s.url, s.origin])).toEqual([
       ['https://gymbeam.hr', 'BRIEF'],
       ['https://gymbeam.hr/true-whey', 'BRIEF'],
@@ -144,7 +142,6 @@ describe('research phase', () => {
 describe('mentionsBrand', () => {
   it.each([
     ['GymBeam Hrvatska', 'GymBeam BCAA price', true],
-    // Spaces and punctuation do not matter.
     ['GymBeam Hrvatska', 'Gym Beam review', true],
     ['Revyan', 'EliseAI: AI for property management', false],
     ['Dida Boža', 'dida-boza.hr shop', true],

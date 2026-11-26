@@ -4,10 +4,6 @@ import { type Browser, chromium } from 'playwright'
 import { slideHtml } from './slide-html.js'
 import type { SlideRenderer } from './slide-renderer.js'
 
-/**
- * Headless Chromium renders the slide's HTML and takes a screenshot at the
- * exact Instagram size. One browser is started on first use and reused.
- */
 export class PlaywrightRenderer implements SlideRenderer {
   private browser?: Promise<Browser>
 
@@ -22,7 +18,6 @@ export class PlaywrightRenderer implements SlideRenderer {
     })
     try {
       await page.setContent(slideHtml(props), { waitUntil: 'load' })
-      // Text must be drawn in Geist, not a fallback font.
       await page.evaluate('document.fonts.ready.then(() => true)')
       return await page.screenshot({
         type: 'png',

@@ -25,14 +25,11 @@ import { useUpdatePost } from '@/hooks/queries/posts/useUpdatePost'
 interface PostPreviewProps {
   runId: string
   post: PostDto
-  /** The Instagram handle (@name), or the brand name without a profile. */
   brandName: string
   logo?: AssetDto
-  /** Editing and regenerating are off while a phase runs. */
   locked: boolean
 }
 
-/** One post as it would look on Instagram: the rendered slides, then the caption. */
 export function PostPreview({
   runId,
   post,
@@ -257,7 +254,6 @@ function Caption({
   }
   if (!editing) {
     return (
-      // Grows to the bottom of the card, so the edit buttons of all posts line up.
       <div className="flex flex-1 flex-col gap-2 p-3">
         <p className="whitespace-pre-line">
           <span className="font-semibold">{post.product}</span> {post.caption}

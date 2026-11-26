@@ -23,11 +23,6 @@ export class RunService {
     return this.runs.create(briefColumns(brief))
   }
 
-  /**
-   * Deletes the run with everything that belongs to it: its phases, sources
-   * and posts (cascade in the database) and every stored file. Refused while
-   * a phase is queued or running, so no job is cut off half way.
-   */
   async remove(id: string) {
     if (!(await this.runs.findById(id))) throw new NotFoundError('Run', id)
     const phases = await this.phaseRuns.latestByRun(id)
@@ -39,7 +34,6 @@ export class RunService {
     }
     const files = await this.assets.listByRun(id)
     await this.runs.delete(id)
-    // The rows are gone; a file that cannot be deleted is only wasted space.
     await Promise.all(
       files.map((file) =>
         this.storage.delete(file.storageKey).catch((error: unknown) => {
@@ -52,7 +46,6 @@ export class RunService {
     )
   }
 
-  /** Replaces the brief while the run has not been started. */
   async update(id: string, brief: Brief) {
     if (await this.runs.updateIfNotStarted(id, briefColumns(brief))) {
       return this.get(id)

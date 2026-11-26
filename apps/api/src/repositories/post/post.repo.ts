@@ -11,7 +11,6 @@ import type { Prisma } from '../../generated/prisma/client.js'
 export class PostRepo {
   constructor(private readonly db: DbClient) {}
 
-  /** The approved plan replaces the run's posts; their copy starts empty. */
   async replaceWithPlan(runId: string, plan: z.infer<typeof PlanOutput>) {
     await this.db.post.deleteMany({ where: { runId } })
     await this.db.post.createMany({
@@ -29,7 +28,6 @@ export class PostRepo {
     })
   }
 
-  /** Writes the copy onto the posts with the same index. */
   async saveCopy(runId: string, copy: Array<PostCopy>) {
     for (const post of copy) {
       await this.db.post.updateMany({
@@ -43,7 +41,6 @@ export class PostRepo {
     }
   }
 
-  /** Puts each rendered PNG on its slide; the text stays as written. */
   async saveSlides(runId: string, rendered: Array<RenderedSlide>) {
     const posts = await this.listByRun(runId)
     for (const post of posts) {
@@ -61,7 +58,6 @@ export class PostRepo {
     }
   }
 
-  /** Puts slides that were made again (by the review) on their posts. */
   async replaceSlides(runId: string, slides: Array<RenderedSlide>) {
     for (const slide of slides) {
       const post = await this.findByIndex(runId, slide.postIndex)
@@ -69,7 +65,6 @@ export class PostRepo {
     }
   }
 
-  /** Replaces the PNG of one slide, e.g. after regenerating it. */
   async setSlideAsset(postId: string, order: number, assetId: string) {
     const post = await this.db.post.findUniqueOrThrow({ where: { id: postId } })
     const slides = toSlides(post.slides).map((s) =>
@@ -106,7 +101,6 @@ export interface StoredSlide {
   assetId: string | null
 }
 
-/** Slides as stored in the JSON column; anything malformed counts as none. */
 export const toSlides = (value: unknown): Array<StoredSlide> =>
   Array.isArray(value)
     ? value.flatMap((v: unknown) => {

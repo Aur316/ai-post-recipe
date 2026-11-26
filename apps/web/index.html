@@ -8,13 +8,11 @@
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script>
-      // Apply a saved light theme before first paint; dark is the default.
       try {
         if (localStorage.getItem('theme') === 'light') {
           document.documentElement.classList.remove('dark')
         }
       } catch {}
-      // The interface language is the first URL segment (/en/…, /hr/…).
       var language = location.pathname.split('/')[1]
       if (language === 'en' || language === 'hr') {
         document.documentElement.lang = language
