@@ -107,6 +107,58 @@ describe('assets', () => {
     expect(ErrorResponse.parse(res.body).error.code).toBe('VALIDATION_FAILED')
   })
 
+  describe('deleting', () => {
+    it('removes an uploaded reference and its file', async () => {
+      const run = await ctx.createRun()
+      const asset = AssetDto.parse(
+        (await upload(run.id, 'UPLOAD_LOGO', await png(), 'image/png')).body,
+      )
+
+      const res = await request(ctx.app).delete(`/api/assets/${asset.id}`)
+
+      expect(res.status).toBe(204)
+      expect(
+        [...ctx.storage.objects.keys()].some((k) => k.includes(asset.id)),
+      ).toBe(false)
+      expect(
+        (await request(ctx.app).get(`/api/assets/${asset.id}`)).status,
+      ).toBe(404)
+    })
+
+    it('refuses once the run has started', async () => {
+      const run = await ctx.createRun()
+      const asset = AssetDto.parse(
+        (await upload(run.id, 'UPLOAD_LOGO', await png(), 'image/png')).body,
+      )
+      await request(ctx.app).post(`/api/runs/${run.id}/start`)
+
+      const res = await request(ctx.app).delete(`/api/assets/${asset.id}`)
+
+      expect(res.status).toBe(409)
+      expect(ErrorResponse.parse(res.body).error.code).toBe(
+        'RUN_ALREADY_STARTED',
+      )
+      expect(
+        (await request(ctx.app).get(`/api/assets/${asset.id}`)).status,
+      ).toBe(200)
+    })
+
+    it('refuses new uploads once the run has started', async () => {
+      const run = await ctx.createRun()
+      await request(ctx.app).post(`/api/runs/${run.id}/start`)
+
+      const res = await upload(run.id, 'UPLOAD_LOGO', await png(), 'image/png')
+
+      expect(res.status).toBe(409)
+    })
+
+    it('returns 404 for an unknown asset', async () => {
+      expect(
+        (await request(ctx.app).delete(`/api/assets/${UNKNOWN_ID}`)).status,
+      ).toBe(404)
+    })
+  })
+
   it('returns 404 for an unknown asset', async () => {
     expect(
       (await request(ctx.app).get(`/api/assets/${UNKNOWN_ID}`)).status,

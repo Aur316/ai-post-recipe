@@ -36,10 +36,10 @@ describe('Runs page', () => {
         return HttpResponse.json(page([run('r1', 'GymBeam Hrvatska')], 1, 1))
       }),
     )
-    renderRoute('/')
+    renderRoute('/en')
 
     const link = await screen.findByRole('link', { name: /GymBeam Hrvatska/ })
-    expect(link).toHaveAttribute('href', '/runs/r1')
+    expect(link).toHaveAttribute('href', '/en/runs/r1')
     expect(screen.getByText('Draft')).toBeInTheDocument()
     expect(queries).toEqual([`?page=1&size=${DEFAULT_PAGE_SIZE}`])
   })
@@ -55,7 +55,7 @@ describe('Runs page', () => {
         )
       }),
     )
-    renderRoute('/')
+    renderRoute('/en')
 
     expect(await screen.findByText('Newer brand')).toBeInTheDocument()
     expect(await screen.findByText('Older brand')).toBeInTheDocument()
@@ -63,7 +63,7 @@ describe('Runs page', () => {
 
   it('shows an empty state', async () => {
     server.use(http.get('/api/runs', () => HttpResponse.json(page([], 1, 0))))
-    renderRoute('/')
+    renderRoute('/en')
 
     expect(await screen.findByText(/No runs yet/)).toBeInTheDocument()
   })

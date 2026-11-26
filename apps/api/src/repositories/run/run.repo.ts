@@ -44,6 +44,13 @@ export class RunRepo {
     return count === 1
   }
 
+  /** True when at least one phase of the run has been queued. */
+  async hasStarted(id: string) {
+    return (
+      (await this.db.run.count({ where: { id, phases: { some: {} } } })) > 0
+    )
+  }
+
   setStatus(id: string, status: RunStatus) {
     return this.db.run.update({ where: { id }, data: { status } })
   }

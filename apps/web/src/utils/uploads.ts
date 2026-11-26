@@ -4,6 +4,8 @@ import {
   type UploadAssetKind,
 } from '@ai-post-recipe/shared'
 
+import i18n from '@/i18n'
+
 export interface PendingUpload {
   id: string
   file: File
@@ -14,22 +16,15 @@ export interface PendingUpload {
   error?: string
 }
 
-export const UPLOAD_KIND_LABELS: Record<UploadAssetKind, string> = {
-  UPLOAD_SCREENSHOT: 'Instagram screenshot',
-  UPLOAD_PRODUCT: 'Product photo',
-  UPLOAD_LOGO: 'Logo',
-  UPLOAD_OTHER: 'Other reference',
-}
-
 /** Same rules as the API, so the user sees the reason before uploading. */
 export const rejectReason = (file: File, kind: UploadAssetKind) => {
   if (!(UPLOAD_MIME_TYPES as ReadonlyArray<string>).includes(file.type)) {
-    return 'Only PNG, JPEG, WebP or SVG files'
+    return i18n.t('uploader.onlyImages')
   }
   if (file.type === 'image/svg+xml' && kind !== 'UPLOAD_LOGO') {
-    return 'SVG is only allowed for logos'
+    return i18n.t('uploader.svgOnlyLogo')
   }
-  if (file.size > MAX_UPLOAD_BYTES) return 'Larger than 10 MB'
+  if (file.size > MAX_UPLOAD_BYTES) return i18n.t('uploader.tooLarge')
   return undefined
 }
 

@@ -1,4 +1,5 @@
 import { MoonIcon, SunIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 
@@ -10,8 +11,9 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ theme, onToggle }: ThemeToggleProps) {
+  const { t } = useTranslation()
   const label =
-    theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+    theme === 'dark' ? t('layout.switchToLight') : t('layout.switchToDark')
   return (
     <Button
       type="button"

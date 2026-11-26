@@ -11,6 +11,11 @@
           document.documentElement.classList.remove('dark')
         }
       } catch {}
+      // The interface language is the first URL segment (/en/…, /hr/…).
+      var language = location.pathname.split('/')[1]
+      if (language === 'en' || language === 'hr') {
+        document.documentElement.lang = language
+      }
     </script>
   </head>
   <body>

@@ -28,8 +28,9 @@ apps/web/src/
 ├─ hooks/
 │  ├─ queries/<domain>/     # useGetRunsInfinite, useGetRunById, useCreateRun, useUploadAsset, …
 │  └─ useTheme.ts           # other hooks
-├─ layouts/                 # app-layout: header, theme toggle, toaster
-├─ pages/                   # runs, add-run, run-details
+├─ i18n/                    # i18next setup, LanguageRoute (/:lang), locales/en.ts and locales/hr.ts
+├─ layouts/                 # app-layout: header, language and theme toggles, toaster
+├─ pages/                   # runs, add-run, edit-run, run-details
 ├─ components/              # brief-form, asset-uploader, run-status-badge, theme-toggle, …
 │  └─ ui/                   # shadcn/ui components
 ├─ utils/                   # helpers (API error messages), upload rules
@@ -49,17 +50,34 @@ apps/web/src/
 
 Dark is the default (`class="dark"` on `<html>`). The header toggle switches to light and stores the choice in `localStorage`; a small inline script in `index.html` applies it before first paint.
 
+## Languages
+
+The interface is in English and Croatian (`react-i18next`). The language is the first segment of every URL (`/en/runs/…`, `/hr/runs/…`), so each language version has its own address that search engines can index and people can share. This is separate from the brief's output language, which sets the language of the generated posts.
+
+- **Routing:** every page sits under `/:lang` (`LanguageRoute`). A path without a valid language (`/`, or an old link such as `/runs/1`) redirects to the same page in the preferred language: the last choice (kept in `localStorage`), else Croatian for a Croatian browser, else English. Links are built with `useLocalizedPath()`.
+- **Switching:** the **EN | HR** buttons in the header open the same page under the other language's URL.
+- **SEO tags:** each page renders `<link rel="canonical">`, `<link rel="alternate" hreflang="en|hr|x-default">` and a translated `<meta name="description">`; React places them in `<head>`. `<html lang>` follows the URL (set before first paint in `index.html`, then by i18next).
+- **Texts** live in `i18n/locales/en.ts`; `hr.ts` has the type of the English file, so a missing or misspelled key fails the type check. `t()` keys are type-checked too.
+- **Validation** uses the shared brief schema: `createBriefSchema(messages)` in `packages/shared` takes the messages, the API uses the English ones and the form passes translated ones, so the rules stay in one place. Shown errors are re-validated when the language changes.
+- **API errors** are translated by their `code` (`apiErrors.*`); an unknown code falls back to the API's English message. Phase errors from the pipeline stay as the API wrote them.
+- Dates are formatted in the interface language.
+
+> [!NOTE]
+> The pages are rendered in the browser. Google renders JavaScript, so the tags above are seen, but other crawlers may not run it. If public pages (e.g. a landing page) are added later, prerendering them per language would make them visible to every crawler. Run pages hold private work and should be `noindex` on a public domain.
+
 ## Layout and scrolling
 
 The app fills the screen: the header stays put and `main` scrolls pages that are taller than the screen. List pages (runs) fill `main` and scroll only their list, with the `scrollbar-thin` utility from `index.css` (thin, theme-aware). The infinite scroll observes that list container (`rootRef`).
 
 ## Pages
 
+Every path below sits under the language prefix (`/en`, `/hr`).
+
 | Page                          | Purpose                                                                                                                                         |
 | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Runs (`/`)                    | Lists earlier runs with their status; starts a new run                                                                                          |
 | New run (`/runs/new`)         | Collects the brief in a multi-step wizard and uploads the reference files                                                                       |
-| Edit brief (`/runs/:id/edit`) | The same wizard, filled with the saved brief; only while the run has not started                                                                |
+| Edit brief (`/runs/:id/edit`) | The same wizard, filled with the saved brief, where uploads can be added or removed; only while the run has not started                         |
 | Run details (`/runs/:id`)     | Shows the brief and uploads; later the phase timeline and each phase result; hosts the approval panel, the slide previews and the export button |
 
 ## Brief form fields

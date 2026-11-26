@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 
+import i18n from '@/i18n'
 import { server } from '@/test/server'
 
 URL.createObjectURL = () => 'blob:preview'
@@ -35,5 +36,9 @@ globalThis.IntersectionObserver = function (
 } as unknown as typeof IntersectionObserver
 
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
+beforeEach(async () => {
+  localStorage.removeItem('language')
+  await i18n.changeLanguage('en')
+})
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())

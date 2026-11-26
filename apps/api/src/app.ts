@@ -62,6 +62,7 @@ export function createApp({ db, storage, queue }: AppDeps) {
   app.post('/api/runs/:id/phases/:phase/rerun', pipeline.rerun)
   app.post('/api/runs/:id/assets', uploadSingleFile, assets.upload)
   app.get('/api/assets/:id', assets.download)
+  app.delete('/api/assets/:id', assets.remove)
 
   app.use(errorHandler)
   return app

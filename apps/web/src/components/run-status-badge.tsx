@@ -1,19 +1,13 @@
 import type { RunStatus } from '@ai-post-recipe/shared'
+import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
 
-const LABELS: Record<RunStatus, string> = {
-  DRAFT: 'Draft',
-  RUNNING: 'Running',
-  AWAITING_APPROVAL: 'Awaiting approval',
-  COMPLETED: 'Completed',
-  FAILED: 'Failed',
-}
+import { RUN_STATUS_TONES } from '@/utils/status-tones'
 
 export function RunStatusBadge({ status }: { status: RunStatus }) {
+  const { t } = useTranslation()
   return (
-    <Badge variant={status === 'FAILED' ? 'destructive' : 'secondary'}>
-      {LABELS[status]}
-    </Badge>
+    <Badge variant={RUN_STATUS_TONES[status]}>{t(`runStatus.${status}`)}</Badge>
   )
 }

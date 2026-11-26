@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router'
 
 import { ReactQueryProvider } from '@/contexts/query-client'
+import '@/i18n'
 import '@/index.css'
 import { router } from '@/router'
 

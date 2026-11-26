@@ -12,6 +12,17 @@ export class AssetRepo {
     return this.db.asset.findUnique({ where: { id } })
   }
 
+  /**
+   * Deletes an asset whose run has no phase runs yet; the check is part of the
+   * delete. Returns whether it was deleted.
+   */
+  async deleteIfRunNotStarted(id: string) {
+    const { count } = await this.db.asset.deleteMany({
+      where: { id, run: { phases: { none: {} } } },
+    })
+    return count === 1
+  }
+
   listByRun(runId: string) {
     return this.db.asset.findMany({
       where: { runId },

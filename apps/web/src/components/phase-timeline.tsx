@@ -3,6 +3,7 @@ import {
   type PhaseKey,
   type PhaseRunDto,
 } from '@ai-post-recipe/shared'
+import { useTranslation } from 'react-i18next'
 
 import { ApprovalPanel } from '@/components/approval-panel'
 import { Badge } from '@/components/ui/badge'
@@ -12,12 +13,8 @@ import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
 
 import { useRerunPhase } from '@/hooks/queries/runs/useRerunPhase'
-import {
-  PHASE_LABELS,
-  PHASE_STATUS_LABELS,
-  formatDuration,
-  isPhaseActive,
-} from '@/utils/phases'
+import { formatDuration, isPhaseActive } from '@/utils/phases'
+import { phaseStatusTone } from '@/utils/status-tones'
 
 interface PhaseTimelineProps {
   runId: string
@@ -58,12 +55,15 @@ function PhaseItem({
   phase,
   canRerun,
 }: PhaseItemProps) {
+  const { t } = useTranslation()
   const rerun = useRerunPhase()
   const status = phase?.status
   const duration = phase && formatDuration(phase)
   const cost = phase?.costUsd ? `$${phase.costUsd.toFixed(4)}` : undefined
   const meta = [
-    phase && phase.attempt > 1 && `attempt ${phase.attempt}`,
+    phase &&
+      phase.attempt > 1 &&
+      t('phaseTimeline.attempt', { attempt: phase.attempt }),
     duration,
     cost,
     phase?.model,
@@ -83,7 +83,7 @@ function PhaseItem({
           <span className="w-5 text-sm text-muted-foreground tabular-nums">
             {index}
           </span>
-          <span className="font-medium">{PHASE_LABELS[phaseKey]}</span>
+          <span className="font-medium">{t(`phases.${phaseKey}`)}</span>
           {isPhaseActive(status) && <Spinner className="size-4" />}
         </div>
         <div className="flex items-center gap-2">
@@ -92,8 +92,8 @@ function PhaseItem({
               {meta.join(' · ')}
             </span>
           )}
-          <Badge variant={status === 'FAILED' ? 'destructive' : 'secondary'}>
-            {status ? PHASE_STATUS_LABELS[status] : 'Not started'}
+          <Badge variant={phaseStatusTone(status)}>
+            {t(`phaseStatus.${status ?? 'NOT_STARTED'}`)}
           </Badge>
           {status &&
             ['DONE', 'APPROVED', 'FAILED', 'STALE'].includes(status) && (
@@ -104,7 +104,7 @@ function PhaseItem({
                 disabled={!canRerun || rerun.isPending}
                 onClick={() => rerun.mutate({ id: runId, phase: phaseKey })}
               >
-                Run again
+                {t('phaseTimeline.runAgain')}
               </Button>
             )}
         </div>
@@ -121,7 +121,9 @@ function PhaseItem({
       {phase && (status === 'DONE' || status === 'APPROVED') && (
         <details className="mt-3 text-sm">
           <summary className="cursor-pointer text-muted-foreground">
-            {phase.editedOutput ? 'Output (edited at approval)' : 'Output'}
+            {phase.editedOutput
+              ? t('phaseTimeline.outputEdited')
+              : t('phaseTimeline.output')}
           </summary>
           <pre className="mt-2 scrollbar-thin max-h-80 overflow-auto rounded-md bg-muted p-3 text-xs">
             {JSON.stringify(phase.editedOutput ?? phase.output, null, 2)}

@@ -30,6 +30,7 @@ FR-04, FR-05, FR-06, FR-07, NFR-05, NFR-07, NFR-11
 
 - A run starts only when the operator presses **Start**; until then **Edit brief** opens the wizard with the saved brief.
 - `PUT /api/runs/:id` replaces the brief; once any phase has run it returns `409 RUN_ALREADY_STARTED`.
+- Uploaded references can be removed (`DELETE /api/assets/:id`) or added until the start; after it both return `409 RUN_ALREADY_STARTED`.
 
 **US-4.4** As a **developer**, I want a fake LLM provider, so that the whole pipeline can be tested without a key.
 
@@ -58,6 +59,7 @@ FR-04, FR-05, FR-06, FR-07, NFR-05, NFR-07, NFR-11
 - [x] 409 for every illegal transition, 400 for an unknown phase or an invalid edit
 - [x] `GET /api/runs/:id` returns the latest attempt of each phase
 - [x] `PUT /api/runs/:id` edits the brief until the run starts (the not-started check is part of the update)
+- [x] `DELETE /api/assets/:id` for uploaded references before the start; uploads after the start return 409
 
 **Web**
 
@@ -66,14 +68,15 @@ FR-04, FR-05, FR-06, FR-07, NFR-05, NFR-07, NFR-11
 - [x] `ApprovalPanel`: JSON editor checked against the shared schema; approve, approve with edits, run again
 - [x] Start / Continue button on the run details page
 - [x] Edit brief (`/runs/:id/edit`): the wizard filled with the saved brief, shown only before the start
+- [x] Remove button on uploaded references (run details and the edit wizard), only before the start
 
 **Tests**
 
 - [x] Unit tests for the run status and the next phase to run
 - [x] API tests: full run through both gates with an edit, 409s, invalid edit, re-run with stale phases, retry then success, failure after retries and continue
 - [x] Real pg-boss: job commits and rolls back with the transaction
-- [x] API tests: brief edit before the start, 409 after it, invalid brief, unknown run
-- [x] Web tests: start, approve, approve with edits, invalid JSON, brief edit, no edit after the start
+- [x] API tests: brief edit before the start, 409 after it, invalid brief, unknown run; reference delete before the start, 409 after it, upload after the start
+- [x] Web tests: start, approve, approve with edits, invalid JSON, brief edit, no edit after the start, reference removal
 
 ## Exit criteria
 

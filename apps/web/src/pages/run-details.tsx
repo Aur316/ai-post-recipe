@@ -1,16 +1,20 @@
+import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router'
 
+import { AssetGrid } from '@/components/asset-grid'
+import { BackLink } from '@/components/back-link'
 import { PhaseTimeline } from '@/components/phase-timeline'
 import { RunStatusBadge } from '@/components/run-status-badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-import { assetsQueryFunctions } from '@/data/query-functions/assets'
 import { useGetRunById } from '@/hooks/queries/runs/useGetRunById'
 import { useStartRun } from '@/hooks/queries/runs/useStartRun'
-import { UPLOAD_KIND_LABELS } from '@/utils/uploads'
+import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 
 export function RunDetails() {
+  const { t } = useTranslation()
+  const localized = useLocalizedPath()
   const { id = '' } = useParams()
   const { data: run, isPending } = useGetRunById({
     id,
@@ -22,19 +26,30 @@ export function RunDetails() {
   })
   const startRun = useStartRun()
 
-  if (isPending) return <p className="text-muted-foreground">Loading…</p>
-  if (!run) return <p className="text-muted-foreground">Run not found.</p>
+  if (isPending)
+    return <p className="text-muted-foreground">{t('common.loading')}</p>
+  if (!run) {
+    return (
+      <section className="space-y-6">
+        <BackLink to="/" label={t('runs.title')} />
+        <p className="text-muted-foreground">{t('common.runNotFound')}</p>
+      </section>
+    )
+  }
 
   const { brief } = run
   return (
     <section className="space-y-6">
+      <BackLink to="/" label={t('runs.title')} />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{run.brandName}</h1>
         <div className="flex items-center gap-3">
           <RunStatusBadge status={run.status} />
           {run.phases.length === 0 && (
             <Button asChild variant="outline">
-              <Link to={`/runs/${run.id}/edit`}>Edit brief</Link>
+              <Link to={localized(`/runs/${run.id}/edit`)}>
+                {t('runDetails.editBrief')}
+              </Link>
             </Button>
           )}
           {(run.status === 'DRAFT' || run.status === 'FAILED') && (
@@ -43,7 +58,9 @@ export function RunDetails() {
               disabled={startRun.isPending}
               onClick={() => startRun.mutate(run.id)}
             >
-              {run.phases.length ? 'Continue' : 'Start'}
+              {run.phases.length
+                ? t('runDetails.continue')
+                : t('runDetails.start')}
             </Button>
           )}
         </div>
@@ -51,7 +68,7 @@ export function RunDetails() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Phases</CardTitle>
+          <CardTitle>{t('runDetails.phases')}</CardTitle>
         </CardHeader>
         <CardContent>
           <PhaseTimeline runId={run.id} phases={run.phases} />
@@ -60,24 +77,24 @@ export function RunDetails() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Brief</CardTitle>
+          <CardTitle>{t('runDetails.brief')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <a className="underline" href={brief.instagramUrl}>
             {brief.instagramUrl}
           </a>
           <p>{brief.reason}</p>
-          <Detail label="Links">
+          <Detail label={t('runDetails.links')}>
             {brief.links.map((l) => (
               <li key={l.url}>
-                {l.type.toLowerCase()}:{' '}
+                {t(`brief.linkTypes.${l.type}`).toLowerCase()}:{' '}
                 <a className="underline" href={l.url}>
                   {l.url}
                 </a>
               </li>
             ))}
           </Detail>
-          <Detail label="Products">
+          <Detail label={t('runDetails.products')}>
             {brief.products.map((p) => (
               <li key={p.name}>
                 {p.url ? (
@@ -91,19 +108,21 @@ export function RunDetails() {
             ))}
           </Detail>
           <p>
-            <span className="font-medium">Audience:</span> {brief.audience}
+            <span className="font-medium">{t('runDetails.audience')}</span>{' '}
+            {brief.audience}
           </p>
           <p>
-            <span className="font-medium">Goals:</span> {brief.goals}
+            <span className="font-medium">{t('runDetails.goals')}</span>{' '}
+            {brief.goals}
           </p>
           {brief.inspiration && (
             <p>
-              <span className="font-medium">Inspiration:</span>{' '}
+              <span className="font-medium">{t('runDetails.inspiration')}</span>{' '}
               {brief.inspiration}
             </p>
           )}
           {brief.inspirationLinks.length > 0 && (
-            <Detail label="Inspiration links">
+            <Detail label={t('runDetails.inspirationLinks')}>
               {brief.inspirationLinks.map((url) => (
                 <li key={url}>
                   <a className="underline" href={url}>
@@ -115,46 +134,33 @@ export function RunDetails() {
           )}
           {brief.formats.length > 0 && (
             <p>
-              <span className="font-medium">Preferred formats:</span>{' '}
-              {brief.formats.map((f) => f.toLowerCase()).join(', ')}
+              <span className="font-medium">
+                {t('runDetails.preferredFormats')}
+              </span>{' '}
+              {brief.formats
+                .map((f) => t(`brief.formatTypes.${f}`).toLowerCase())
+                .join(', ')}
             </p>
           )}
           <p>
-            <span className="font-medium">Language:</span>{' '}
-            {brief.language === 'hr' ? 'Croatian' : 'English'}
+            <span className="font-medium">{t('runDetails.language')}</span>{' '}
+            {t(`outputLanguage.${brief.language}`)}
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>References ({run.assets.length})</CardTitle>
+          <CardTitle>
+            {t('runDetails.references', { count: run.assets.length })}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          {run.assets.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No uploads.</p>
-          ) : (
-            <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {run.assets.map((asset) => (
-                <li key={asset.id} className="space-y-1">
-                  <img
-                    src={assetsQueryFunctions.url(asset.id)}
-                    alt={
-                      UPLOAD_KIND_LABELS[
-                        asset.kind as keyof typeof UPLOAD_KIND_LABELS
-                      ] ?? asset.kind
-                    }
-                    className="aspect-square w-full rounded-md border object-cover"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {UPLOAD_KIND_LABELS[
-                      asset.kind as keyof typeof UPLOAD_KIND_LABELS
-                    ] ?? asset.kind}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
+          <AssetGrid
+            runId={run.id}
+            assets={run.assets}
+            removable={run.phases.length === 0}
+          />
         </CardContent>
       </Card>
     </section>

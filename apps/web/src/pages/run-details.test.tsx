@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { HttpResponse, http } from 'msw'
 
@@ -70,7 +70,7 @@ describe('Run details', () => {
         return new HttpResponse(null, { status: 202 })
       }),
     )
-    renderRoute(`/runs/${RUN_ID}`)
+    renderRoute(`/en/runs/${RUN_ID}`)
 
     expect(await screen.findAllByText('Not started')).toHaveLength(8)
     await user.click(screen.getByRole('button', { name: 'Start' }))
@@ -83,11 +83,11 @@ describe('Run details', () => {
         HttpResponse.json(run('DRAFT', [])),
       ),
     )
-    renderRoute(`/runs/${RUN_ID}`)
+    renderRoute(`/en/runs/${RUN_ID}`)
 
     expect(
       await screen.findByRole('link', { name: 'Edit brief' }),
-    ).toHaveAttribute('href', `/runs/${RUN_ID}/edit`)
+    ).toHaveAttribute('href', `/en/runs/${RUN_ID}/edit`)
   })
 
   it('hides the edit link once a phase has run', async () => {
@@ -96,10 +96,116 @@ describe('Run details', () => {
         HttpResponse.json(run('FAILED', [phaseRun('BRIEF', 'FAILED')])),
       ),
     )
-    renderRoute(`/runs/${RUN_ID}`)
+    renderRoute(`/en/runs/${RUN_ID}`)
 
     await screen.findByRole('button', { name: 'Continue' })
     expect(screen.queryByRole('link', { name: 'Edit brief' })).toBeNull()
+  })
+
+  it('links back to the runs list', async () => {
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(run('DRAFT', [])),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    expect(await screen.findByRole('link', { name: 'Runs' })).toHaveAttribute(
+      'href',
+      '/en',
+    )
+  })
+
+  it('links the brief editor back to its run', async () => {
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(run('DRAFT', [])),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}/edit`)
+
+    expect(
+      await screen.findByRole('link', { name: 'GymBeam Hrvatska' }),
+    ).toHaveAttribute('href', `/en/runs/${RUN_ID}`)
+  })
+
+  describe('references', () => {
+    const logo = {
+      id: '01a213f4-9d21-76ed-b4d4-2c2eb4573099',
+      runId: RUN_ID,
+      kind: 'UPLOAD_LOGO',
+      mimeType: 'image/png',
+      width: 8,
+      height: 8,
+      sizeBytes: 100,
+      createdAt: '2026-11-25T10:00:00.000Z',
+    }
+
+    it('removes an upload before the run starts', async () => {
+      const user = userEvent.setup()
+      let deleted = false
+      server.use(
+        http.get(`/api/runs/${RUN_ID}`, () =>
+          HttpResponse.json({ ...run('DRAFT', []), assets: [logo] }),
+        ),
+        http.delete(`/api/assets/${logo.id}`, () => {
+          deleted = true
+          return new HttpResponse(null, { status: 204 })
+        }),
+      )
+      renderRoute(`/en/runs/${RUN_ID}`)
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Remove logo' }),
+      )
+      const dialog = await screen.findByRole('alertdialog')
+      expect(deleted).toBe(false)
+      await user.click(within(dialog).getByRole('button', { name: 'Remove' }))
+      await waitFor(() => expect(deleted).toBe(true))
+      await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull())
+    })
+
+    it('keeps the upload when the removal is cancelled', async () => {
+      const user = userEvent.setup()
+      let deleted = false
+      server.use(
+        http.get(`/api/runs/${RUN_ID}`, () =>
+          HttpResponse.json({ ...run('DRAFT', []), assets: [logo] }),
+        ),
+        http.delete(`/api/assets/${logo.id}`, () => {
+          deleted = true
+          return new HttpResponse(null, { status: 204 })
+        }),
+      )
+      renderRoute(`/en/runs/${RUN_ID}`)
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Remove logo' }),
+      )
+      await user.click(
+        within(await screen.findByRole('alertdialog')).getByRole('button', {
+          name: 'Cancel',
+        }),
+      )
+
+      await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull())
+      expect(deleted).toBe(false)
+    })
+
+    it('keeps uploads once the run has started', async () => {
+      server.use(
+        http.get(`/api/runs/${RUN_ID}`, () =>
+          HttpResponse.json({
+            ...run('RUNNING', [phaseRun('BRIEF', 'RUNNING')]),
+            assets: [logo],
+          }),
+        ),
+      )
+      renderRoute(`/en/runs/${RUN_ID}`)
+
+      expect(await screen.findByRole('img', { name: 'Logo' })).toBeVisible()
+      expect(screen.queryByRole('button', { name: 'Remove logo' })).toBeNull()
+    })
   })
 
   describe('editing the brief', () => {
@@ -115,7 +221,7 @@ describe('Run details', () => {
           return HttpResponse.json(run('DRAFT', []))
         }),
       )
-      const router = renderRoute(`/runs/${RUN_ID}/edit`)
+      const router = renderRoute(`/en/runs/${RUN_ID}/edit`)
 
       const name = await screen.findByLabelText('Brand name')
       expect(name).toHaveValue('GymBeam Hrvatska')
@@ -130,7 +236,7 @@ describe('Run details', () => {
 
       await waitFor(() => expect(sent?.brandName).toBe('GymBeam HR'))
       await waitFor(() =>
-        expect(router.state.location.pathname).toBe(`/runs/${RUN_ID}`),
+        expect(router.state.location.pathname).toBe(`/en/runs/${RUN_ID}`),
       )
     })
 
@@ -140,7 +246,7 @@ describe('Run details', () => {
           HttpResponse.json(run('RUNNING', [phaseRun('BRIEF', 'RUNNING')])),
         ),
       )
-      renderRoute(`/runs/${RUN_ID}/edit`)
+      renderRoute(`/en/runs/${RUN_ID}/edit`)
 
       expect(await screen.findByText(/already started/)).toBeInTheDocument()
       expect(screen.queryByLabelText('Brand name')).toBeNull()
@@ -173,7 +279,7 @@ describe('Run details', () => {
 
     it('approves the proposal unchanged', async () => {
       const user = userEvent.setup()
-      renderRoute(`/runs/${RUN_ID}`)
+      renderRoute(`/en/runs/${RUN_ID}`)
 
       await user.click(await screen.findByRole('button', { name: 'Approve' }))
       await waitFor(() => expect(body).toEqual({}))
@@ -181,7 +287,7 @@ describe('Run details', () => {
 
     it('sends the edited version', async () => {
       const user = userEvent.setup()
-      renderRoute(`/runs/${RUN_ID}`)
+      renderRoute(`/en/runs/${RUN_ID}`)
 
       const editor = await screen.findByLabelText('Phase output')
       fireEvent.change(editor, {
@@ -197,7 +303,7 @@ describe('Run details', () => {
 
     it('does not send invalid JSON', async () => {
       const user = userEvent.setup()
-      renderRoute(`/runs/${RUN_ID}`)
+      renderRoute(`/en/runs/${RUN_ID}`)
 
       const editor = await screen.findByLabelText('Phase output')
       fireEvent.change(editor, { target: { value: '{ nope' } })

@@ -17,6 +17,7 @@ The API is REST over JSON. Every request and response body has a Zod schema in `
 | POST   | `/api/runs/:id/phases/:phase/rerun`                   | Re-runs a phase; later phases become `STALE`                                                                                                                       |
 | POST   | `/api/runs/:id/posts/:index/slides/:order/regenerate` | Regenerates one slide, with an optional instruction                                                                                                                |
 | GET    | `/api/assets/:id`                                     | Streams the file from storage                                                                                                                                      |
+| DELETE | `/api/assets/:id`                                     | Deletes an uploaded reference and its file while the run has not started; `409 RUN_ALREADY_STARTED` afterwards (uploads are refused the same way)                  |
 | GET    | `/api/runs/:id/export`                                | Downloads the ZIP                                                                                                                                                  |
 
 ## State rules
@@ -59,4 +60,4 @@ Every error uses one shape:
 - Allowed types: PNG, JPEG, WebP, and SVG for logos. Size limit: 10 MB per file.
 - The API reads width and height with sharp and stores them on the `Asset`.
 
-> **Current state:** health, runs (create, list, detail with the latest attempt of each phase, brief edit before the start), start, approve, re-run, asset upload and download exist. Start, approve and re-run answer `202 Accepted`: the work happens in the background. Slide regeneration and export follow in M7–M8.
+> **Current state:** health, runs (create, list, detail with the latest attempt of each phase, brief edit and reference delete before the start), start, approve, re-run, asset upload and download exist. Start, approve and re-run answer `202 Accepted`: the work happens in the background. Slide regeneration and export follow in M7–M8.
