@@ -1,0 +1,39 @@
+{
+  "phase": "PLAN",
+  "status": "APPROVED",
+  "attempt": 1,
+  "promptId": "plan@v2",
+  "model": "anthropic/claude-sonnet-5.5",
+  "tokensIn": 5117,
+  "tokensOut": 1712,
+  "costUsd": 0.027354,
+  "output": {
+    "posts": [
+      {
+        "goal": "Edukacija i više spremanja",
+        "index": 1,
+        "format": "CAROUSEL",
+        "concept": "Karusel od 5 slika pod naslovom 'Kreatin: koliko, kada i kako?'. Slajd 1: naslov velikim crnim slovima na bijeloj pozadini s narančastim akcentom (#FF4F1A) i pakiranjem Kreatin monohidrata. Slajd 2: 'Preporučeni dnevni unos: 3 g kreatina' kao velika brojka. Slajd 3: 'Uzimaj redovito, svaki dan' uz jednostavnu ilustraciju dnevne rutine (jutro, nakon treninga, večer), bez navođenja točnog broja tjedana. Slajd 4: mini podsjetnik 'Ne zaboravi piti dovoljno vode' u prijateljskom tonu, bez zdravstvenih obećanja. Slajd 5: poziv na akciju 'Spremi objavu za podsjetnik i napiši u komentar: uzimaš li kreatin već?' uz link na shop u opisu. Ne navoditi okuse, mikronizaciju ni udio čistog kreatina po mjerici jer nisu provjereni.",
+        "product": "Kreatin monohidrat",
+        "rationale": "Kratki praktični savjet s jasnom brojkom (3 g) odgovara inspiraciji brenda i traženom cilju spremanja i komentara. Karusel potiče listanje i spremanje kao podsjetnik, početnici dobivaju jasne upute, a redoviti vježbači pitanje za komentar. Koristimo samo provjerenu tvrdnju o 3 g dnevno, a ton ostaje prijateljski i praktičan."
+      },
+      {
+        "goal": "Predstavljanje proizvoda",
+        "index": 2,
+        "format": "IMAGE",
+        "concept": "Jedna premium, a pristupačna fotografija pakiranja Just Whey Grass-Fed Protein na čistoj bijeloj pozadini s narančastim (#FF4F1A) geometrijskim akcentom iza proizvoda i mjericom pored. Na slici tri kratke oznake u crnom: '22 g bjelančevina*', '6,5 g BCAA*', 'Cologne List®'. Sitna napomena na dnu: '*u dozi od 30 g, najmanje'. Naslov: 'Tri izvora sirutke. Jedna mjerica.' Opis: kratko objasniti da Just Whey objedinjuje koncentrat, izolat i hidrolizat sirutke, da je napravljen od mlijeka krava koje pasu travu i da sadrži probavne enzime DigeZyme®. Završiti pitanjem 'Koji ti je okus favorit?' i linkom na shop. Ne navoditi cijene ni zdravstvene tvrdnje izvan provjerenih.",
+        "product": "Just Whey Grass-Fed Protein",
+        "rationale": "Čist studijski kadar s bijelom pozadinom i narančastim akcentom prati vizualni identitet brenda i web prikaz proizvoda. Provjerene brojke (22 g bjelančevina, 6,5 g BCAA u 30 g, tri oblika sirutke, Cologne List®) daju povjerenje redovitim vježbačima koji uspoređuju dodatke, a pitanje o okusu potiče komentare."
+      },
+      {
+        "goal": "Interes za kupnju i angažman",
+        "index": 3,
+        "format": "STORY",
+        "concept": "Serija od 4 story framea na tamnoj pozadini s narančastim naglascima. Frame 1: anketa 'Što ti je prioritet u suplementaciji?' s opcijama 'Protein' i 'Kreatin'. Frame 2: Just Whey s brojkom '66 doza u pakiranju od 2000 g' i ocjenom '4,7 (8517 recenzija)' uz tekst 'Cijena od 26,95 €' i naznaku da se cijena odnosi na najmanje pakiranje na webu. Frame 3: kreatin s porukom 'Dnevno 3 g – jednostavna rutina' i stickerom pitanja 'Koja ti je najveća nedoumica oko kreatina?'. Frame 4: poziv na akciju s linkom na shop i podsjetnikom 'Besplatna dostava za narudžbe iznad 50 €'. Ton lagan i motivirajući, s pokojom šalom.",
+        "product": "Just Whey Grass-Fed Protein i Kreatin monohidrat",
+        "rationale": "Story format s anketom i pitanjem potiče izravnu interakciju, a brojke (66 doza, ocjena 4,7 iz 8517 recenzija, besplatna dostava iznad 50 €) su provjerene i potiču interes za kupnju. Povezuje oba proizvoda iz brifa i vodi publiku prema shopu, dok odgovori na pitanja daju ideje za budući sadržaj."
+      }
+    ]
+  },
+  "editedOutput": null
+}

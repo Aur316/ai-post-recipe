@@ -1,0 +1,162 @@
+{
+  "phase": "REVIEW",
+  "status": "DONE",
+  "attempt": 2,
+  "promptId": "review@v1",
+  "model": "anthropic/claude-sonnet-5.5",
+  "tokensIn": 27715,
+  "tokensOut": 9567,
+  "costUsd": 0.5219545,
+  "output": {
+    "score": 0.3,
+    "issues": [],
+    "slides": [
+      {
+        "order": 1,
+        "issues": [],
+        "passed": true,
+        "postIndex": 1,
+        "ruleIssues": [],
+        "regenerated": false
+      },
+      {
+        "order": 2,
+        "issues": [
+          "Headline sits close to the product jar and its label, and the product label 'Creatine Monohydrate' is partly cut off by the headline area.",
+          "A person is visible in the background performing a deadlift, so the background contains a recognisable person."
+        ],
+        "passed": false,
+        "postIndex": 1,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 3,
+        "issues": [
+          "Headline text overlaps the product label ('Creatine Monohydrate'), so the real label is covered and hard to read."
+        ],
+        "passed": false,
+        "postIndex": 1,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 4,
+        "issues": [
+          "Headline overlaps the product label 'Creatine Monohydrate', covering the real label and making both hard to read.",
+          "A person's hands and arm are visible in the top left background."
+        ],
+        "passed": false,
+        "postIndex": 1,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 5,
+        "issues": [],
+        "passed": true,
+        "postIndex": 1,
+        "ruleIssues": [],
+        "regenerated": false
+      },
+      {
+        "order": 1,
+        "issues": [],
+        "passed": true,
+        "postIndex": 2,
+        "ruleIssues": [],
+        "regenerated": false
+      },
+      {
+        "order": 1,
+        "issues": [
+          "Neon sign text in the background ('KTAP') is partly covered by the slide counter, and background signage is not allowed."
+        ],
+        "passed": false,
+        "postIndex": 3,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 2,
+        "issues": [
+          "Background shows a neon sign with readable letters ('ISOT THING' / 'FOORITLSI IS'), which is not allowed.",
+          "Body text overlaps the product jars and shaker, so product labels are covered.",
+          "Product labels on the jars are mostly dark and unreadable, so the real label is not shown."
+        ],
+        "passed": false,
+        "postIndex": 3,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 3,
+        "issues": [
+          "Background shows a neon 'GYM' sign, which is background text and not allowed.",
+          "Product jar and shaker labels show garbled letters ('UMEWI', 'AIKNTIJI', 'LI OT NE NI'), meaning fake or distorted product labels.",
+          "Text overlaps the product jar and shaker."
+        ],
+        "passed": false,
+        "postIndex": 3,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 4,
+        "issues": [
+          "Background shows a neon 'GYM' sign with background text, which is not allowed.",
+          "Orange accent line overlaps the bottom of the creatine jar, and the headline is very close to the product base."
+        ],
+        "passed": false,
+        "postIndex": 3,
+        "ruleIssues": [],
+        "regenerated": true
+      }
+    ],
+    "replaced": [
+      {
+        "order": 2,
+        "assetId": "01a218e3-d934-71b6-97a2-1be3559164ab",
+        "postIndex": 1,
+        "backgroundAssetId": "01a218e3-d5e3-72e1-868f-ec8e101156da"
+      },
+      {
+        "order": 3,
+        "assetId": "01a218e3-fed2-71d6-9ba3-1982e251577e",
+        "postIndex": 1,
+        "backgroundAssetId": "01a218e3-fba2-7051-8ad4-f6ba2d561795"
+      },
+      {
+        "order": 4,
+        "assetId": "01a218e4-2533-7318-9215-f6021483d76a",
+        "postIndex": 1,
+        "backgroundAssetId": "01a218e4-220a-7238-9f9a-f53a12470313"
+      },
+      {
+        "order": 1,
+        "assetId": "01a218e4-50f0-7007-a796-1857e6c6175a",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218e4-4cbc-7198-9a95-4d9464835a9a"
+      },
+      {
+        "order": 2,
+        "assetId": "01a218e4-7d6e-727a-950c-a3a43b4a929f",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218e4-799f-7404-8215-010a72986c7e"
+      },
+      {
+        "order": 3,
+        "assetId": "01a218e4-a50a-753c-9ac2-7c0d1640eb8a",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218e4-a0f5-7557-849b-7849b5ed71c5"
+      },
+      {
+        "order": 4,
+        "assetId": "01a218e4-c9c5-7746-83a2-7ee83a59f6aa",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218e4-c583-700e-9be4-c3305ea8a2f1"
+      }
+    ]
+  },
+  "editedOutput": null
+}
