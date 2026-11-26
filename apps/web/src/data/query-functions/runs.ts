@@ -18,6 +18,13 @@ export const runsQueryFunctions = {
     httpClient.get(`${ROOT}/${id}`),
   create: (brief: BriefInput): Promise<RunSummaryDto> =>
     httpClient.post(ROOT, brief),
+  update: ({
+    id,
+    brief,
+  }: {
+    id: string
+    brief: BriefInput
+  }): Promise<RunDetailDto> => httpClient.put(`${ROOT}/${id}`, brief),
   start: (id: string): Promise<void> => httpClient.post(`${ROOT}/${id}/start`),
   approvePhase: ({
     id,

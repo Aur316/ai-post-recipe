@@ -35,14 +35,26 @@ export class RunController {
 
   get = async (req: Request, res: Response) => {
     const { id } = validate(IdParams, req.params)
-    const { run, assets, phases } = await this.runs.get(id)
-    const body: RunDetailDto = {
-      ...toRunSummaryDto(run),
-      brief: Brief.parse(run.brief),
-      assets: assets.map(toAssetDto),
-      phases: phases.map(toPhaseRunDto),
-    }
-    res.json(body)
+    res.json(toRunDetailDto(await this.runs.get(id)))
+  }
+
+  update = async (req: Request, res: Response) => {
+    const { id } = validate(IdParams, req.params)
+    const brief = validate(Brief, req.body)
+    res.json(toRunDetailDto(await this.runs.update(id, brief)))
+  }
+}
+
+function toRunDetailDto({
+  run,
+  assets,
+  phases,
+}: Awaited<ReturnType<RunService['get']>>): RunDetailDto {
+  return {
+    ...toRunSummaryDto(run),
+    brief: Brief.parse(run.brief),
+    assets: assets.map(toAssetDto),
+    phases: phases.map(toPhaseRunDto),
   }
 }
 

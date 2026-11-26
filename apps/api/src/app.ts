@@ -56,6 +56,7 @@ export function createApp({ db, storage, queue }: AppDeps) {
   app.post('/api/runs', runs.create)
   app.get('/api/runs', runs.list)
   app.get('/api/runs/:id', runs.get)
+  app.put('/api/runs/:id', runs.update)
   app.post('/api/runs/:id/start', pipeline.start)
   app.post('/api/runs/:id/phases/:phase/approve', pipeline.approve)
   app.post('/api/runs/:id/phases/:phase/rerun', pipeline.rerun)

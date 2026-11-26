@@ -5,6 +5,7 @@ import {
   Brief,
   LinkType,
   PostFormat,
+  type RunDetailDto,
 } from '@ai-post-recipe/shared'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -34,6 +35,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 import { useUploadAsset } from '@/hooks/queries/assets/useUploadAsset'
 import { useCreateRun } from '@/hooks/queries/runs/useCreateRun'
+import { useUpdateRun } from '@/hooks/queries/runs/useUpdateRun'
 import { getApiErrorMessage } from '@/utils/helpers'
 import { type PendingUpload, rejectReason } from '@/utils/uploads'
 
@@ -83,17 +85,33 @@ const DEFAULT_VALUES: FormInput = {
   formats: [],
 }
 
-export function BriefForm() {
+/** The saved brief in the shape the form edits. */
+function toFormValues(brief: Brief): FormInput {
+  return {
+    ...brief,
+    products: brief.products.map((p) => ({ name: p.name, url: p.url ?? '' })),
+    inspirationLinks: brief.inspirationLinks.map((url) => ({ url })),
+  }
+}
+
+interface BriefFormProps {
+  /** A run that has not started yet; the form then edits its brief. */
+  run?: RunDetailDto
+}
+
+export function BriefForm({ run }: BriefFormProps) {
   const [step, setStep] = useState(0)
   const [uploads, setUploads] = useState<Array<PendingUpload>>([])
+  // Set once the brief is saved, so a retry only uploads the failed files.
   const [runId, setRunId] = useState<string>()
   const navigate = useNavigate()
   const createRun = useCreateRun()
+  const updateRun = useUpdateRun()
   const uploadAsset = useUploadAsset()
 
   const form = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(BriefFormSchema),
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: run ? toFormValues(run.brief) : DEFAULT_VALUES,
     // Validate a field when it loses focus, then live while it is corrected.
     mode: 'onTouched',
   })
@@ -116,16 +134,15 @@ export function BriefForm() {
   const patchUpload = (id: string, patch: Partial<PendingUpload>) =>
     setUploads((all) => all.map((u) => (u.id === id ? { ...u, ...patch } : u)))
 
-  /** Creates the run once, then uploads every file that is not uploaded yet. */
-  const submit = form.handleSubmit(async ({ inspirationLinks, ...brief }) => {
-    const id =
-      runId ??
-      (
-        await createRun.mutateAsync({
-          ...brief,
-          inspirationLinks: inspirationLinks.map((l) => l.url),
-        })
-      ).id
+  /** Saves the brief once, then uploads every file that is not uploaded yet. */
+  const submit = form.handleSubmit(async ({ inspirationLinks, ...values }) => {
+    const brief = {
+      ...values,
+      inspirationLinks: inspirationLinks.map((l) => l.url),
+    }
+    let id = runId
+    if (!id && run) id = (await updateRun.mutateAsync({ id: run.id, brief })).id
+    if (!id) id = (await createRun.mutateAsync(brief)).id
     setRunId(id)
 
     let failed = false
@@ -526,11 +543,7 @@ export function BriefForm() {
             type="submit"
             disabled={isSubmitting || hasInvalidFiles}
           >
-            {isSubmitting
-              ? 'Creating…'
-              : runId
-                ? 'Retry uploads'
-                : 'Create run'}
+            {submitLabel({ editing: !!run, saved: !!runId, isSubmitting })}
           </Button>
         ) : (
           <Button key="next" type="button" onClick={() => void next()}>
@@ -540,6 +553,20 @@ export function BriefForm() {
       </div>
     </form>
   )
+}
+
+function submitLabel({
+  editing,
+  saved,
+  isSubmitting,
+}: {
+  editing: boolean
+  saved: boolean
+  isSubmitting: boolean
+}) {
+  if (isSubmitting) return editing ? 'Saving…' : 'Creating…'
+  if (saved) return 'Retry uploads'
+  return editing ? 'Save changes' : 'Create run'
 }
 
 function FieldError({ message }: { message?: string }) {

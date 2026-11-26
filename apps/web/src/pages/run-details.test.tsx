@@ -77,6 +77,76 @@ describe('Run details', () => {
     await waitFor(() => expect(started).toBe(true))
   })
 
+  it('offers to edit the brief only before the run starts', async () => {
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(run('DRAFT', [])),
+      ),
+    )
+    renderRoute(`/runs/${RUN_ID}`)
+
+    expect(
+      await screen.findByRole('link', { name: 'Edit brief' }),
+    ).toHaveAttribute('href', `/runs/${RUN_ID}/edit`)
+  })
+
+  it('hides the edit link once a phase has run', async () => {
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(run('FAILED', [phaseRun('BRIEF', 'FAILED')])),
+      ),
+    )
+    renderRoute(`/runs/${RUN_ID}`)
+
+    await screen.findByRole('button', { name: 'Continue' })
+    expect(screen.queryByRole('link', { name: 'Edit brief' })).toBeNull()
+  })
+
+  describe('editing the brief', () => {
+    it('saves the edited brief and opens the run', async () => {
+      const user = userEvent.setup()
+      let sent: { brandName?: string } | undefined
+      server.use(
+        http.get(`/api/runs/${RUN_ID}`, () =>
+          HttpResponse.json(run('DRAFT', [])),
+        ),
+        http.put(`/api/runs/${RUN_ID}`, async ({ request }) => {
+          sent = (await request.json()) as typeof sent
+          return HttpResponse.json(run('DRAFT', []))
+        }),
+      )
+      const router = renderRoute(`/runs/${RUN_ID}/edit`)
+
+      const name = await screen.findByLabelText('Brand name')
+      expect(name).toHaveValue('GymBeam Hrvatska')
+      await user.clear(name)
+      await user.type(name, 'GymBeam HR')
+      for (let i = 0; i < 3; i++) {
+        await user.click(screen.getByRole('button', { name: 'Next' }))
+      }
+      await user.click(
+        await screen.findByRole('button', { name: 'Save changes' }),
+      )
+
+      await waitFor(() => expect(sent?.brandName).toBe('GymBeam HR'))
+      await waitFor(() =>
+        expect(router.state.location.pathname).toBe(`/runs/${RUN_ID}`),
+      )
+    })
+
+    it('does not show the form for a started run', async () => {
+      server.use(
+        http.get(`/api/runs/${RUN_ID}`, () =>
+          HttpResponse.json(run('RUNNING', [phaseRun('BRIEF', 'RUNNING')])),
+        ),
+      )
+      renderRoute(`/runs/${RUN_ID}/edit`)
+
+      expect(await screen.findByText(/already started/)).toBeInTheDocument()
+      expect(screen.queryByLabelText('Brand name')).toBeNull()
+    })
+  })
+
   describe('approval', () => {
     let body: unknown
     beforeEach(() => {

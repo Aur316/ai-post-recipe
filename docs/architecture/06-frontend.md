@@ -55,11 +55,12 @@ The app fills the screen: the header stays put and `main` scrolls pages that are
 
 ## Pages
 
-| Page                      | Purpose                                                                                                                                         |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Runs (`/`)                | Lists earlier runs with their status; starts a new run                                                                                          |
-| New run (`/runs/new`)     | Collects the brief in a multi-step wizard and uploads the reference files                                                                       |
-| Run details (`/runs/:id`) | Shows the brief and uploads; later the phase timeline and each phase result; hosts the approval panel, the slide previews and the export button |
+| Page                          | Purpose                                                                                                                                         |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Runs (`/`)                    | Lists earlier runs with their status; starts a new run                                                                                          |
+| New run (`/runs/new`)         | Collects the brief in a multi-step wizard and uploads the reference files                                                                       |
+| Edit brief (`/runs/:id/edit`) | The same wizard, filled with the saved brief; only while the run has not started                                                                |
+| Run details (`/runs/:id`)     | Shows the brief and uploads; later the phase timeline and each phase result; hosts the approval panel, the slide previews and the export button |
 
 ## Brief form fields
 
@@ -78,4 +79,4 @@ The `useGetRunById` hook will poll every 2 seconds while any phase is `RUNNING` 
 
 The approval panel turns the phase JSON into an editable form (for example, one card per post in the content plan). Saving sends the edited version with the approval, so the original AI proposal stays untouched in `output`.
 
-> **Current state:** runs list, the brief wizard with uploads, and the run details page with the brief, references, the phase timeline (status, attempt, duration, cost, model, prompt, output) and the approval panel (JSON editor checked against the shared phase schema; approve, approve with edits, run again). The page polls every 2 seconds while the run is `RUNNING`. Phase-specific views (analysis, plan, previews) follow in M5–M7.
+> **Current state:** runs list, the brief wizard with uploads (also used to edit the brief until the run starts), and the run details page with the brief, references, the phase timeline (status, attempt, duration, cost, model, prompt, output) and the approval panel (JSON editor checked against the shared phase schema; approve, approve with edits, run again). The page polls every 2 seconds while the run is `RUNNING`. Phase-specific views (analysis, plan, previews) follow in M5–M7.

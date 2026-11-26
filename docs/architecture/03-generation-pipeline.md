@@ -52,7 +52,7 @@ The run itself has a coarser status (`DRAFT`, `RUNNING`, `AWAITING_APPROVAL`, `C
 
 ## Run status
 
-The run status is derived from the latest attempt of each phase: `RUNNING` while any phase is queued or running, `AWAITING_APPROVAL` at a gate, `FAILED` when a phase failed, `COMPLETED` when all eight are done or approved, otherwise `DRAFT` (not started, or paused with stale phases). **Start** (shown as **Continue** after the first run) queues the first phase that is missing, failed or stale.
+The run status is derived from the latest attempt of each phase: `RUNNING` while any phase is queued or running, `AWAITING_APPROVAL` at a gate, `FAILED` when a phase failed, `COMPLETED` when all eight are done or approved, otherwise `DRAFT` (not started, or paused with stale phases). A new run is a `DRAFT` and does not start by itself: the operator can still edit the brief, and the edit is refused once any phase has run. **Start** (shown as **Continue** after the first run) queues the first phase that is missing, failed or stale.
 
 ## Retries
 

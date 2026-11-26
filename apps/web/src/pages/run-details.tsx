@@ -1,4 +1,4 @@
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 
 import { PhaseTimeline } from '@/components/phase-timeline'
 import { RunStatusBadge } from '@/components/run-status-badge'
@@ -32,6 +32,11 @@ export function RunDetails() {
         <h1 className="text-2xl font-semibold">{run.brandName}</h1>
         <div className="flex items-center gap-3">
           <RunStatusBadge status={run.status} />
+          {run.phases.length === 0 && (
+            <Button asChild variant="outline">
+              <Link to={`/runs/${run.id}/edit`}>Edit brief</Link>
+            </Button>
+          )}
           {(run.status === 'DRAFT' || run.status === 'FAILED') && (
             <Button
               type="button"
