@@ -144,20 +144,24 @@ function SlideButton({
   onClick: () => void
 }) {
   return (
-    <Button
-      type="button"
-      size="icon"
-      variant="secondary"
-      aria-label={label}
-      disabled={disabled}
-      onClick={onClick}
+    <div
       className={cn(
-        'absolute top-1/2 -translate-y-1/2 rounded-full opacity-90',
+        'pointer-events-none absolute inset-y-0 flex items-center',
         side === 'left' ? 'left-2' : 'right-2',
       )}
     >
-      {side === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-    </Button>
+      <Button
+        type="button"
+        size="icon"
+        variant="secondary"
+        aria-label={label}
+        disabled={disabled}
+        onClick={onClick}
+        className="pointer-events-auto rounded-full opacity-90"
+      >
+        {side === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+      </Button>
+    </div>
   )
 }
 
