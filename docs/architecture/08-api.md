@@ -11,6 +11,7 @@ The API is REST over JSON. Every request and response body has a Zod schema in `
 | GET    | `/api/runs`                                           | Lists runs newest first, paginated: `?page=1&size=20` (defaults from `DEFAULT_PAGE_SIZE`, max `MAX_PAGE_SIZE`), returns `{ items, total, page, size, totalPages }`   |
 | GET    | `/api/runs/:id`                                       | One run with its brief, uploads, the latest attempt of each phase, the sources of the latest research and its posts (from the approved plan, with copy once written) |
 | PUT    | `/api/runs/:id`                                       | Replaces the brief while no phase has started; `409 RUN_ALREADY_STARTED` afterwards                                                                                  |
+| DELETE | `/api/runs/:id`                                       | Deletes the run with its phases, sources, posts and stored files; `409 RUN_IN_PROGRESS` while a phase is queued or running                                           |
 | POST   | `/api/runs/:id/assets`                                | Uploads a file (multipart): screenshot, product photo, logo, other                                                                                                   |
 | POST   | `/api/runs/:id/start`                                 | Starts the first phase that is not finished                                                                                                                          |
 | POST   | `/api/runs/:id/phases/:phase/approve`                 | Approves a phase, optionally with an edited output; starts the next phase                                                                                            |
@@ -61,4 +62,4 @@ Every error uses one shape:
 - Allowed types: PNG, JPEG, WebP, and SVG for logos. Size limit: 10 MB per file.
 - The API reads width and height with sharp and stores them on the `Asset`.
 
-> **Current state:** health (with providers), runs (create, list, detail with the latest attempt of each phase, brief edit and reference delete before the start), start, approve, re-run, asset upload and download exist. Start, approve and re-run answer `202 Accepted`: the work happens in the background. Post edits and slide regeneration answer when they are done. Export follows in M8.
+> **Current state:** health (with providers), runs (create, list, detail with the latest attempt of each phase, brief edit and reference delete before the start, run delete), start, approve, re-run, asset upload and download exist. Start, approve and re-run answer `202 Accepted`: the work happens in the background. Post edits and slide regeneration answer when they are done. Export follows in M8.

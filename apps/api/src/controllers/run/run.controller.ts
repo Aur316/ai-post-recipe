@@ -42,6 +42,12 @@ export class RunController {
     res.json(toRunDetailDto(await this.runs.get(id)))
   }
 
+  remove = async (req: Request, res: Response) => {
+    const { id } = validate(IdParams, req.params)
+    await this.runs.remove(id)
+    res.status(204).end()
+  }
+
   update = async (req: Request, res: Response) => {
     const { id } = validate(IdParams, req.params)
     const brief = validate(Brief, req.body)

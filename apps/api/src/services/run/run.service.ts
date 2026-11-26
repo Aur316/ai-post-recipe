@@ -1,6 +1,8 @@
 import type { Brief, ListQuery } from '@ai-post-recipe/shared'
 
 import { ConflictError, NotFoundError } from '../../lib/errors.js'
+import { logger } from '../../lib/logger.js'
+import type { StorageProvider } from '../../providers/storage/storage.provider.js'
 import type { AssetRepo } from '../../repositories/asset/asset.repo.js'
 import type { PhaseRunRepo } from '../../repositories/phase-run/phase-run.repo.js'
 import type { PostRepo } from '../../repositories/post/post.repo.js'
@@ -14,10 +16,40 @@ export class RunService {
     private readonly phaseRuns: PhaseRunRepo,
     private readonly sources: SourceRepo,
     private readonly posts: PostRepo,
+    private readonly storage: StorageProvider,
   ) {}
 
   create(brief: Brief) {
     return this.runs.create(briefColumns(brief))
+  }
+
+  /**
+   * Deletes the run with everything that belongs to it: its phases, sources
+   * and posts (cascade in the database) and every stored file. Refused while
+   * a phase is queued or running, so no job is cut off half way.
+   */
+  async remove(id: string) {
+    if (!(await this.runs.findById(id))) throw new NotFoundError('Run', id)
+    const phases = await this.phaseRuns.latestByRun(id)
+    if (phases.some((p) => p.status === 'PENDING' || p.status === 'RUNNING')) {
+      throw new ConflictError(
+        'RUN_IN_PROGRESS',
+        'A phase is running; delete the run when it has finished',
+      )
+    }
+    const files = await this.assets.listByRun(id)
+    await this.runs.delete(id)
+    // The rows are gone; a file that cannot be deleted is only wasted space.
+    await Promise.all(
+      files.map((file) =>
+        this.storage.delete(file.storageKey).catch((error: unknown) => {
+          logger.warn(
+            { err: error, storageKey: file.storageKey },
+            'Could not delete a stored file',
+          )
+        }),
+      ),
+    )
   }
 
   /** Replaces the brief while the run has not been started. */

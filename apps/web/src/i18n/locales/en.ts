@@ -121,6 +121,14 @@ export const en = {
     noSearch:
       "No web search (no SERPER_API_KEY): only the brief's links were read.",
   },
+  deleteRun: {
+    button: 'Delete run',
+    title: 'Delete the run for {{brand}}?',
+    description:
+      'The brief, the uploaded references, every phase result, the generated images and the posts are deleted for good. This cannot be undone.',
+    confirm: 'Delete',
+    deleting: 'Deleting…',
+  },
   common: {
     loading: 'Loading…',
     remove: 'Remove',
@@ -310,6 +318,7 @@ export const en = {
     RUN_COMPLETED: 'Every phase is done.',
     PHASE_NOT_AWAITING_APPROVAL: 'This phase is not waiting for approval.',
     PHASE_NOT_RERUNNABLE: 'This phase cannot be run again now.',
+    POST_NOT_FOUND: 'The post does not exist.',
     RUN_ALREADY_STARTED:
       'The run has already started; the brief and references can no longer change.',
     ASSET_NOT_DELETABLE: 'Only uploaded references can be deleted.',

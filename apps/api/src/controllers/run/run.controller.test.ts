@@ -147,6 +147,51 @@ describe('runs', () => {
       expect(res.status).toBe(400)
     })
 
+    describe('deleting', () => {
+      it('deletes the run, its rows and its stored files', async () => {
+        const { id } = RunSummaryDto.parse((await createRun()).body)
+        await request(ctx.app)
+          .post(`/api/runs/${id}/assets`)
+          .field('kind', 'UPLOAD_LOGO')
+          .attach('file', await png(), {
+            filename: 'logo.png',
+            contentType: 'image/png',
+          })
+        await request(ctx.app).post(`/api/runs/${id}/start`)
+        await ctx.queue.drain()
+        expect(
+          [...ctx.storage.objects.keys()].some((k) => k.includes(id)),
+        ).toBe(true)
+
+        const res = await request(ctx.app).delete(`/api/runs/${id}`)
+
+        expect(res.status).toBe(204)
+        expect((await request(ctx.app).get(`/api/runs/${id}`)).status).toBe(404)
+        expect(await ctx.db.phaseRun.count({ where: { runId: id } })).toBe(0)
+        expect(await ctx.db.asset.count({ where: { runId: id } })).toBe(0)
+        expect(
+          [...ctx.storage.objects.keys()].some((k) => k.includes(id)),
+        ).toBe(false)
+      })
+
+      it('refuses while a phase is running', async () => {
+        const { id } = RunSummaryDto.parse((await createRun()).body)
+        await request(ctx.app).post(`/api/runs/${id}/start`)
+
+        const res = await request(ctx.app).delete(`/api/runs/${id}`)
+
+        expect(res.status).toBe(409)
+        expect(ErrorResponse.parse(res.body).error.code).toBe('RUN_IN_PROGRESS')
+        await ctx.queue.drain()
+      })
+
+      it('returns 404 for an unknown run', async () => {
+        expect(
+          (await request(ctx.app).delete(`/api/runs/${UNKNOWN_ID}`)).status,
+        ).toBe(404)
+      })
+    })
+
     it('returns 404 for an unknown run', async () => {
       const res = await request(ctx.app)
         .put(`/api/runs/${UNKNOWN_ID}`)

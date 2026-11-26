@@ -461,6 +461,52 @@ describe('Run details', () => {
     })
   })
 
+  it('deletes the run after confirmation and goes back to the list', async () => {
+    const user = userEvent.setup()
+    let deleted = false
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(run('COMPLETED', [])),
+      ),
+      http.delete(`/api/runs/${RUN_ID}`, () => {
+        deleted = true
+        return new HttpResponse(null, { status: 204 })
+      }),
+      http.get('/api/runs', () =>
+        HttpResponse.json({
+          items: [],
+          total: 0,
+          page: 1,
+          size: 20,
+          totalPages: 0,
+        }),
+      ),
+    )
+    const router = renderRoute(`/en/runs/${RUN_ID}`)
+
+    await user.click(await screen.findByRole('button', { name: 'Delete run' }))
+    const dialog = await screen.findByRole('alertdialog')
+    expect(dialog).toHaveTextContent('Delete the run for GymBeam Hrvatska?')
+    expect(deleted).toBe(false)
+    await user.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+    await waitFor(() => expect(deleted).toBe(true))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/en'))
+  })
+
+  it('cannot delete a run while a phase runs', async () => {
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(run('RUNNING', [phaseRun('BRIEF', 'RUNNING')])),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    expect(
+      await screen.findByRole('button', { name: 'Delete run' }),
+    ).toBeDisabled()
+  })
+
   describe('references', () => {
     const logo = {
       id: '01a213f4-9d21-76ed-b4d4-2c2eb4573099',
