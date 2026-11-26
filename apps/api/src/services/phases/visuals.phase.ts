@@ -72,7 +72,7 @@ export const visualsPhase: Phase<'VISUALS'> = {
   },
 }
 
-/** In website mode, the screenshots the research took, for covers without a product photo. */
+/** In website mode, the screenshots the research took: input for the backgrounds. */
 export async function websiteShots(ctx: PhaseContext) {
   if (ctx.brief.styleSource !== 'WEBSITE') return []
   const ids = captureAssetIds(ctx.outputs.RESEARCH?.captures ?? [])

@@ -1,8 +1,10 @@
-import type { PhaseOutputs } from '@ai-post-recipe/shared'
+import { Brief, type PhaseOutputs } from '@ai-post-recipe/shared'
 import { describe, expect, it } from 'vitest'
 
 import { FakeImageProvider } from '../../providers/image/fake-image.provider.js'
 import { FakeRenderer } from '../../providers/renderer/fake.renderer.js'
+import { png } from '../../test/context.js'
+import { gymbeamBrief } from '../../test/fixtures.js'
 import { phaseContext } from '../../test/phase-context.js'
 import { visualsPhase } from './visuals.phase.js'
 
@@ -102,7 +104,7 @@ describe('visuals phase', () => {
     // The scene theme, not the concept, which may describe stickers or text.
     expect(images.requests[1]?.prompt.user).toContain('Kreatin')
     expect(images.requests[1]?.prompt.user).not.toContain('c2')
-    expect(result).toMatchObject({ promptId: 'background@v3', model: 'fake' })
+    expect(result).toMatchObject({ promptId: 'background@v5', model: 'fake' })
     expect(result.usage?.costUsd).toBeCloseTo(0.12)
 
     const [first, , secondPost] = renderer.rendered
@@ -121,5 +123,53 @@ describe('visuals phase', () => {
     ])
     expect(saved.filter((k) => k === 'GENERATED_BACKGROUND')).toHaveLength(3)
     expect(saved.filter((k) => k === 'RENDERED_SLIDE')).toHaveLength(7)
+  })
+
+  it('in website mode gives the image model a website screenshot as input, and keeps it off the slide', async () => {
+    const images = new FakeImageProvider()
+    const renderer = new FakeRenderer()
+    const screenshot = await png(40, 25)
+
+    await visualsPhase.execute(
+      phaseContext({
+        brief: Brief.parse({ ...gymbeamBrief(), styleSource: 'WEBSITE' }),
+        outputs: {
+          ...outputs,
+          RESEARCH: {
+            queries: [],
+            sources: [],
+            captures: [
+              {
+                url: 'https://gymbeam.hr',
+                assetIds: ['cap-1'],
+                colors: [],
+                error: null,
+              },
+            ],
+          },
+        },
+        images,
+        renderer,
+        loadUploads: () => Promise.resolve([]),
+        readAsset: () =>
+          Promise.resolve({
+            data: screenshot,
+            mimeType: 'image/png',
+            width: 40,
+            height: 25,
+          }),
+        saveAsset: (kind) => Promise.resolve(kind),
+      }),
+    )
+
+    expect(images.requests).toHaveLength(3)
+    for (const request of images.requests) {
+      expect(request.images?.map((i) => i.label)).toEqual([
+        "Screenshot of the brand's website (input only)",
+      ])
+      expect(request.prompt.user).toContain('attached screenshot')
+    }
+    // The slides show no screenshot: without a product photo there is no product.
+    expect(renderer.rendered.every((r) => !r.productImageUrl)).toBe(true)
   })
 })

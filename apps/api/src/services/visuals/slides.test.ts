@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { brandImages } from './slides.js'
+import { brandImages, referenceShot } from './slides.js'
 
 const upload = (kind: 'UPLOAD_LOGO' | 'UPLOAD_PRODUCT', id: string) => ({
   id,
@@ -17,29 +17,26 @@ describe('brandImages', () => {
       upload('UPLOAD_PRODUCT', 'p1'),
       upload('UPLOAD_PRODUCT', 'p2'),
     ]
-    expect(brandImages(uploads, 3, [shot('s1')])).toMatchObject({
+    expect(brandImages(uploads, 3)).toMatchObject({
       logo: { id: 'logo' },
       product: { id: 'p1' },
-      frame: 'none',
     })
   })
 
-  it('without product photos shows a different website screenshot per post, in a browser frame', () => {
-    const shots = [shot('hero'), shot('features'), shot('pricing')]
-    expect(brandImages([], 1, shots)).toMatchObject({
-      product: shots[0],
-      frame: 'browser',
-    })
-    expect(brandImages([], 2, shots)).toMatchObject({
-      product: shots[1],
-      frame: 'browser',
-    })
-  })
-
-  it('shows no product without photos or screenshots', () => {
-    expect(brandImages([], 1, [])).toMatchObject({
+  it('shows no product without product photos', () => {
+    expect(brandImages([upload('UPLOAD_LOGO', 'logo')], 1)).toMatchObject({
+      logo: { id: 'logo' },
       product: undefined,
-      frame: 'none',
     })
+  })
+})
+
+describe('referenceShot', () => {
+  it('gives each post a different website screenshot as input for its background', () => {
+    const shots = [shot('hero'), shot('features')]
+    expect(referenceShot(shots, 1)).toBe(shots[0])
+    expect(referenceShot(shots, 2)).toBe(shots[1])
+    expect(referenceShot(shots, 3)).toBe(shots[0])
+    expect(referenceShot([], 1)).toBeUndefined()
   })
 })

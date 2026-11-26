@@ -43,8 +43,6 @@ export interface SlideProps {
   tokens: BrandTokens
   backgroundUrl?: string
   productImageUrl?: string
-  /** `browser`: the product is a website or app screenshot, shown in a browser window. */
-  productFrame?: 'none' | 'browser'
   logoUrl?: string
 }
 
@@ -170,22 +168,18 @@ export function Slide(props: SlideProps) {
             justifyContent: 'center',
           }}
         >
-          {props.productFrame === 'browser' ? (
-            <BrowserFrame src={props.productImageUrl} />
-          ) : (
-            <img
-              src={props.productImageUrl}
-              alt=""
-              data-product
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                objectFit: 'contain',
-                borderRadius: 32,
-                boxShadow: '0 40px 80px rgba(0,0,0,0.45)',
-              }}
-            />
-          )}
+          <img
+            src={props.productImageUrl}
+            alt=""
+            data-product
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              objectFit: 'contain',
+              borderRadius: 32,
+              boxShadow: '0 40px 80px rgba(0,0,0,0.45)',
+            }}
+          />
         </div>
       )}
 
@@ -294,48 +288,6 @@ function Header(props: SlideProps & { top: number; pad: number }) {
           {props.order}/{props.total}
         </span>
       )}
-    </div>
-  )
-}
-
-/** A website screenshot in a simple browser window, as on SaaS posts. */
-function BrowserFrame({ src }: { src: string }) {
-  return (
-    <div
-      data-product
-      style={{
-        width: '100%',
-        borderRadius: 24,
-        overflow: 'hidden',
-        background: '#1C1C22',
-        border: '2px solid rgba(255,255,255,0.12)',
-        boxShadow: '0 40px 80px rgba(0,0,0,0.55)',
-      }}
-    >
-      <div style={{ display: 'flex', gap: 12, padding: '18px 22px' }}>
-        {['#FF5F57', '#FEBC2E', '#28C840'].map((color) => (
-          <span
-            key={color}
-            style={{
-              width: 18,
-              height: 18,
-              borderRadius: 9,
-              background: color,
-            }}
-          />
-        ))}
-      </div>
-      <img
-        src={src}
-        alt=""
-        style={{
-          display: 'block',
-          width: '100%',
-          aspectRatio: '16 / 10',
-          objectFit: 'cover',
-          objectPosition: 'top',
-        }}
-      />
     </div>
   )
 }

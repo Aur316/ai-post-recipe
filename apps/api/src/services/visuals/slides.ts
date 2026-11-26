@@ -9,7 +9,7 @@ import {
 
 import type { ImageProvider } from '../../providers/image/image.provider.js'
 import type { SlideRenderer } from '../../providers/renderer/slide-renderer.js'
-import { type Upload, toDataUrl } from '../phases/images.js'
+import { type Upload, shrinkImage, toDataUrl } from '../phases/images.js'
 
 /** What making a slide needs; the visuals phase and slide regeneration share it. */
 export interface SlideTools {
@@ -18,8 +18,8 @@ export interface SlideTools {
   prompts: PromptLibrary
   uploads: Array<Upload>
   /**
-   * Website screenshots (website mode). Without an uploaded product photo,
-   * the cover shows one of these in a browser frame instead.
+   * Website screenshots (website mode). The image model gets one per post as
+   * input for the background; they are never placed on the slide as they are.
    */
   websiteShots: Array<{ data: Buffer; mimeType: string }>
   /** Stores a file of the run and returns its asset id. */
@@ -45,6 +45,15 @@ export interface PostDesign {
 export const tokensFor = (analysis?: AnalysisOutput): BrandTokens =>
   brandTokens(analysis?.colors ?? [])
 
+/** The website screenshot a post's background is drawn from: a different part of the site per post. */
+export const referenceShot = (
+  websiteShots: SlideTools['websiteShots'],
+  postIndex: number,
+) =>
+  websiteShots.length
+    ? websiteShots[(postIndex - 1) % websiteShots.length]
+    : undefined
+
 /** Asks the image model for a background (no text, logo or product) and saves it. */
 export async function makeBackground(
   tools: SlideTools,
@@ -52,6 +61,7 @@ export async function makeBackground(
   instruction?: string,
 ) {
   const story = post.format === 'STORY'
+  const shot = referenceShot(tools.websiteShots, post.index)
   const prompt = tools.prompts.render('background', {
     brand: post.brief.brandName,
     colors:
@@ -63,11 +73,22 @@ export async function makeBackground(
     // text, and image models then draw them.
     theme: `${post.product ? `${post.product}, ` : ''}${post.goal}`,
     textArea: story ? 'lower third' : 'bottom third',
+    reference: shot
+      ? "Reference: the attached screenshot of the brand's website."
+      : '',
     instruction: instruction ? `Extra instruction: ${instruction}` : '',
   })
   const image = await tools.images.generate({
     prompt,
     aspectRatio: aspectRatioFor(post.format),
+    images: shot
+      ? [
+          {
+            label: "Screenshot of the brand's website (input only)",
+            ...(await shrinkImage(shot.data)),
+          },
+        ]
+      : undefined,
   })
   const assetId = await tools.saveAsset(
     'GENERATED_BACKGROUND',
@@ -79,31 +100,15 @@ export async function makeBackground(
 
 /**
  * What a slide shows besides the text: the logo, and the post's product photo,
- * one per post in upload order. Without product photos, a website screenshot
- * (a different part of the site per post) stands in, framed as a browser.
+ * one per post in upload order. Without product photos the slide shows none.
  */
-export function brandImages(
-  uploads: Array<Upload>,
-  postIndex: number,
-  websiteShots: Array<{ data: Buffer; mimeType: string }> = [],
-) {
+export function brandImages(uploads: Array<Upload>, postIndex: number) {
   const logo = uploads.find((u) => u.kind === 'UPLOAD_LOGO')
   const products = uploads.filter((u) => u.kind === 'UPLOAD_PRODUCT')
-  if (products.length) {
-    return {
-      logo,
-      product: products[(postIndex - 1) % products.length],
-      frame: 'none' as const,
-    }
-  }
-  const shot = websiteShots.length
-    ? websiteShots[(postIndex - 1) % websiteShots.length]
+  const product = products.length
+    ? products[(postIndex - 1) % products.length]
     : undefined
-  return {
-    logo,
-    product: shot,
-    frame: shot ? ('browser' as const) : ('none' as const),
-  }
+  return { logo, product }
 }
 
 /** Renders one slide with the real logo, product photo and text, and saves the PNG. */
@@ -117,11 +122,7 @@ export async function renderSlide(
     background: { data: Buffer; mimeType: string }
   },
 ) {
-  const { logo, product, frame } = brandImages(
-    tools.uploads,
-    input.post.index,
-    tools.websiteShots,
-  )
+  const { logo, product } = brandImages(tools.uploads, input.post.index)
   const png = await tools.renderer.render({
     format: input.post.format,
     layout: input.total === 1 ? 'cover' : layoutFor(input.order, input.total),
@@ -132,7 +133,6 @@ export async function renderSlide(
     tokens: tokensFor(input.post.analysis),
     backgroundUrl: await toDataUrl(input.background),
     productImageUrl: product ? await toDataUrl(product) : undefined,
-    productFrame: frame,
     logoUrl: logo ? await toDataUrl(logo) : undefined,
   })
   return tools.saveAsset('RENDERED_SLIDE', png, 'image/png')
