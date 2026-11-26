@@ -35,6 +35,8 @@ const storage = new S3Storage({
 const queue = new PgBossQueue(env.DATABASE_URL, {
   retryLimit: 2,
   retryDelaySeconds: 5,
+  // The slowest phase (review with remade slides) takes about two minutes.
+  expireInSeconds: 300,
 })
 
 const llm: LlmProvider = env.OPENROUTER_API_KEY
@@ -89,10 +91,20 @@ createApp({
   logger.info(`api: http://localhost:${env.PORT}`)
 })
 
-for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-  process.once(signal, () => {
-    void Promise.allSettled([renderer.close(), capturer.close()]).finally(() =>
-      process.exit(0),
-    )
+/**
+ * Stop the queue first and let a running phase finish; exiting at once would
+ * leave its job active until it expires, and the run would stall meanwhile.
+ * Then close the browsers that render slides and take screenshots.
+ */
+async function shutdown() {
+  logger.info('Stopping: waiting for running phases to finish')
+  await queue.stop().catch((error: unknown) => {
+    logger.warn({ err: error }, 'The queue did not stop cleanly')
   })
+  await Promise.allSettled([renderer.close(), capturer.close()])
+  process.exit(0)
+}
+
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.once(signal, () => void shutdown())
 }

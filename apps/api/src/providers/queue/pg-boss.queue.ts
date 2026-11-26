@@ -23,8 +23,9 @@ export class PgBossQueue implements JobQueue {
     await this.boss.start()
   }
 
-  async stop() {
-    await this.boss.stop({ graceful: true })
+  /** Waits for running jobs to finish (up to `timeoutMs`), so none is cut off half way. */
+  async stop(timeoutMs = 60_000) {
+    await this.boss.stop({ graceful: true, timeout: timeoutMs })
   }
 
   async send<T extends object>(queue: string, data: T, options?: SendOptions) {
@@ -33,6 +34,7 @@ export class PgBossQueue implements JobQueue {
       retryLimit: this.retry.retryLimit,
       retryDelay: this.retry.retryDelaySeconds,
       retryBackoff: true,
+      expireInSeconds: this.retry.expireInSeconds ?? 300,
       db: options?.tx ? asPgBossDb(options.tx) : undefined,
     })
   }
