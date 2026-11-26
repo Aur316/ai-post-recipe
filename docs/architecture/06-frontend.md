@@ -65,6 +65,12 @@ The interface is in English and Croatian (`react-i18next`). The language is the 
 > [!NOTE]
 > The pages are rendered in the browser. Google renders JavaScript, so the tags above are seen, but other crawlers may not run it. If public pages (e.g. a landing page) are added later, prerendering them per language would make them visible to every crawler. Run pages hold private work and should be `noindex` on a public domain.
 
+## Errors
+
+- **Render errors** are caught on two levels. `ErrorBoundary` (the only class component, as React offers error boundaries only as classes) wraps the page inside `AppLayout`: a failing page shows a fallback with **Try again** and **Back to the runs**, the header keeps working, and opening another page clears the error. The router's `errorElement` (`RouteError`) and a boundary in `main.tsx` catch what fails outside a page (the layout, the router, the providers) with a full-screen fallback. In development the fallback also shows the error message.
+- **Unknown addresses** show a 404 page (`pages/not-found.tsx`) inside the layout, with a link back to the runs and `<meta name="robots" content="noindex">`. A path without a language gets one first (`/foo` → `/en/foo`). A run that does not exist (API 404) shows the same page.
+- **Failed requests** are not render errors: queries and mutations show a toast, form errors appear next to their fields. A query that fails with 4xx is not retried and shows no toast, because the page shows the problem (e.g. the 404 page).
+
 ## Layout and scrolling
 
 The app fills the screen: the header stays put and `main` scrolls pages that are taller than the screen. List pages (runs) fill `main` and scroll only their list, with the `scrollbar-thin` utility from `index.css` (thin, theme-aware). The infinite scroll observes that list container (`rootRef`).

@@ -4,11 +4,25 @@ export const en = {
     description:
       'Turns an Instagram brand brief into three finished posts, phase by phase, with human approval.',
   },
+  errorPage: {
+    title: 'Something went wrong',
+    description:
+      'This page hit an unexpected error. Try again, or go back to the runs.',
+    tryAgain: 'Try again',
+    backToRuns: 'Back to the runs',
+    details: 'Error details',
+  },
+  notFound: {
+    title: 'Page not found',
+    description:
+      'This address does not exist, or what it pointed to was deleted.',
+    backToRuns: 'Back to the runs',
+  },
   common: {
     loading: 'Loading…',
     remove: 'Remove',
     cancel: 'Cancel',
-    runNotFound: 'Run not found.',
+    runNotFound: 'Run not found',
     somethingWentWrong: 'Something went wrong',
   },
   layout: {

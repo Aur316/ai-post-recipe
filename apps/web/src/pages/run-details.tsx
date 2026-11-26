@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useGetRunById } from '@/hooks/queries/runs/useGetRunById'
 import { useStartRun } from '@/hooks/queries/runs/useStartRun'
 import { useLocalizedPath } from '@/hooks/useLocalizedPath'
+import { NotFound } from '@/pages/not-found'
 
 export function RunDetails() {
   const { t } = useTranslation()
@@ -28,14 +29,7 @@ export function RunDetails() {
 
   if (isPending)
     return <p className="text-muted-foreground">{t('common.loading')}</p>
-  if (!run) {
-    return (
-      <section className="space-y-6">
-        <BackLink to="/" label={t('runs.title')} />
-        <p className="text-muted-foreground">{t('common.runNotFound')}</p>
-      </section>
-    )
-  }
+  if (!run) return <NotFound title={t('common.runNotFound')} />
 
   const { brief } = run
   return (

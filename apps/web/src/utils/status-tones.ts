@@ -1,6 +1,5 @@
 import type { PhaseStatus, RunStatus } from '@ai-post-recipe/shared'
 
-/** Badge variants that carry the meaning of a status. */
 export type StatusTone = 'neutral' | 'info' | 'warning' | 'success' | 'danger'
 
 export const RUN_STATUS_TONES: Record<RunStatus, StatusTone> = {
@@ -11,7 +10,6 @@ export const RUN_STATUS_TONES: Record<RunStatus, StatusTone> = {
   FAILED: 'danger',
 }
 
-/** `undefined` is a phase that has not started yet. */
 export const phaseStatusTone = (status?: PhaseStatus): StatusTone => {
   switch (status) {
     case 'PENDING':

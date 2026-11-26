@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { Link, Outlet } from 'react-router'
+import { Link, Outlet, useLocation } from 'react-router'
 
+import { ErrorBoundary } from '@/components/error-boundary'
+import { ErrorFallback } from '@/components/error-fallback'
 import { LanguageToggle } from '@/components/language-toggle'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Toaster } from '@/components/ui/sonner'
@@ -12,6 +14,7 @@ export function AppLayout() {
   const { theme, toggleTheme } = useTheme()
   const { t } = useTranslation()
   const localized = useLocalizedPath()
+  const { pathname } = useLocation()
 
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
@@ -30,7 +33,13 @@ export function AppLayout() {
           The bottom padding sits on the page itself, so it stays below content that overflows. */}
       <main className="scrollbar-thin min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto h-full max-w-5xl px-4 pt-8 *:pb-8">
-          <Outlet />
+          {/* A page that fails keeps the header; another page clears the error. */}
+          <ErrorBoundary
+            resetKey={pathname}
+            fallback={(props) => <ErrorFallback {...props} />}
+          >
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </main>
       <Toaster theme={theme} />

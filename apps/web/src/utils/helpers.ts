@@ -9,10 +9,6 @@ type TranslatedErrorCode = keyof Translation['apiErrors']
 const isTranslatedErrorCode = (code: string): code is TranslatedErrorCode =>
   code in en.apiErrors
 
-/**
- * The API error in the interface language: a known error code is translated,
- * otherwise the API's own (English) message is shown.
- */
 export const getApiErrorMessage = (
   error: unknown,
   fallback?: string,

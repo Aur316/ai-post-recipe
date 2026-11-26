@@ -16,7 +16,6 @@ export interface PendingUpload {
   error?: string
 }
 
-/** Same rules as the API, so the user sees the reason before uploading. */
 export const rejectReason = (file: File, kind: UploadAssetKind) => {
   if (!(UPLOAD_MIME_TYPES as ReadonlyArray<string>).includes(file.type)) {
     return i18n.t('uploader.onlyImages')

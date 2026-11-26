@@ -6,11 +6,25 @@ export const hr: Translation = {
     description:
       'Pretvara brif Instagram brenda u tri gotove objave, fazu po fazu, uz ljudsko odobrenje.',
   },
+  errorPage: {
+    title: 'Nešto je pošlo po zlu',
+    description:
+      'Na ovoj stranici dogodila se neočekivana pogreška. Pokušaj ponovno ili se vrati na pokretanja.',
+    tryAgain: 'Pokušaj ponovno',
+    backToRuns: 'Natrag na pokretanja',
+    details: 'Detalji pogreške',
+  },
+  notFound: {
+    title: 'Stranica nije pronađena',
+    description:
+      'Ova adresa ne postoji ili je ono na što je upućivala obrisano.',
+    backToRuns: 'Natrag na pokretanja',
+  },
   common: {
     loading: 'Učitavanje…',
     remove: 'Ukloni',
     cancel: 'Odustani',
-    runNotFound: 'Pokretanje nije pronađeno.',
+    runNotFound: 'Pokretanje nije pronađeno',
     somethingWentWrong: 'Nešto je pošlo po zlu',
   },
   layout: {
