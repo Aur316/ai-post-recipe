@@ -131,6 +131,29 @@ export const hr: Translation = {
     confirm: 'Obriši',
     deleting: 'Brisanje…',
   },
+  review: {
+    score: 'Ocjena',
+    passed: 'Prošli slajdovi',
+    regenerated: 'Ponovno izrađeni',
+    remade: 'ponovno izrađen',
+  },
+  export: {
+    download: 'Preuzmi ZIP',
+    summary:
+      '{{files}} datoteka: mapa za svaku objavu sa slajdovima, opisom i metapodacima, te izvori i rezultat svake faze. Preuzimanje uvijek sadrži zadnje izmjene.',
+  },
+  usage: {
+    short: '{{cost}} · {{tokens}} tokena',
+    details: 'Trošak i tokeni po fazi',
+    title: 'Trošak i tokeni',
+    phase: 'Faza',
+    attempts: 'Pokušaji',
+    tokensIn: 'Ulazni tokeni',
+    tokensOut: 'Izlazni tokeni',
+    cost: 'Trošak',
+    total: 'Ukupno',
+    note: 'Računa se svaki pokušaj, uključujući ponovna pokretanja i ponovno izrađene slajdove.',
+  },
   common: {
     loading: 'Učitavanje…',
     remove: 'Ukloni',
@@ -320,6 +343,7 @@ export const hr: Translation = {
     RUN_COMPLETED: 'Sve su faze gotove.',
     PHASE_NOT_AWAITING_APPROVAL: 'Ova faza ne čeka odobrenje.',
     PHASE_NOT_RERUNNABLE: 'Ova se faza sada ne može ponovno pokrenuti.',
+    NOTHING_TO_EXPORT: 'Pokretanje još nema objava za izvoz.',
     POST_NOT_FOUND: 'Objava ne postoji.',
     RUN_ALREADY_STARTED:
       'Pokretanje je već započelo; brif i reference više se ne mogu mijenjati.',

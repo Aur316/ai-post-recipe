@@ -30,6 +30,9 @@ apps/api/src/
 │  ├─ run/                  # run.service.ts: creating, listing and reading runs
 │  ├─ pipeline/             # pipeline.service.ts: state machine (start, approve, re-run); run-status.ts
 │  ├─ phases/               # one file per phase: brief, research, analysis, plan, copy, visuals, review, export
+│  ├─ review/               # slide-check.ts: rule checks of a rendered slide
+│  ├─ visuals/              # slides.ts: background and slide rendering, shared by the visuals phase, review and regenerate
+│  ├─ post/                 # post.service.ts: caption edits, regenerating one slide
 │  └─ export/               # export.service.ts: builds the ZIP
 ├─ repositories/            # Prisma access, one folder per table
 │  ├─ run/                  # run.repo.ts (+ .test.ts)
@@ -118,4 +121,4 @@ Phases call the model through `runPrompt(ctx, promptId, schema, values, images?)
 
 The phase runner wraps the provider in `MeteredLlm` for each attempt: it adds up tokens and cost of every call (failed ones too) and refuses a call once the run has spent `MAX_COST_USD_PER_RUN`. Without `OPENROUTER_API_KEY` the API uses `FakeLlmProvider` with recorded answers, logs a warning, reports `llm: "fake"` in `/api/health`, and the web app shows a demo-mode banner.
 
-> **Current state:** research, analysis, plan, post text and visuals are real (fetcher, Serper, OpenRouter text, vision and image models, Playwright); review and export are placeholders until M8.
+> **Current state:** research, analysis, plan, post text and visuals are real (fetcher, Serper, OpenRouter text, vision and image models, Playwright); review and export check and package them.

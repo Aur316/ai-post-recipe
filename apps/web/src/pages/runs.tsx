@@ -6,6 +6,7 @@ import { Link } from 'react-router'
 import { InfiniteScrollSpinner } from '@/components/infinite-scroll-spinner'
 import { RunStatusBadge } from '@/components/run-status-badge'
 import { Button } from '@/components/ui/button'
+import { UsageBadge } from '@/components/usage-summary'
 
 import { cn } from '@/lib/utils'
 
@@ -58,7 +59,12 @@ export function Runs() {
                       {new Date(run.createdAt).toLocaleString(i18n.language)}
                     </p>
                   </div>
-                  <RunStatusBadge status={run.status} />
+                  <div className="flex shrink-0 items-center gap-2">
+                    {run.status === 'COMPLETED' && (
+                      <UsageBadge usage={run.usage} />
+                    )}
+                    <RunStatusBadge status={run.status} />
+                  </div>
                 </Link>
               </li>
             ))}

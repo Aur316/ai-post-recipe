@@ -58,7 +58,6 @@ const search: SearchProvider = env.SERPER_API_KEY
   ? new SerperProvider(env.SERPER_API_KEY)
   : new NoopSearchProvider()
 
-// MODEL_<PROMPT ID> in the environment overrides a prompt's model.
 const prompts = PromptLibrary.load(process.env)
 
 await storage.ensureBucket()
@@ -87,7 +86,6 @@ createApp({
   logger.info(`api: http://localhost:${env.PORT}`)
 })
 
-// Close the browser that renders slides when the process stops.
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.once(signal, () => {
     void renderer.close().finally(() => process.exit(0))

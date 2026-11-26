@@ -129,6 +129,29 @@ export const en = {
     confirm: 'Delete',
     deleting: 'Deleting…',
   },
+  review: {
+    score: 'Score',
+    passed: 'Slides passed',
+    regenerated: 'Made again',
+    remade: 'made again',
+  },
+  export: {
+    download: 'Download ZIP',
+    summary:
+      '{{files}} files: a folder per post with the slides, caption and meta data, plus sources and every phase output. The download always has the latest edits.',
+  },
+  usage: {
+    short: '{{cost}} · {{tokens}} tokens',
+    details: 'Cost and tokens per phase',
+    title: 'Cost and tokens',
+    phase: 'Phase',
+    attempts: 'Attempts',
+    tokensIn: 'Input tokens',
+    tokensOut: 'Output tokens',
+    cost: 'Cost',
+    total: 'Total',
+    note: 'Every attempt counts, including re-runs and regenerated slides.',
+  },
   common: {
     loading: 'Loading…',
     remove: 'Remove',
@@ -318,6 +341,7 @@ export const en = {
     RUN_COMPLETED: 'Every phase is done.',
     PHASE_NOT_AWAITING_APPROVAL: 'This phase is not waiting for approval.',
     PHASE_NOT_RERUNNABLE: 'This phase cannot be run again now.',
+    NOTHING_TO_EXPORT: 'The run has no posts to export yet.',
     POST_NOT_FOUND: 'The post does not exist.',
     RUN_ALREADY_STARTED:
       'The run has already started; the brief and references can no longer change.',

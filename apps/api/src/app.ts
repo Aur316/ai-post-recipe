@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto'
 import { pinoHttp } from 'pino-http'
 
 import { AssetController } from './controllers/asset/asset.controller.js'
+import { ExportController } from './controllers/export/export.controller.js'
 import { HealthController } from './controllers/health/health.controller.js'
 import { PipelineController } from './controllers/pipeline/pipeline.controller.js'
 import { PostController } from './controllers/post/post.controller.js'
@@ -20,6 +21,7 @@ import { PostRepo } from './repositories/post/post.repo.js'
 import { RunRepo } from './repositories/run/run.repo.js'
 import { SourceRepo } from './repositories/source/source.repo.js'
 import { AssetService } from './services/asset/asset.service.js'
+import { ExportService } from './services/export/export.service.js'
 import { PipelineService } from './services/pipeline/pipeline.service.js'
 import { PostService, type SlideDeps } from './services/post/post.service.js'
 import { RunService } from './services/run/run.service.js'
@@ -54,6 +56,7 @@ export function createApp({ db, storage, queue, providers, slides }: AppDeps) {
   )
   const health = new HealthController(db, storage, providers)
   const posts = new PostController(new PostService(db, storage, slides))
+  const exports = new ExportController(new ExportService(db, storage))
 
   const app = express()
   app.disable('x-powered-by')
@@ -78,6 +81,7 @@ export function createApp({ db, storage, queue, providers, slides }: AppDeps) {
   app.post('/api/runs/:id/start', pipeline.start)
   app.post('/api/runs/:id/phases/:phase/approve', pipeline.approve)
   app.post('/api/runs/:id/phases/:phase/rerun', pipeline.rerun)
+  app.get('/api/runs/:id/export', exports.download)
   app.patch('/api/runs/:id/posts/:index', posts.update)
   app.post(
     '/api/runs/:id/posts/:index/slides/:order/regenerate',

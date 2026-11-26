@@ -3,10 +3,12 @@ import { useState } from 'react'
 import {
   AnalysisOutput,
   CopyOutput,
+  ExportOutput,
   type PhaseKey,
   type PhaseRunDto,
   PlanOutput,
   ResearchOutput,
+  ReviewOutput,
   type RunDetailDto,
 } from '@ai-post-recipe/shared'
 import { useTranslation } from 'react-i18next'
@@ -14,10 +16,13 @@ import { useTranslation } from 'react-i18next'
 import { AnalysisView } from '@/components/analysis-view'
 import { BriefSummaryView } from '@/components/brief-summary-view'
 import { CopyView } from '@/components/copy-view'
+import { DownloadZipButton } from '@/components/download-zip-button'
 import { PlanView } from '@/components/plan-view'
 import { PostsView } from '@/components/posts-view'
 import { ResearchView } from '@/components/research-view'
+import { ReviewView } from '@/components/review-view'
 import { Button } from '@/components/ui/button'
+import { UsageTable } from '@/components/usage-summary'
 
 import { findChanges } from '@/utils/changes'
 
@@ -34,6 +39,16 @@ export function OutputView({
 }) {
   if (phase === 'BRIEF') return run ? <BriefSummaryView run={run} /> : null
   // The rendered slides live on the posts, with their current text.
+  if (phase === 'REVIEW') {
+    const parsed = ReviewOutput.safeParse(value)
+    return parsed.success ? <ReviewView review={parsed.data} /> : null
+  }
+  if (phase === 'EXPORT') {
+    const parsed = ExportOutput.safeParse(value)
+    return parsed.success && run ? (
+      <ExportView run={run} files={parsed.data.files} />
+    ) : null
+  }
   if (phase === 'VISUALS') {
     return run?.posts.length ? <PostsView run={run} /> : null
   }
@@ -57,7 +72,16 @@ export function OutputView({
 }
 
 export const hasOutputView = (phase: PhaseKey) =>
-  ['BRIEF', 'RESEARCH', 'ANALYSIS', 'PLAN', 'COPY', 'VISUALS'].includes(phase)
+  [
+    'BRIEF',
+    'RESEARCH',
+    'ANALYSIS',
+    'PLAN',
+    'COPY',
+    'VISUALS',
+    'REVIEW',
+    'EXPORT',
+  ].includes(phase)
 
 /**
  * A finished phase as it reads. When the person edited it at approval, the
@@ -141,3 +165,18 @@ const show = (value: unknown) =>
     : typeof value === 'string'
       ? value
       : JSON.stringify(value)
+
+function ExportView({ run, files }: { run: RunDetailDto; files: number }) {
+  const { t } = useTranslation()
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3 text-sm">
+        <span className="text-muted-foreground">
+          {t('export.summary', { files })}
+        </span>
+        <DownloadZipButton runId={run.id} />
+      </div>
+      <UsageTable usage={run.usage} byPhase={run.usageByPhase} />
+    </div>
+  )
+}

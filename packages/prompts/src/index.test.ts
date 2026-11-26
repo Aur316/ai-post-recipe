@@ -90,6 +90,7 @@ describe('PromptLibrary', () => {
       'background',
       'copy',
       'plan',
+      'review',
     ])
   })
 })

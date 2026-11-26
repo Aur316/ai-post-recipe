@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "seed": "pnpm --filter api db:seed",
-    "postinstall": "node scripts/setup-env.mjs"
+    "postinstall": "node scripts/setup-env.mjs",
+    "seed:demo": "pnpm --filter api db:seed:demo"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.3",

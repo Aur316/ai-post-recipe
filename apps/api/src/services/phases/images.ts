@@ -93,6 +93,7 @@ const EXTENSIONS: Record<string, string> = {
   'image/png': 'png',
   'image/jpeg': 'jpg',
   'image/webp': 'webp',
+  'application/zip': 'zip',
 }
 
 /** Saves a file the pipeline made (a background, a slide) as an asset of the run. */
@@ -106,7 +107,9 @@ export async function saveGeneratedAsset(
 ) {
   const id = uuidv7()
   const storageKey = `runs/${runId}/${kind}/${id}.${EXTENSIONS[mimeType] ?? 'bin'}`
-  const { width, height } = await sharp(data).metadata()
+  const { width, height } = mimeType.startsWith('image/')
+    ? await sharp(data).metadata()
+    : { width: undefined, height: undefined }
   await storage.put(storageKey, data, mimeType)
   return assets.create({
     id,

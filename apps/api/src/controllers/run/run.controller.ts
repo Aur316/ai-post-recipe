@@ -9,6 +9,7 @@ import {
   type RunListResponse,
   type RunSummaryDto,
   type SourceDto,
+  type Usage,
 } from '@ai-post-recipe/shared'
 import type { Request, Response } from 'express'
 
@@ -25,14 +26,16 @@ export class RunController {
   create = async (req: Request, res: Response) => {
     const brief = validate(Brief, req.body)
     const run = await this.runs.create(brief)
-    res.status(201).json(toRunSummaryDto(run))
+    res
+      .status(201)
+      .json(toRunSummaryDto(run, { costUsd: 0, tokensIn: 0, tokensOut: 0 }))
   }
 
   list = async (req: Request, res: Response) => {
     const result = await this.runs.list(validate(ListQuery, req.query))
     const body: RunListResponse = {
       ...result,
-      items: result.items.map(toRunSummaryDto),
+      items: result.items.map(({ run, usage }) => toRunSummaryDto(run, usage)),
     }
     res.json(body)
   }
@@ -61,9 +64,12 @@ function toRunDetailDto({
   phases,
   sources,
   posts,
+  usage,
+  usageByPhase,
 }: Awaited<ReturnType<RunService['get']>>): RunDetailDto {
   return {
-    ...toRunSummaryDto(run),
+    ...toRunSummaryDto(run, usage),
+    usageByPhase,
     brief: Brief.parse(run.brief),
     assets: assets.map(toAssetDto),
     phases: phases.map(toPhaseRunDto),
@@ -100,7 +106,7 @@ function toSourceDto(source: Source): SourceDto {
   }
 }
 
-function toRunSummaryDto(run: Run): RunSummaryDto {
+function toRunSummaryDto(run: Run, usage: Usage): RunSummaryDto {
   return {
     id: run.id,
     brandName: run.brandName,
@@ -109,5 +115,6 @@ function toRunSummaryDto(run: Run): RunSummaryDto {
     status: run.status,
     createdAt: run.createdAt.toISOString(),
     updatedAt: run.updatedAt.toISOString(),
+    usage,
   }
 }

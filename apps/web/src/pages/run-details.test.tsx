@@ -75,6 +75,8 @@ const run = (status: string, phases: Array<ReturnType<typeof phaseRun>>) => ({
   phases,
   sources: [] as Array<unknown>,
   posts: [] as Array<unknown>,
+  usage: { costUsd: 0, tokensIn: 0, tokensOut: 0 },
+  usageByPhase: [] as Array<unknown>,
 })
 
 describe('Run details', () => {
@@ -505,6 +507,105 @@ describe('Run details', () => {
     expect(
       await screen.findByRole('button', { name: 'Delete run' }),
     ).toBeDisabled()
+  })
+
+  it('shows the review and offers the ZIP', async () => {
+    const review = {
+      score: 0.5,
+      issues: ['Post 1, caption: "40" appears in no source'],
+      replaced: [],
+      slides: [
+        {
+          postIndex: 1,
+          order: 1,
+          passed: true,
+          issues: [],
+          ruleIssues: [],
+          regenerated: true,
+        },
+        {
+          postIndex: 1,
+          order: 2,
+          passed: false,
+          issues: ['Text overlaps the shelf'],
+          ruleIssues: [],
+          regenerated: false,
+        },
+      ],
+    }
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json({
+          ...run('COMPLETED', [
+            phaseRun('REVIEW', 'DONE', review),
+            phaseRun('EXPORT', 'DONE', { assetId: 'zip', files: 12 }),
+          ]),
+          posts: [
+            {
+              id: crypto.randomUUID(),
+              index: 1,
+              format: 'IMAGE',
+              goal: 'g',
+              concept: 'c',
+              rationale: 'r',
+              product: 'p',
+              caption: 'Caption',
+              hashtags: [],
+              slides: [],
+            },
+          ],
+        }),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    expect(await screen.findByText('50%')).toBeInTheDocument()
+    expect(screen.getByText('Text overlaps the shelf')).toBeInTheDocument()
+    expect(screen.getByText('made again')).toBeInTheDocument()
+    expect(screen.getAllByText(/appears in no source/).length).toBeGreaterThan(
+      0,
+    )
+    const links = screen.getAllByRole('link', { name: 'Download ZIP' })
+    expect(links[0]).toHaveAttribute('href', `/api/runs/${RUN_ID}/export`)
+  })
+
+  it('shows the cost and tokens, with a breakdown per phase', async () => {
+    const user = userEvent.setup()
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json({
+          ...run('COMPLETED', [phaseRun('ANALYSIS', 'APPROVED', analysis)]),
+          usage: { costUsd: 0.7593, tokensIn: 98_000, tokensOut: 17_000 },
+          usageByPhase: [
+            {
+              phase: 'ANALYSIS',
+              attempts: 1,
+              costUsd: 0.06,
+              tokensIn: 27_000,
+              tokensOut: 4_000,
+            },
+            {
+              phase: 'REVIEW',
+              attempts: 2,
+              costUsd: 0.45,
+              tokensIn: 50_000,
+              tokensOut: 2_000,
+            },
+          ],
+        }),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    const button = await screen.findByRole('button', {
+      name: 'Cost and tokens per phase',
+    })
+    expect(button).toHaveTextContent('$0.76 · 115K tokens')
+    await user.click(button)
+    const table = await screen.findByRole('table')
+    expect(within(table).getByText('Brand analysis')).toBeInTheDocument()
+    expect(within(table).getByText('$0.45')).toBeInTheDocument()
+    expect(within(table).getByText('Total')).toBeInTheDocument()
   })
 
   describe('references', () => {

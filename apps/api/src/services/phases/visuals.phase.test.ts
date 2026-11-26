@@ -102,7 +102,7 @@ describe('visuals phase', () => {
     // The scene theme, not the concept, which may describe stickers or text.
     expect(images.requests[1]?.prompt.user).toContain('Kreatin')
     expect(images.requests[1]?.prompt.user).not.toContain('c2')
-    expect(result).toMatchObject({ promptId: 'background@v2', model: 'fake' })
+    expect(result).toMatchObject({ promptId: 'background@v3', model: 'fake' })
     expect(result.usage?.costUsd).toBeCloseTo(0.12)
 
     const [first, , secondPost] = renderer.rendered

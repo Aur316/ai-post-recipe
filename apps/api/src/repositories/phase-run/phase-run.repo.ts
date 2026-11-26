@@ -73,6 +73,43 @@ export class PhaseRunRepo {
     })
   }
 
+  /** Usage per phase over every attempt, in phase order. */
+  async usageByPhase(runId: string) {
+    const rows = await this.db.phaseRun.groupBy({
+      by: ['phase'],
+      where: { runId },
+      _count: { _all: true },
+      _sum: { costUsd: true, tokensIn: true, tokensOut: true },
+      orderBy: { phase: 'asc' },
+    })
+    return rows.map((r) => ({
+      phase: r.phase,
+      attempts: r._count._all,
+      costUsd: Number(r._sum.costUsd ?? 0),
+      tokensIn: r._sum.tokensIn ?? 0,
+      tokensOut: r._sum.tokensOut ?? 0,
+    }))
+  }
+
+  /** Total usage of each run, for a page of the runs list. */
+  async usageOfRuns(runIds: Array<string>) {
+    const rows = await this.db.phaseRun.groupBy({
+      by: ['runId'],
+      where: { runId: { in: runIds } },
+      _sum: { costUsd: true, tokensIn: true, tokensOut: true },
+    })
+    return new Map(
+      rows.map((r) => [
+        r.runId,
+        {
+          costUsd: Number(r._sum.costUsd ?? 0),
+          tokensIn: r._sum.tokensIn ?? 0,
+          tokensOut: r._sum.tokensOut ?? 0,
+        },
+      ]),
+    )
+  }
+
   /** Sum of `costUsd` over every attempt of every phase of the run. */
   async totalCost(runId: string) {
     const { _sum } = await this.db.phaseRun.aggregate({

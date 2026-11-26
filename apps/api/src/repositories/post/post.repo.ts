@@ -61,6 +61,14 @@ export class PostRepo {
     }
   }
 
+  /** Puts slides that were made again (by the review) on their posts. */
+  async replaceSlides(runId: string, slides: Array<RenderedSlide>) {
+    for (const slide of slides) {
+      const post = await this.findByIndex(runId, slide.postIndex)
+      if (post) await this.setSlideAsset(post.id, slide.order, slide.assetId)
+    }
+  }
+
   /** Replaces the PNG of one slide, e.g. after regenerating it. */
   async setSlideAsset(postId: string, order: number, assetId: string) {
     const post = await this.db.post.findUniqueOrThrow({ where: { id: postId } })

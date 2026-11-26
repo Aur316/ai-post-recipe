@@ -49,6 +49,17 @@ const DEFAULT_FIXTURES: Record<string, Fixture> = {
       product: 'True Whey',
     })),
   }),
+  // Passes every slide listed in the prompt ("post 2, slide 3 of 4").
+  review: (request) => ({
+    slides: [
+      ...request.prompt.user.matchAll(/post (\d+), slide (\d+) of/g),
+    ].map((m) => ({
+      postIndex: Number(m[1]),
+      order: Number(m[2]),
+      passed: true,
+      issues: [],
+    })),
+  }),
   copy: () => ({
     posts: [1, 2, 3].map((index) => ({
       index,
