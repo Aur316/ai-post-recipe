@@ -22,7 +22,7 @@ describe('Brief form', () => {
     renderRoute('/en/runs/new')
 
     await user.type(
-      screen.getByLabelText('Instagram profile URL'),
+      screen.getByLabelText('Instagram profile URL (optional)'),
       'https://facebook.com/x',
     )
     await user.click(screen.getByRole('button', { name: 'Next' }))
@@ -68,7 +68,7 @@ describe('Brief form', () => {
 
     await user.type(screen.getByLabelText('Brand name'), 'GymBeam Hrvatska')
     await user.type(
-      screen.getByLabelText('Instagram profile URL'),
+      screen.getByLabelText('Instagram profile URL (optional)'),
       'https://www.instagram.com/gymbeamhr/',
     )
     await user.type(
@@ -110,5 +110,58 @@ describe('Brief form', () => {
       language: 'hr',
     })
     expect(uploadedKinds).toEqual(['UPLOAD_LOGO'])
+  })
+
+  it('reads the style from the website: no Instagram, only logo and product photos', async () => {
+    const user = userEvent.setup()
+    let sentBrief: unknown
+    server.use(
+      http.post('/api/runs', async ({ request }) => {
+        sentBrief = await request.json()
+        return HttpResponse.json(createdRun, { status: 201 })
+      }),
+      http.get('/api/runs/r1', () =>
+        HttpResponse.json({ ...createdRun, brief: {}, assets: [] }),
+      ),
+    )
+    renderRoute('/en/runs/new')
+
+    await user.type(screen.getByLabelText('Brand name'), 'Revyan')
+    await user.type(
+      screen.getByLabelText('Why this brand?'),
+      'A B2B SaaS to test the recipe.',
+    )
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+    await user.type(
+      screen.getByLabelText('Link 1 URL'),
+      'https://revyan.io/hu/',
+    )
+    await user.type(screen.getByLabelText('Product 1 name'), 'Revyan')
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+    await user.type(screen.getByLabelText('Target audience'), 'Small teams')
+    await user.type(screen.getByLabelText('Goals'), 'Sign-ups')
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+
+    await user.click(
+      await screen.findByRole('switch', {
+        name: "Read the brand's style from its website",
+      }),
+    )
+    await user.upload(
+      screen.getByTestId('file-input'),
+      new File(['png'], 'screenshot-home.png', { type: 'image/png' }),
+    )
+    // A screenshot is filed as a product photo; screenshots are not offered.
+    expect(
+      screen.getByRole('combobox', { name: 'File type' }),
+    ).toHaveTextContent('Product photo')
+
+    await user.click(screen.getByRole('button', { name: 'Create run' }))
+    await waitFor(() =>
+      expect(sentBrief).toMatchObject({
+        instagramUrl: '',
+        styleSource: 'WEBSITE',
+      }),
+    )
   })
 })

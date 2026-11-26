@@ -15,6 +15,7 @@ import {
 import { ruleIssues } from '../review/slide-check.js'
 import { makeBackground, renderSlide } from '../visuals/slides.js'
 import { type Phase, type PhaseContext, runPrompt } from './phase.js'
+import { websiteShots } from './visuals.phase.js'
 
 /** A failing slide is made again at most this often. */
 export const MAX_REGENERATIONS = 1
@@ -129,6 +130,7 @@ export const reviewPhase: Phase<'REVIEW'> = {
         renderer: ctx.renderer,
         prompts: ctx.prompts,
         uploads: await ctx.loadUploads(),
+        websiteShots: await websiteShots(ctx),
         saveAsset: (...args: Parameters<typeof ctx.saveAsset>) =>
           ctx.saveAsset(...args),
       }

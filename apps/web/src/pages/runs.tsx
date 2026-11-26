@@ -1,24 +1,57 @@
+import { useEffect, useState } from 'react'
+
 import { DEFAULT_PAGE_SIZE } from '@ai-post-recipe/shared'
+import { SearchIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import useInfiniteScroll from 'react-infinite-scroll-hook'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 
 import { InfiniteScrollSpinner } from '@/components/infinite-scroll-spinner'
 import { RunStatusBadge } from '@/components/run-status-badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { UsageBadge } from '@/components/usage-summary'
 
 import { cn } from '@/lib/utils'
 
 import { useGetRunsInfinite } from '@/hooks/queries/runs/useGetRunsInfinite'
 import { useLocalizedPath } from '@/hooks/useLocalizedPath'
+import { useDebounce } from '@/hooks/utils/useDebounce'
 import { PAGE_WIDTH } from '@/utils/layout'
+import { rememberRunsSearch } from '@/utils/runs-search'
+
+/** Pause in typing before the runs list is searched. */
+const SEARCH_DELAY_MS = 200
 
 export function Runs() {
   const { t, i18n } = useTranslation()
   const localized = useLocalizedPath()
+  // The search lives in the URL (?search=…), so reloading, sharing and the
+  // browser's back button keep it.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [search, setSearch] = useState(() => searchParams.get('search') ?? '')
+  // Ask the API only when typing has paused for a moment.
+  const debouncedSearch = useDebounce({
+    value: search.trim(),
+    delay: SEARCH_DELAY_MS,
+  })
+
+  useEffect(() => {
+    rememberRunsSearch(debouncedSearch)
+    if ((searchParams.get('search') ?? '') === debouncedSearch) return
+    // Replace, not push: one history entry for the list, not one per pause in typing.
+    setSearchParams(debouncedSearch ? { search: debouncedSearch } : {}, {
+      replace: true,
+    })
+  }, [debouncedSearch, searchParams, setSearchParams])
   const { runs, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    useGetRunsInfinite({ params: { page: 1, size: DEFAULT_PAGE_SIZE } })
+    useGetRunsInfinite({
+      params: {
+        page: 1,
+        size: DEFAULT_PAGE_SIZE,
+        search: debouncedSearch || undefined,
+      },
+    })
 
   const [sentryRef, { rootRef }] = useInfiniteScroll({
     loading: isPending || isFetchingNextPage,
@@ -35,16 +68,34 @@ export function Runs() {
         </Button>
       </div>
 
+      <div className="relative shrink-0">
+        <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          type="search"
+          aria-label={t('runs.search')}
+          placeholder={t('runs.searchPlaceholder')}
+          value={search}
+          maxLength={120}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
       {isPending && (
         <p className="text-muted-foreground">{t('common.loading')}</p>
       )}
       {!isPending && runs.length === 0 && (
-        <p className="text-muted-foreground">{t('runs.empty')}</p>
+        <p className="text-muted-foreground">
+          {debouncedSearch
+            ? t('runs.noMatch', { search: debouncedSearch })
+            : t('runs.empty')}
+        </p>
       )}
       {runs.length > 0 && (
         <div
+          // As tall as its items, at most down to the bottom of the screen; then it scrolls.
           ref={rootRef}
-          className="scrollbar-thin min-h-0 flex-1 overflow-y-auto rounded-lg border"
+          className="scrollbar-thin min-h-0 overflow-y-auto rounded-lg border"
         >
           <ul className="divide-y">
             {runs.map((run) => (

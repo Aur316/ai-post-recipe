@@ -58,8 +58,22 @@ export const ResearchSource = z.object({
 })
 export type ResearchSource = z.infer<typeof ResearchSource>
 
+/** A website screenshot for the analysis, when the style comes from the website. */
+export const WebsiteCapture = z.object({
+  url: z.string(),
+  /** Screenshots of the page from top to bottom; empty when it could not be captured. */
+  assetIds: z.array(z.string()).default([]),
+  /** The first screenshot; kept for runs made before pages had several. */
+  assetId: z.string().nullable().optional(),
+  /** Colours the page's own styles use most, as hex codes. */
+  colors: z.array(z.string()),
+  error: z.string().nullable(),
+})
+export type WebsiteCapture = z.infer<typeof WebsiteCapture>
+
 export const ResearchOutput = z.object({
   sources: z.array(ResearchSource),
+  captures: z.array(WebsiteCapture).default([]),
   /** The search queries that were run; empty without a search key. */
   queries: z.array(z.string()),
 })

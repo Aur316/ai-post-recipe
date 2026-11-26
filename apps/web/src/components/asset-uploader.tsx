@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 
-import { UploadAssetKind } from '@ai-post-recipe/shared'
+import { type StyleSource, UploadAssetKind } from '@ai-post-recipe/shared'
 import { FileIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils'
 
 import {
   type PendingUpload,
+  allowedKinds,
   rejectReason,
   toPendingUpload,
 } from '@/utils/uploads'
@@ -26,19 +27,26 @@ interface AssetUploaderProps {
   uploads: Array<PendingUpload>
   onChange: (uploads: Array<PendingUpload>) => void
   disabled?: boolean
+  /** In website mode only logo and product photos can be chosen. */
+  styleSource?: StyleSource
 }
 
 export function AssetUploader({
   uploads,
   onChange,
   disabled,
+  styleSource = 'UPLOADS',
 }: AssetUploaderProps) {
   const { t } = useTranslation()
   const input = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
 
   const add = (files: FileList | null) => {
-    if (files) onChange([...uploads, ...Array.from(files).map(toPendingUpload)])
+    if (files)
+      onChange([
+        ...uploads,
+        ...Array.from(files).map((f) => toPendingUpload(f, styleSource)),
+      ])
   }
 
   const setKind = (id: string, kind: UploadAssetKind) =>
@@ -73,7 +81,9 @@ export function AssetUploader({
           disabled && 'pointer-events-none opacity-50',
         )}
       >
-        {t('uploader.dropHint')}
+        {styleSource === 'WEBSITE'
+          ? t('uploader.dropHintWebsite')
+          : t('uploader.dropHint')}
         <input
           ref={input}
           type="file"
@@ -90,7 +100,8 @@ export function AssetUploader({
 
       <ul className="space-y-2">
         {uploads.map((upload) => {
-          const error = rejectReason(upload.file, upload.kind) ?? upload.error
+          const error =
+            rejectReason(upload.file, upload.kind, styleSource) ?? upload.error
           return (
             <li
               key={upload.id}
@@ -133,7 +144,7 @@ export function AssetUploader({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {UploadAssetKind.options.map((kind) => (
+                  {allowedKinds(styleSource).map((kind) => (
                     <SelectItem key={kind} value={kind}>
                       {t(`assets.kinds.${kind}`)}
                     </SelectItem>

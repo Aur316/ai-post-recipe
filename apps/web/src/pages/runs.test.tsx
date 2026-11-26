@@ -1,5 +1,6 @@
 import { DEFAULT_PAGE_SIZE } from '@ai-post-recipe/shared'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { HttpResponse, http } from 'msw'
 
 import { renderRoute } from '@/test/render'
@@ -85,5 +86,56 @@ describe('Runs page', () => {
 
     expect(await screen.findByText('$0.76 · 115K tokens')).toBeInTheDocument()
     expect(screen.getAllByText(/tokens/)).toHaveLength(1)
+  })
+
+  it('searches once typing pauses, and says when nothing matches', async () => {
+    const user = userEvent.setup()
+    const searches: Array<string | null> = []
+    server.use(
+      http.get('/api/runs', ({ request }) => {
+        const search = new URL(request.url).searchParams.get('search')
+        searches.push(search)
+        return HttpResponse.json(
+          search === 'zzz' ? page([], 1, 0) : page([run('r1', 'Revyan')], 1, 1),
+        )
+      }),
+    )
+    renderRoute('/en')
+    await screen.findByText('Revyan')
+
+    await user.type(
+      screen.getByRole('searchbox', { name: 'Search runs' }),
+      'zzz',
+    )
+
+    expect(await screen.findByText('No runs match “zzz”.')).toBeInTheDocument()
+    // The first load, then one search: not one request per keystroke.
+    expect(searches).toEqual([null, 'zzz'])
+  })
+
+  it('keeps the search in the URL and starts from it', async () => {
+    const user = userEvent.setup()
+    const searches: Array<string | null> = []
+    server.use(
+      http.get('/api/runs', ({ request }) => {
+        searches.push(new URL(request.url).searchParams.get('search'))
+        return HttpResponse.json(page([run('r1', 'Revyan')], 1, 1))
+      }),
+    )
+    const router = renderRoute('/en?search=rev')
+
+    // Opened with ?search=: the field and the first request use it.
+    expect(
+      await screen.findByRole('searchbox', { name: 'Search runs' }),
+    ).toHaveValue('rev')
+    expect(searches[0]).toBe('rev')
+
+    await user.type(
+      screen.getByRole('searchbox', { name: 'Search runs' }),
+      'yan',
+    )
+    await waitFor(() =>
+      expect(router.state.location.search).toBe('?search=revyan'),
+    )
   })
 })

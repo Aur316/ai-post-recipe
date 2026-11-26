@@ -1,8 +1,8 @@
 import type {
   BriefInput,
-  ListQuery,
   PhaseKey,
   RunDetailDto,
+  RunListQuery,
   RunListResponse,
   RunSummaryDto,
 } from '@ai-post-recipe/shared'
@@ -12,7 +12,7 @@ import { httpClient } from '@/clients/http'
 const ROOT = '/api/runs'
 
 export const runsQueryFunctions = {
-  list: (query: ListQuery): Promise<RunListResponse> =>
+  list: (query: RunListQuery): Promise<RunListResponse> =>
     httpClient.get(ROOT, query),
   getById: (id: string): Promise<RunDetailDto> =>
     httpClient.get(`${ROOT}/${id}`),

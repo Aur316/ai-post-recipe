@@ -3,6 +3,7 @@ import {
   ResearchOutput,
   type ResearchSource,
   type SourceOrigin,
+  type WebsiteCapture,
 } from '@ai-post-recipe/shared'
 
 import { logger } from '../../lib/logger.js'
@@ -232,6 +233,48 @@ export const researchPhase: Phase<'RESEARCH'> = {
     const sources = await mapLimited(candidates, CONCURRENCY, (c) =>
       read(ctx, c),
     )
-    return { output: { sources, queries } }
+    const captures =
+      ctx.brief.styleSource === 'WEBSITE'
+        ? await captureWebsite(ctx, sources)
+        : []
+    return { output: { sources, queries, captures } }
   },
+}
+
+/** At most this many website pages are captured, and this many screenshots kept. */
+export const MAX_CAPTURES = 3
+export const MAX_SHOTS = 5
+
+/**
+ * Screenshots of the brand's own pages that could be read (so robots.txt
+ * allowed them), from top to bottom: the brief's links first, then its
+ * product pages; at most MAX_SHOTS in all.
+ */
+async function captureWebsite(
+  ctx: PhaseContext,
+  sources: Array<ResearchSource>,
+): Promise<Array<WebsiteCapture>> {
+  const pages = sources
+    .filter((s) => s.origin === 'BRIEF' && s.reachable)
+    .slice(0, MAX_CAPTURES)
+  const captures: Array<WebsiteCapture> = []
+  let left = MAX_SHOTS
+  for (const page of pages) {
+    if (left <= 0) break
+    const shot = await ctx.capturer.capture(page.url)
+    const assetIds: Array<string> = []
+    for (const image of shot.images.slice(0, left)) {
+      assetIds.push(
+        await ctx.saveAsset('CAPTURED_SCREENSHOT', image, 'image/jpeg'),
+      )
+    }
+    left -= assetIds.length
+    captures.push({
+      url: page.url,
+      assetIds,
+      colors: shot.colors,
+      error: shot.error,
+    })
+  }
+  return captures
 }

@@ -56,26 +56,30 @@ export async function loadUploads(
  */
 export async function toLlmImages(
   uploads: Array<Upload>,
+  firstNumber = 1,
 ): Promise<Array<LlmImage>> {
   return Promise.all(
-    uploads.slice(0, MAX_IMAGES).map(async (upload, i) => {
-      const image = sharp(upload.data).resize({
-        width: MAX_SIDE,
-        height: MAX_SIDE,
-        fit: 'inside',
-        withoutEnlargement: true,
-      })
-      const keepAlpha = upload.kind === 'UPLOAD_LOGO'
-      const data = keepAlpha
-        ? await image.png().toBuffer()
-        : await image.jpeg({ quality: 85 }).toBuffer()
-      return {
-        label: `Image ${i + 1}: ${LABELS[upload.kind]}`,
-        mimeType: keepAlpha ? 'image/png' : 'image/jpeg',
-        data,
-      }
-    }),
+    uploads.slice(0, MAX_IMAGES).map(async (upload, i) => ({
+      label: `Image ${firstNumber + i}: ${LABELS[upload.kind]}`,
+      ...(await shrinkImage(upload.data, upload.kind === 'UPLOAD_LOGO')),
+    })),
   )
+}
+
+/** Scales an image to at most 1280 px; logos stay PNG for their transparency. */
+export async function shrinkImage(data: Buffer, keepAlpha = false) {
+  const image = sharp(data).resize({
+    width: MAX_SIDE,
+    height: MAX_SIDE,
+    fit: 'inside',
+    withoutEnlargement: true,
+  })
+  return keepAlpha
+    ? { mimeType: 'image/png', data: await image.png().toBuffer() }
+    : {
+        mimeType: 'image/jpeg',
+        data: await image.jpeg({ quality: 85 }).toBuffer(),
+      }
 }
 
 /** An upload as a data URL for a slide; SVG logos are turned into PNG. */
@@ -121,4 +125,31 @@ export async function saveGeneratedAsset(
     height: height ?? null,
     sizeBytes: data.length,
   })
+}
+
+/** Every website screenshot of the research, top to bottom; also reads runs made before pages had several. */
+export const captureAssetIds = (
+  captures: Array<{ assetIds?: Array<string>; assetId?: string | null }>,
+) =>
+  captures.flatMap((c) =>
+    c.assetIds?.length ? c.assetIds : c.assetId ? [c.assetId] : [],
+  )
+
+/** Stored files by id, e.g. the website screenshots. */
+export async function readAssets(
+  assets: AssetRepo,
+  storage: StorageProvider,
+  ids: Array<string>,
+) {
+  return Promise.all(
+    ids.map(async (id) => {
+      const asset = await assets.findById(id)
+      if (!asset) throw new Error(`Asset ${id} not found`)
+      const { body } = await storage.get(asset.storageKey)
+      const chunks: Array<Buffer> = []
+      for await (const chunk of body)
+        chunks.push(Buffer.from(chunk as Uint8Array))
+      return { data: Buffer.concat(chunks), mimeType: asset.mimeType }
+    }),
+  )
 }

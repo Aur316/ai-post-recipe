@@ -16,6 +16,7 @@ import { useGetRunById } from '@/hooks/queries/runs/useGetRunById'
 import { useStartRun } from '@/hooks/queries/runs/useStartRun'
 import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 import { NotFound } from '@/pages/not-found'
+import { runsListPath } from '@/utils/runs-search'
 import { totalTokens } from '@/utils/usage'
 
 export function RunDetails() {
@@ -41,7 +42,7 @@ export function RunDetails() {
   const uploads = run.assets.filter((a) => a.kind.startsWith('UPLOAD_'))
   return (
     <section className="space-y-6">
-      <BackLink to="/" label={t('runs.title')} />
+      <BackLink to={runsListPath()} label={t('runs.title')} />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{run.brandName}</h1>
         <div className="flex items-center gap-3">
@@ -92,9 +93,11 @@ export function RunDetails() {
               <CardTitle>{t('runDetails.brief')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <a className="underline" href={brief.instagramUrl}>
-                {brief.instagramUrl}
-              </a>
+              {brief.instagramUrl && (
+                <a className="underline" href={brief.instagramUrl}>
+                  {brief.instagramUrl}
+                </a>
+              )}
               <p>{brief.reason}</p>
               <Detail label={t('runDetails.links')}>
                 {brief.links.map((l) => (
@@ -159,6 +162,12 @@ export function RunDetails() {
               <p>
                 <span className="font-medium">{t('runDetails.language')}</span>{' '}
                 {t(`outputLanguage.${brief.language}`)}
+              </p>
+              <p>
+                <span className="font-medium">
+                  {t('runDetails.styleSource')}
+                </span>{' '}
+                {t(`runDetails.styleSources.${brief.styleSource}`)}
               </p>
             </CardContent>
           </Card>

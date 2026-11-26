@@ -120,6 +120,7 @@ export const hr: Translation = {
     unreachable: 'Nedostupne',
     fromSearch: 'Pronađene pretragom',
     queries: 'Pretrage',
+    captures: 'Snimke web-stranice za analizu',
     noSearch:
       'Bez web pretrage (nema SERPER_API_KEY): pročitane su samo poveznice iz brifa.',
   },
@@ -171,6 +172,9 @@ export const hr: Translation = {
     title: 'Pokretanja',
     newRun: 'Novo pokretanje',
     empty: 'Još nema pokretanja. Započni jedno s brifom brenda.',
+    search: 'Pretraži pokretanja',
+    searchPlaceholder: 'Pretraži po brendu ili Instagram profilu',
+    noMatch: 'Nijedno pokretanje ne odgovara “{{search}}”.',
   },
   runStatus: {
     DRAFT: 'Skica',
@@ -200,6 +204,8 @@ export const hr: Translation = {
     inspirationLinks: 'Poveznice za inspiraciju',
     preferredFormats: 'Željeni formati:',
     language: 'Jezik pokretanja:',
+    styleSource: 'Stil iz:',
+    styleSources: { UPLOADS: 'učitanih slika', WEBSITE: 'web-stranice' },
     references: 'Reference ({{count}})',
   },
   outputLanguage: { hr: 'Hrvatski', en: 'Engleski' },
@@ -261,6 +267,10 @@ export const hr: Translation = {
     onlyImages: 'Samo PNG, JPEG, WebP ili SVG datoteke',
     svgOnlyLogo: 'SVG je dopušten samo za logo',
     tooLarge: 'Veće od 10 MB',
+    notInWebsiteMode:
+      'Ne koristi se dok se stil čita s web-stranice: odaberi Logo ili Fotografiju proizvoda, ili ukloni',
+    dropHintWebsite:
+      'Ovdje povuci logo i fotografije proizvoda ili klikni za odabir. PNG, JPEG, WebP (SVG za logo), najviše 10 MB po datoteci.',
   },
   brief: {
     steps: {
@@ -271,7 +281,7 @@ export const hr: Translation = {
     },
     brandName: 'Naziv brenda',
     brandNamePlaceholder: 'npr. GymBeam Hrvatska',
-    instagramUrl: 'URL Instagram profila',
+    instagramUrl: 'URL Instagram profila (neobavezno)',
     reason: 'Zašto ovaj brend?',
     reasonPlaceholder:
       'npr. Veliki hrvatski brend sportske prehrane s aktivnim Instagram profilom i jasnom ponudom proizvoda.',
@@ -313,7 +323,13 @@ export const hr: Translation = {
       STORY: 'Story',
     },
     uploads: 'Snimke zaslona, fotografije proizvoda i logo',
+    uploadsWebsite: 'Logo i fotografije proizvoda',
     uploadedReferences: 'Učitane reference',
+    styleFromWebsite: 'Pročitaj stil brenda s web-stranice',
+    styleFromWebsiteOff:
+      'Isključeno: analiza čita boje i stil iz snimki zaslona koje učitaš (npr. Instagram profila).',
+    styleFromWebsiteOn:
+      'Uključeno: aplikacija snima zaslone poveznica iznad i čita boje sa same stranice. Učitaj samo logo i fotografije proizvoda.',
     back: 'Natrag',
     next: 'Dalje',
     create: 'Stvori pokretanje',

@@ -32,11 +32,15 @@ export const preferredLanguage = (): Language => {
 }
 
 /** `/hr/runs/1` with `en` → `/en/runs/1`; a path without a language gets one. */
-export const withLanguage = (pathname: string, language: Language) => {
+export const withLanguage = (path: string, language: Language) => {
+  // A query or hash (`/?search=x`) stays as it is.
+  const index = path.search(/[?#]/)
+  const pathname = index === -1 ? path : path.slice(0, index)
+  const suffix = index === -1 ? '' : path.slice(index)
   const [, first = '', ...rest] = pathname.split('/')
   const segments = isLanguage(first) ? rest : [first, ...rest]
   const tail = segments.filter(Boolean).join('/')
-  return `/${language}${tail ? `/${tail}` : ''}`
+  return `/${language}${tail ? `/${tail}` : ''}${suffix}`
 }
 
 export const setLanguage = async (language: Language) => {

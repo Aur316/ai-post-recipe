@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 
 import { useGetHealth } from '@/hooks/queries/health/useGetHealth'
 import { PAGE_WIDTH } from '@/utils/layout'
+import { runsListPath } from '@/utils/runs-search'
 
 /** Where to get the API keys and how to add them; the same steps as docs/onboarding.md. */
 export function Onboarding() {
@@ -19,7 +20,7 @@ export function Onboarding() {
 
   return (
     <section className={cn(PAGE_WIDTH, 'space-y-6')}>
-      <BackLink to="/" label={t('runs.title')} />
+      <BackLink to={runsListPath()} label={t('runs.title')} />
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold">{t('onboarding.title')}</h1>
         <p className="text-muted-foreground">{t('onboarding.intro')}</p>

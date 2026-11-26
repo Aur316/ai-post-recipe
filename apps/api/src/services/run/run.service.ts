@@ -1,4 +1,4 @@
-import type { Brief, ListQuery } from '@ai-post-recipe/shared'
+import type { Brief, RunListQuery } from '@ai-post-recipe/shared'
 
 import { ConflictError, NotFoundError } from '../../lib/errors.js'
 import { logger } from '../../lib/logger.js'
@@ -64,7 +64,7 @@ export class RunService {
     )
   }
 
-  async list(query: ListQuery) {
+  async list(query: RunListQuery) {
     const { items, total } = await this.runs.list(query)
     const usage = await this.phaseRuns.usageOfRuns(items.map((r) => r.id))
     return {

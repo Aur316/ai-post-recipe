@@ -9,6 +9,20 @@ import { SourceDto } from './sources.js'
 export const OutputLanguage = z.enum(['hr', 'en'])
 export type OutputLanguage = z.infer<typeof OutputLanguage>
 
+/**
+ * Where the analysis reads the brand's look from: the uploaded screenshots,
+ * or screenshots and colours the app takes from the brand's website. Logo and
+ * product photos are uploaded in both cases; they go on the slides.
+ */
+export const StyleSource = z.enum(['UPLOADS', 'WEBSITE'])
+export type StyleSource = z.infer<typeof StyleSource>
+
+/** "@gymbeamhr" from an Instagram profile URL, or undefined. */
+export function instagramHandle(url: string) {
+  const match = /instagram\.com\/([^/?#]+)/i.exec(url)
+  return match?.[1] ? `@${match[1]}` : undefined
+}
+
 export const LinkType = z.enum(['WEBSITE', 'SHOP', 'CATALOG', 'OTHER'])
 export type LinkType = z.infer<typeof LinkType>
 
@@ -66,10 +80,11 @@ export const createBriefSchema = (m: BriefMessages) => {
       .trim()
       .min(1, m.brandNameRequired)
       .max(BRIEF_LIMITS.brandName, m.tooLong(BRIEF_LIMITS.brandName)),
-    instagramUrl: httpUrl.regex(
-      /^https?:\/\/(www\.)?instagram\.com\/[^/?#]+/i,
-      m.instagramProfile,
-    ),
+    /** Optional: not every brand has one, and it is never downloaded. */
+    instagramUrl: httpUrl
+      .regex(/^https?:\/\/(www\.)?instagram\.com\/[^/?#]+/i, m.instagramProfile)
+      .or(z.literal(''))
+      .default(''),
     reason: z
       .string()
       .trim()
@@ -108,6 +123,7 @@ export const createBriefSchema = (m: BriefMessages) => {
     inspirationLinks: z.array(httpUrl).default([]),
     language: OutputLanguage,
     formats: z.array(PostFormat).default([]),
+    styleSource: StyleSource.default('UPLOADS'),
   })
 }
 

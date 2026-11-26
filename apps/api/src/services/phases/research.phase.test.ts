@@ -1,6 +1,7 @@
 import { Brief } from '@ai-post-recipe/shared'
 import { describe, expect, it } from 'vitest'
 
+import { FakeCapturer } from '../../providers/capture/fake.capturer.js'
 import type {
   SearchOptions,
   SearchProvider,
@@ -169,5 +170,60 @@ describe('searchQueries', () => {
       'Revyan work management',
       'Revyan Elyse AI assistant',
     ])
+  })
+})
+
+describe('research in website mode', () => {
+  it("captures the brand's own readable pages, not search results", async () => {
+    const brief = Brief.parse({ ...gymbeamBrief(), styleSource: 'WEBSITE' })
+    const capturer = new FakeCapturer({
+      'https://gymbeam.hr/true-whey': {
+        images: [],
+        colors: [],
+        error: 'Timeout',
+      },
+    })
+    const search = new FakeSearch({
+      'GymBeam Hrvatska': ['https://blog.example/gymbeam'],
+    })
+    const saved: Array<string> = []
+
+    const { output } = await researchPhase.execute(
+      phaseContext({
+        brief,
+        capturer,
+        search,
+        saveAsset: (kind) => {
+          saved.push(kind)
+          return Promise.resolve(`${kind}-${saved.length}`)
+        },
+      }),
+    )
+
+    expect(capturer.captured).toEqual([
+      'https://gymbeam.hr',
+      'https://gymbeam.hr/true-whey',
+    ])
+    expect(output.captures).toEqual([
+      {
+        url: 'https://gymbeam.hr',
+        assetIds: ['CAPTURED_SCREENSHOT-1', 'CAPTURED_SCREENSHOT-2'],
+        colors: ['#7C3AED'],
+        error: null,
+      },
+      {
+        url: 'https://gymbeam.hr/true-whey',
+        assetIds: [],
+        colors: [],
+        error: 'Timeout',
+      },
+    ])
+  })
+
+  it('captures nothing when the style comes from the uploads', async () => {
+    const capturer = new FakeCapturer()
+    const { output } = await researchPhase.execute(phaseContext({ capturer }))
+    expect(output.captures).toEqual([])
+    expect(capturer.captured).toEqual([])
   })
 })

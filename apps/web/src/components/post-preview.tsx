@@ -25,6 +25,7 @@ import { useUpdatePost } from '@/hooks/queries/posts/useUpdatePost'
 interface PostPreviewProps {
   runId: string
   post: PostDto
+  /** The Instagram handle (@name), or the brand name without a profile. */
   brandName: string
   logo?: AssetDto
   /** Editing and regenerating are off while a phase runs. */

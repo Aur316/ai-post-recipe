@@ -1,4 +1,4 @@
-import type { RunDetailDto } from '@ai-post-recipe/shared'
+import { type RunDetailDto, instagramHandle } from '@ai-post-recipe/shared'
 
 import { PostPreview } from '@/components/post-preview'
 
@@ -12,7 +12,7 @@ export function PostsView({ run }: { run: RunDetailDto }) {
             key={post.id}
             runId={run.id}
             post={post}
-            brandName={run.brandName}
+            brandName={instagramHandle(run.brief.instagramUrl) ?? run.brandName}
             logo={run.assets.find((a) => a.kind === 'UPLOAD_LOGO')}
             locked={run.status === 'RUNNING'}
           />

@@ -16,6 +16,17 @@ export const ListQuery = z.object({
 })
 export type ListQuery = z.infer<typeof ListQuery>
 
+/** The runs list can also be filtered by brand name or Instagram profile. */
+export const RunListQuery = ListQuery.extend({
+  search: z
+    .string()
+    .trim()
+    .max(120)
+    .optional()
+    .transform((value) => value || undefined),
+})
+export type RunListQuery = z.infer<typeof RunListQuery>
+
 export const paginated = <T extends z.ZodType>(item: T) =>
   z.object({
     items: z.array(item),

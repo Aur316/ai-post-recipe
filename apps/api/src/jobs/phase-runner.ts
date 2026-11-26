@@ -4,6 +4,7 @@ import { PostFormat } from '@ai-post-recipe/shared'
 import type { Db } from '../db/prisma.js'
 import { logger } from '../lib/logger.js'
 import { PermanentError } from '../lib/phase-errors.js'
+import type { PageCapturer } from '../providers/capture/page-capturer.js'
 import type { PageFetcher } from '../providers/fetcher/web-fetcher.js'
 import type { ImageProvider } from '../providers/image/image.provider.js'
 import type { LlmProvider } from '../providers/llm/llm.provider.js'
@@ -14,11 +15,7 @@ import type { StorageProvider } from '../providers/storage/storage.provider.js'
 import { AssetRepo } from '../repositories/asset/asset.repo.js'
 import { PostRepo, toSlides } from '../repositories/post/post.repo.js'
 import { ExportService } from '../services/export/export.service.js'
-import {
-  loadUploads,
-  saveGeneratedAsset,
-  toLlmImages,
-} from '../services/phases/images.js'
+import { loadUploads, saveGeneratedAsset } from '../services/phases/images.js'
 import type { PhaseRegistry } from '../services/phases/index.js'
 import { PipelineService } from '../services/pipeline/pipeline.service.js'
 import { CostMeter, MeteredImages, MeteredLlm } from './cost-meter.js'
@@ -32,6 +29,7 @@ export interface RunnerTools {
   storage: StorageProvider
   images: ImageProvider
   renderer: SlideRenderer
+  capturer: PageCapturer
   /** MAX_COST_USD_PER_RUN: no LLM call starts once a run has spent this much. */
   costCapUsd: number
 }
@@ -63,6 +61,7 @@ export class PhaseRunner {
       fetcher,
       storage,
       renderer,
+      capturer,
       costCapUsd,
     } = this.tools
     const meter = new CostMeter(
@@ -79,12 +78,11 @@ export class PhaseRunner {
         llm: new MeteredLlm(llm, meter),
         images: new MeteredImages(images, meter),
         renderer,
+        capturer,
         prompts,
         search,
         fetcher,
         loadUploads: () => loadUploads(assets, storage, runId),
-        loadImages: async () =>
-          toLlmImages(await loadUploads(assets, storage, runId)),
         loadPosts: async () =>
           (await new PostRepo(this.db).listByRun(runId)).map((p) => ({
             index: p.index,

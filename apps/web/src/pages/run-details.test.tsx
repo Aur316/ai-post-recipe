@@ -138,6 +138,21 @@ describe('Run details', () => {
     )
   })
 
+  it('links back to the list with its last search', async () => {
+    sessionStorage.setItem('runs.search', 'gym beam')
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(run('DRAFT', [])),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    expect(await screen.findByRole('link', { name: 'Runs' })).toHaveAttribute(
+      'href',
+      '/en?search=gym+beam',
+    )
+  })
+
   it('links the brief editor back to its run', async () => {
     server.use(
       http.get(`/api/runs/${RUN_ID}`, () =>

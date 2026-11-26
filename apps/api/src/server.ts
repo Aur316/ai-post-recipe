@@ -5,6 +5,7 @@ import { loadEnv } from './config/env.js'
 import { createDb } from './db/prisma.js'
 import { registerWorkers } from './jobs/phase-runner.js'
 import { logger } from './lib/logger.js'
+import { PlaywrightCapturer } from './providers/capture/playwright.capturer.js'
 import { WebFetcher } from './providers/fetcher/web-fetcher.js'
 import { FakeImageProvider } from './providers/image/fake-image.provider.js'
 import type { ImageProvider } from './providers/image/image.provider.js'
@@ -53,6 +54,7 @@ const images: ImageProvider = env.OPENROUTER_API_KEY
     })
   : new FakeImageProvider()
 const renderer = new PlaywrightRenderer()
+const capturer = new PlaywrightCapturer()
 
 const search: SearchProvider = env.SERPER_API_KEY
   ? new SerperProvider(env.SERPER_API_KEY)
@@ -73,6 +75,7 @@ await registerWorkers({
   storage,
   images,
   renderer,
+  capturer,
   costCapUsd: env.MAX_COST_USD_PER_RUN,
 })
 
@@ -88,6 +91,8 @@ createApp({
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.once(signal, () => {
-    void renderer.close().finally(() => process.exit(0))
+    void Promise.allSettled([renderer.close(), capturer.close()]).finally(() =>
+      process.exit(0),
+    )
   })
 }

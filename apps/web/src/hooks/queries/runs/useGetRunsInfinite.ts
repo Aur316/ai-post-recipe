@@ -1,4 +1,4 @@
-import type { ListQuery, RunListResponse } from '@ai-post-recipe/shared'
+import type { RunListQuery, RunListResponse } from '@ai-post-recipe/shared'
 import {
   type InfiniteData,
   type UseInfiniteQueryOptions,
@@ -15,14 +15,14 @@ type RunsInfiniteQueryOptions = Partial<
       Error,
       InfiniteData<RunListResponse>,
       ReturnType<typeof runsQueryKeys.infiniteList>,
-      ListQuery
+      RunListQuery
     >,
     'queryKey' | 'queryFn' | 'initialPageParam' | 'getNextPageParam'
   >
 >
 
 interface UseGetRunsInfiniteProps {
-  params: ListQuery
+  params: RunListQuery
   queryOptions?: RunsInfiniteQueryOptions
 }
 
@@ -35,7 +35,7 @@ export const useGetRunsInfinite = ({
     Error,
     InfiniteData<RunListResponse>,
     ReturnType<typeof runsQueryKeys.infiniteList>,
-    ListQuery
+    RunListQuery
   >({
     queryKey: runsQueryKeys.infiniteList(params),
     queryFn: ({ pageParam }) => runsQueryFunctions.list(pageParam),

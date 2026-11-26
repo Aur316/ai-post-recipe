@@ -5,6 +5,7 @@ import { afterAll } from 'vitest'
 import { createApp } from '../app.js'
 import { createDb } from '../db/prisma.js'
 import { registerWorkers } from '../jobs/phase-runner.js'
+import { FakeCapturer } from '../providers/capture/fake.capturer.js'
 import type {
   FetchedPage,
   PageFetcher,
@@ -85,6 +86,7 @@ export function createTestContext(
     storage,
     images,
     renderer,
+    capturer: new FakeCapturer(),
     costCapUsd: options.costCapUsd ?? 100,
   })
   const runs = new RunRepo(db)

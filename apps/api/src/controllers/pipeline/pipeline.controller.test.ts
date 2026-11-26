@@ -75,7 +75,7 @@ describe('pipeline', () => {
       status: 'APPROVED',
       editedOutput: { tone: 'Friendly and expert' },
       output: { tone: analysis.tone },
-      promptId: 'analysis@v2',
+      promptId: 'analysis@v3',
       model: 'fake',
     })
   })

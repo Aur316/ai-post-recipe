@@ -1,5 +1,10 @@
 import type { PromptLibrary } from '@ai-post-recipe/prompts'
-import { AnalysisOutput, Brief, PostFormat } from '@ai-post-recipe/shared'
+import {
+  AnalysisOutput,
+  Brief,
+  PostFormat,
+  ResearchOutput,
+} from '@ai-post-recipe/shared'
 
 import type { Db } from '../../db/prisma.js'
 import { CostMeter, MeteredImages } from '../../jobs/cost-meter.js'
@@ -11,7 +16,12 @@ import { AssetRepo } from '../../repositories/asset/asset.repo.js'
 import { PhaseRunRepo } from '../../repositories/phase-run/phase-run.repo.js'
 import { PostRepo, toSlides } from '../../repositories/post/post.repo.js'
 import { RunRepo } from '../../repositories/run/run.repo.js'
-import { loadUploads, saveGeneratedAsset } from '../phases/images.js'
+import {
+  captureAssetIds,
+  loadUploads,
+  readAssets,
+  saveGeneratedAsset,
+} from '../phases/images.js'
 import { makeBackground, renderSlide } from '../visuals/slides.js'
 
 export interface SlideDeps {
@@ -80,11 +90,20 @@ export class PostService {
       this.slides.costCapUsd,
     )
     const assets = new AssetRepo(this.db)
+    const brief = Brief.parse(run.brief)
+    const research = ResearchOutput.safeParse(
+      latest.find((p) => p.phase === 'RESEARCH')?.output,
+    ).data
+    const shotIds =
+      brief.styleSource === 'WEBSITE'
+        ? captureAssetIds(research?.captures ?? [])
+        : []
     const tools = {
       images: new MeteredImages(this.slides.images, meter),
       renderer: this.slides.renderer,
       prompts: this.slides.prompts,
       uploads: await loadUploads(assets, this.storage, runId),
+      websiteShots: await readAssets(assets, this.storage, shotIds),
       saveAsset: async (
         kind: 'GENERATED_BACKGROUND' | 'RENDERED_SLIDE',
         data: Buffer,
@@ -102,7 +121,7 @@ export class PostService {
         ).id,
     }
     const design = {
-      brief: Brief.parse(run.brief),
+      brief,
       analysis: AnalysisOutput.safeParse(
         analysis?.editedOutput ?? analysis?.output,
       ).data,

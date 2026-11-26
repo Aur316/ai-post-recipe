@@ -52,6 +52,7 @@ enum AssetKind {
   GENERATED_BACKGROUND
   RENDERED_SLIDE
   EXPORT_ZIP
+  CAPTURED_SCREENSHOT
 }
 
 /// Length limits mirror BRIEF_LIMITS in packages/shared; the brief JSON fields are

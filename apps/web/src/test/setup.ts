@@ -38,6 +38,7 @@ globalThis.IntersectionObserver = function (
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 beforeEach(async () => {
   localStorage.removeItem('language')
+  sessionStorage.clear()
   await i18n.changeLanguage('en')
 })
 afterEach(() => server.resetHandlers())

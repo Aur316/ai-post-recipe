@@ -7,6 +7,7 @@ import type {
 } from '@ai-post-recipe/shared'
 import type { z } from 'zod'
 
+import type { PageCapturer } from '../../providers/capture/page-capturer.js'
 import type { PageFetcher } from '../../providers/fetcher/web-fetcher.js'
 import type { ImageProvider } from '../../providers/image/image.provider.js'
 import type {
@@ -24,15 +25,19 @@ export interface PhaseTools {
   prompts: PromptLibrary
   search: SearchProvider
   fetcher: PageFetcher
-  /** The run's uploaded images, ready to send to a vision model. */
-  loadImages(): Promise<Array<LlmImage>>
   /** The run's uploads as stored, for slides. */
   loadUploads(): Promise<Array<Upload>>
   images: ImageProvider
   renderer: SlideRenderer
+  /** Screenshots of the brand's website, when the style comes from it. */
+  capturer: PageCapturer
   /** Stores a file the phase made and returns its asset id. */
   saveAsset(
-    kind: 'GENERATED_BACKGROUND' | 'RENDERED_SLIDE' | 'EXPORT_ZIP',
+    kind:
+      | 'GENERATED_BACKGROUND'
+      | 'RENDERED_SLIDE'
+      | 'EXPORT_ZIP'
+      | 'CAPTURED_SCREENSHOT',
     data: Buffer,
     mimeType: string,
   ): Promise<string>

@@ -2,7 +2,8 @@ import { type RenderedSlide, VisualsOutput } from '@ai-post-recipe/shared'
 
 import { NO_USAGE, addUsage } from '../../providers/llm/llm.provider.js'
 import { makeBackground, renderSlide } from '../visuals/slides.js'
-import type { Phase } from './phase.js'
+import { captureAssetIds } from './images.js'
+import type { Phase, PhaseContext } from './phase.js'
 
 /**
  * One AI background per post, then every slide rendered from the template
@@ -23,6 +24,7 @@ export const visualsPhase: Phase<'VISUALS'> = {
       renderer: ctx.renderer,
       prompts: ctx.prompts,
       uploads: await ctx.loadUploads(),
+      websiteShots: await websiteShots(ctx),
       saveAsset: (...args: Parameters<typeof ctx.saveAsset>) =>
         ctx.saveAsset(...args),
     }
@@ -68,4 +70,16 @@ export const visualsPhase: Phase<'VISUALS'> = {
     }
     return { output: { slides }, promptId, model, usage }
   },
+}
+
+/** In website mode, the screenshots the research took, for covers without a product photo. */
+export async function websiteShots(ctx: PhaseContext) {
+  if (ctx.brief.styleSource !== 'WEBSITE') return []
+  const ids = captureAssetIds(ctx.outputs.RESEARCH?.captures ?? [])
+  return Promise.all(
+    ids.map(async (id) => {
+      const asset = await ctx.readAsset(id)
+      return { data: asset.data, mimeType: asset.mimeType }
+    }),
+  )
 }
