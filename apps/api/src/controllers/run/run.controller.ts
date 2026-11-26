@@ -3,14 +3,17 @@ import {
   IdParams,
   ListQuery,
   OutputLanguage,
+  type PostDto,
+  PostFormat,
   type RunDetailDto,
   type RunListResponse,
   type RunSummaryDto,
   type SourceDto,
 } from '@ai-post-recipe/shared'
 import type { Request, Response } from 'express'
+import { z } from 'zod'
 
-import type { Run, Source } from '../../generated/prisma/client.js'
+import type { Post, Run, Source } from '../../generated/prisma/client.js'
 import { validate } from '../../lib/validate.js'
 import type { RunService } from '../../services/run/run.service.js'
 import { toAssetDto } from '../asset/asset.controller.js'
@@ -51,6 +54,7 @@ function toRunDetailDto({
   assets,
   phases,
   sources,
+  posts,
 }: Awaited<ReturnType<RunService['get']>>): RunDetailDto {
   return {
     ...toRunSummaryDto(run),
@@ -58,6 +62,25 @@ function toRunDetailDto({
     assets: assets.map(toAssetDto),
     phases: phases.map(toPhaseRunDto),
     sources: sources.map(toSourceDto),
+    posts: posts.map(toPostDto),
+  }
+}
+
+function toPostDto(post: Post): PostDto {
+  return {
+    id: post.id,
+    index: post.index,
+    format: PostFormat.parse(post.format),
+    goal: post.goal,
+    concept: post.concept,
+    rationale: post.rationale,
+    product: post.product,
+    caption: post.caption,
+    hashtags: post.hashtags,
+    slides: z
+      .array(z.object({ order: z.number().int(), text: z.string() }))
+      .catch([])
+      .parse(post.slides),
   }
 }
 

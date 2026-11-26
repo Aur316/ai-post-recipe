@@ -45,6 +45,7 @@ FR-12, FR-13
 - [ ] `POST /api/runs/:id/posts/:index/slides/:order/regenerate`
 - [ ] `PostPreview` and `CarouselViewer`
 - [ ] Regenerate button with an instruction field
+- [ ] `CaptionEditor` on the post preview (moved from M6)
 
 **Tests**
 

@@ -4,21 +4,21 @@ The API is REST over JSON. Every request and response body has a Zod schema in `
 
 ## Endpoints
 
-| Method | Path                                                  | Description                                                                                                                                                        |
-| ------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| GET    | `/api/health`                                         | Checks the database and the storage, and reports which providers are configured: `providers: { llm: "openrouter" \| "fake", search: "serper" \| "none" }`          |
-| POST   | `/api/runs`                                           | Creates a run from a brief (`DRAFT`)                                                                                                                               |
-| GET    | `/api/runs`                                           | Lists runs newest first, paginated: `?page=1&size=20` (defaults from `DEFAULT_PAGE_SIZE`, max `MAX_PAGE_SIZE`), returns `{ items, total, page, size, totalPages }` |
-| GET    | `/api/runs/:id`                                       | One run with its brief, uploads, the latest attempt of each phase and the sources of the latest research                                                           |
-| PUT    | `/api/runs/:id`                                       | Replaces the brief while no phase has started; `409 RUN_ALREADY_STARTED` afterwards                                                                                |
-| POST   | `/api/runs/:id/assets`                                | Uploads a file (multipart): screenshot, product photo, logo, other                                                                                                 |
-| POST   | `/api/runs/:id/start`                                 | Starts the first phase that is not finished                                                                                                                        |
-| POST   | `/api/runs/:id/phases/:phase/approve`                 | Approves a phase, optionally with an edited output; starts the next phase                                                                                          |
-| POST   | `/api/runs/:id/phases/:phase/rerun`                   | Re-runs a phase; later phases become `STALE`                                                                                                                       |
-| POST   | `/api/runs/:id/posts/:index/slides/:order/regenerate` | Regenerates one slide, with an optional instruction                                                                                                                |
-| GET    | `/api/assets/:id`                                     | Streams the file from storage                                                                                                                                      |
-| DELETE | `/api/assets/:id`                                     | Deletes an uploaded reference and its file while the run has not started; `409 RUN_ALREADY_STARTED` afterwards (uploads are refused the same way)                  |
-| GET    | `/api/runs/:id/export`                                | Downloads the ZIP                                                                                                                                                  |
+| Method | Path                                                  | Description                                                                                                                                                          |
+| ------ | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/health`                                         | Checks the database and the storage, and reports which providers are configured: `providers: { llm: "openrouter" \| "fake", search: "serper" \| "none" }`            |
+| POST   | `/api/runs`                                           | Creates a run from a brief (`DRAFT`)                                                                                                                                 |
+| GET    | `/api/runs`                                           | Lists runs newest first, paginated: `?page=1&size=20` (defaults from `DEFAULT_PAGE_SIZE`, max `MAX_PAGE_SIZE`), returns `{ items, total, page, size, totalPages }`   |
+| GET    | `/api/runs/:id`                                       | One run with its brief, uploads, the latest attempt of each phase, the sources of the latest research and its posts (from the approved plan, with copy once written) |
+| PUT    | `/api/runs/:id`                                       | Replaces the brief while no phase has started; `409 RUN_ALREADY_STARTED` afterwards                                                                                  |
+| POST   | `/api/runs/:id/assets`                                | Uploads a file (multipart): screenshot, product photo, logo, other                                                                                                   |
+| POST   | `/api/runs/:id/start`                                 | Starts the first phase that is not finished                                                                                                                          |
+| POST   | `/api/runs/:id/phases/:phase/approve`                 | Approves a phase, optionally with an edited output; starts the next phase                                                                                            |
+| POST   | `/api/runs/:id/phases/:phase/rerun`                   | Re-runs a phase; later phases become `STALE`                                                                                                                         |
+| POST   | `/api/runs/:id/posts/:index/slides/:order/regenerate` | Regenerates one slide, with an optional instruction                                                                                                                  |
+| GET    | `/api/assets/:id`                                     | Streams the file from storage                                                                                                                                        |
+| DELETE | `/api/assets/:id`                                     | Deletes an uploaded reference and its file while the run has not started; `409 RUN_ALREADY_STARTED` afterwards (uploads are refused the same way)                    |
+| GET    | `/api/runs/:id/export`                                | Downloads the ZIP                                                                                                                                                    |
 
 ## State rules
 

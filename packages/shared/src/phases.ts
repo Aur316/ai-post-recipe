@@ -114,15 +114,38 @@ export const PlanOutput = z.object({
     .length(3),
 })
 
-export const CopyOutput = z.object({
-  posts: z.array(
-    z.object({
-      index: z.number().int(),
-      caption: z.string(),
-      hashtags: z.array(z.string()),
-      slides: z.array(z.object({ order: z.number().int(), text: z.string() })),
-    }),
-  ),
+export const PostCopy = z.object({
+  index: z.number().int().min(1).max(3),
+  caption: z.string().min(1),
+  hashtags: z.array(z.string()),
+  slides: z
+    .array(
+      z.object({ order: z.number().int().min(1), text: z.string().min(1) }),
+    )
+    .min(1),
+})
+export type PostCopy = z.infer<typeof PostCopy>
+
+/** What the copy model writes: one entry per planned post. */
+export const CopyDraft = z.object({ posts: z.array(PostCopy).length(3) })
+
+/**
+ * A number or quote in the copy that no source contains. Found by a fixed
+ * check after the model has answered, not by the model.
+ */
+export const UnsupportedFact = z.object({
+  postIndex: z.number().int(),
+  /** `caption`, or the slide's order number. */
+  place: z.union([z.literal('caption'), z.number().int()]),
+  kind: z.enum(['number', 'quote']),
+  value: z.string(),
+  /** The words around it, to find it quickly. */
+  context: z.string(),
+})
+export type UnsupportedFact = z.infer<typeof UnsupportedFact>
+
+export const CopyOutput = CopyDraft.extend({
+  unsupported: z.array(UnsupportedFact),
 })
 
 export const VisualsOutput = z.object({

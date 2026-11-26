@@ -1,11 +1,13 @@
 import {
   APPROVAL_PHASES,
   Brief,
+  CopyOutput,
   PHASE_ORDER,
   PHASE_OUTPUT_SCHEMAS,
   type PhaseKey,
   type PhaseOutputs,
   type PhaseStatus,
+  PlanOutput,
   ResearchOutput,
 } from '@ai-post-recipe/shared'
 
@@ -20,6 +22,7 @@ import {
 import type { LlmUsage } from '../../providers/llm/llm.provider.js'
 import type { JobQueue } from '../../providers/queue/job-queue.js'
 import { PhaseRunRepo } from '../../repositories/phase-run/phase-run.repo.js'
+import { PostRepo } from '../../repositories/post/post.repo.js'
 import { RunRepo } from '../../repositories/run/run.repo.js'
 import { SourceRepo } from '../../repositories/source/source.repo.js'
 import { deriveRunStatus, nextPhaseToRun } from './run-status.js'
@@ -99,6 +102,13 @@ export class PipelineService {
         status: 'APPROVED',
         editedOutput: edited,
       })
+      if (phase === 'PLAN') {
+        // The approved plan, with the person's edits, becomes the three posts.
+        await new PostRepo(tx).replaceWithPlan(
+          runId,
+          PlanOutput.parse(edited ?? current.output),
+        )
+      }
       const next = PHASE_ORDER[PHASE_ORDER.indexOf(phase) + 1]
       if (next) await this.enqueue(tx, runId, next)
       await this.refreshStatus(tx, runId)
@@ -176,6 +186,12 @@ export class PipelineService {
       })
       if (done.phase === 'RESEARCH') {
         await this.saveSources(tx, done.runId, result.output)
+      }
+      if (done.phase === 'COPY') {
+        await new PostRepo(tx).saveCopy(
+          done.runId,
+          CopyOutput.parse(result.output).posts,
+        )
       }
       if (done.status === 'DONE') {
         const next = PHASE_ORDER[PHASE_ORDER.indexOf(done.phase) + 1]

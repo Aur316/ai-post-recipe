@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { AssetDto } from './assets.js'
 import { paginated } from './pagination.js'
 import { PhaseRunDto, PostFormat } from './phases.js'
+import { PostDto } from './posts.js'
 import { SourceDto } from './sources.js'
 
 export const OutputLanguage = z.enum(['hr', 'en'])
@@ -143,6 +144,8 @@ export const RunDetailDto = RunSummaryDto.extend({
   phases: z.array(PhaseRunDto),
   /** Sources of the latest research, in the order they were read. */
   sources: z.array(SourceDto),
+  /** The three posts, once the plan is approved. */
+  posts: z.array(PostDto),
 })
 export type RunDetailDto = z.infer<typeof RunDetailDto>
 

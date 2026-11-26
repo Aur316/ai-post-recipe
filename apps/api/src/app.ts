@@ -15,6 +15,7 @@ import type { JobQueue } from './providers/queue/job-queue.js'
 import type { StorageProvider } from './providers/storage/storage.provider.js'
 import { AssetRepo } from './repositories/asset/asset.repo.js'
 import { PhaseRunRepo } from './repositories/phase-run/phase-run.repo.js'
+import { PostRepo } from './repositories/post/post.repo.js'
 import { RunRepo } from './repositories/run/run.repo.js'
 import { SourceRepo } from './repositories/source/source.repo.js'
 import { AssetService } from './services/asset/asset.service.js'
@@ -39,6 +40,7 @@ export function createApp({ db, storage, queue, providers }: AppDeps) {
       assetRepo,
       new PhaseRunRepo(db),
       new SourceRepo(db),
+      new PostRepo(db),
     ),
   )
   const pipeline = new PipelineController(new PipelineService(db, queue))

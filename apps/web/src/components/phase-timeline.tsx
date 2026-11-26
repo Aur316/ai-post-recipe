@@ -1,13 +1,12 @@
 import {
-  AnalysisOutput,
   PHASE_ORDER,
   type PhaseKey,
   type PhaseRunDto,
 } from '@ai-post-recipe/shared'
 import { useTranslation } from 'react-i18next'
 
-import { AnalysisView } from '@/components/analysis-view'
 import { ApprovalPanel } from '@/components/approval-panel'
+import { PhaseOutputView } from '@/components/phase-output-view'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
@@ -128,7 +127,9 @@ function PhaseItem({
         </div>
       )}
       {phase && (status === 'DONE' || status === 'APPROVED') && (
-        <PhaseOutputView phase={phase} />
+        <div className="mt-4">
+          <PhaseOutputView phase={phase} />
+        </div>
       )}
       {phase && (status === 'DONE' || status === 'APPROVED') && (
         <details className="mt-3 text-sm">
@@ -143,17 +144,5 @@ function PhaseItem({
         </details>
       )}
     </li>
-  )
-}
-
-/** A readable view of the phases that have one; the JSON stays below it. */
-function PhaseOutputView({ phase }: { phase: PhaseRunDto }) {
-  if (phase.phase !== 'ANALYSIS') return null
-  const analysis = AnalysisOutput.safeParse(phase.editedOutput ?? phase.output)
-  if (!analysis.success) return null
-  return (
-    <div className="mt-4">
-      <AnalysisView analysis={analysis.data} />
-    </div>
   )
 }
