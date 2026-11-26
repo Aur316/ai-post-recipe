@@ -9,17 +9,17 @@ flowchart LR
   M5 --> M6[M6 Plan and copy] --> M7[M7 Visuals] --> M8[M8 Review and export] --> M9[M9 Delivery]
 ```
 
-| Milestone                                                 | Goal                                                      | Status      |
-| --------------------------------------------------------- | --------------------------------------------------------- | ----------- |
-| [M1 · Scaffold](m1-scaffold.md)                           | Monorepo, empty apps, database, Docker, tooling and CI    | Done        |
-| [M2 · Data and storage](m2-data-and-storage.md)           | Prisma schema, repositories, object storage, uploads      | Done        |
-| [M3 · Brief](m3-brief.md)                                 | Create a run from a validated brief with uploads          | Done        |
-| [M4 · Pipeline engine](m4-pipeline-engine.md)             | Jobs, phase runner, state machine, approval and re-run    | Done        |
-| [M5 · Research and analysis](m5-research-and-analysis.md) | Real sources and a grounded brand analysis                | Done        |
-| [M6 · Plan and copy](m6-plan-and-copy.md)                 | Three post plans and their copy, editable at approval     | Done        |
-| [M7 · Visuals](m7-visuals.md)                             | Slide templates, backgrounds, PNG rendering, preview      | Done        |
-| [M8 · Review and export](m8-review-and-export.md)         | Automatic checks, ZIP export, the three demo posts        | Done        |
-| [M9 · Delivery](m9-delivery.md)                           | One-command start, recipe document, PDF, published images | Not started |
+| Milestone                                                 | Goal                                                   | Status |
+| --------------------------------------------------------- | ------------------------------------------------------ | ------ |
+| [M1 · Scaffold](m1-scaffold.md)                           | Monorepo, empty apps, database, Docker, tooling and CI | Done   |
+| [M2 · Data and storage](m2-data-and-storage.md)           | Prisma schema, repositories, object storage, uploads   | Done   |
+| [M3 · Brief](m3-brief.md)                                 | Create a run from a validated brief with uploads       | Done   |
+| [M4 · Pipeline engine](m4-pipeline-engine.md)             | Jobs, phase runner, state machine, approval and re-run | Done   |
+| [M5 · Research and analysis](m5-research-and-analysis.md) | Real sources and a grounded brand analysis             | Done   |
+| [M6 · Plan and copy](m6-plan-and-copy.md)                 | Three post plans and their copy, editable at approval  | Done   |
+| [M7 · Visuals](m7-visuals.md)                             | Slide templates, backgrounds, PNG rendering, preview   | Done   |
+| [M8 · Review and export](m8-review-and-export.md)         | Automatic checks, ZIP export, the three demo posts     | Done   |
+| [M9 · Delivery](m9-delivery.md)                           | One-command start, recipe document, PDF                | Done   |
 
 ## Definition of done
 

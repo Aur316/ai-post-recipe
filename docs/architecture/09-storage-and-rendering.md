@@ -1,6 +1,6 @@
 # 09 · Storage and rendering
 
-Files live in S3-compatible object storage. Slides are not drawn by an AI model: they are React templates rendered to PNG by Playwright. The image model only supplies the background, so the caption, logo and product photo stay exact.
+Files live in S3-compatible object storage. Slides are not drawn by an AI model: they are React templates rendered to PNG by Playwright. The image model supplies the scene, with the product placed in it from the uploaded photo; the caption and logo are drawn by the template, so they stay exact.
 
 ## Object storage
 
@@ -32,9 +32,9 @@ sequenceDiagram
   end
 ```
 
-1. One template, `Slide` in `packages/slide-templates`, with three layouts: **cover** (first slide; product photo in the middle, headline at the bottom), **text** (middle slides; text over a darkened background) and **closing** (last slide; text and a brand button). A single-image post uses only its first slide text, as a cover.
-2. Props: `format`, `layout`, `text`, `order`/`total` (shown as 2/5 on carousels and stories), `brandName`, `tokens` (accent colour from the analysis, Geist font), `backgroundUrl`, `productImageUrl`, `logoUrl`. All images are data URLs.
-3. The logo is the uploaded `UPLOAD_LOGO` (SVG turned into PNG); each post takes one uploaded product photo in turn. Without product photos the slide shows no product; in website mode the website screenshots only go to the image model, as input for the background. Without a logo the header shows the brand name.
+1. One template, `Slide` in `packages/slide-templates`, with three layouts: **cover** (first slide; headline at the bottom), **text** (middle slides; text over a darkened background) and **closing** (last slide; text and a brand button). A single-image post uses only its first slide text, as a cover.
+2. Props: `format`, `layout`, `text`, `order`/`total` (shown as 2/5 on carousels and stories), `brandName`, `tokens` (accent colour from the analysis, Geist font), `backgroundUrl`, `logoUrl`. All images are data URLs.
+3. The logo is the uploaded `UPLOAD_LOGO` (SVG turned into PNG); each post sends the photo of its own product to the image model (matched by name in the brief's order, otherwise one per post in turn). Without product photos the scene shows no product; in website mode the website screenshots only go to the image model, as input for the background. Without a logo the header shows the brand name.
 4. One background per post: the image model gets the brand, colours, visual style and a scene theme (product and goal), and is told to draw no text, design elements, products or people. Feed and carousel use 4:5, stories 9:16.
 5. Chromium screenshots the page at 1080×1350 (feed, carousel) or 1080×1920 (story) after the fonts have loaded. Text is real text, never part of the generated image.
 6. The PNGs are saved as `RENDERED_SLIDE` assets and written onto the post's slides. The web app shows these PNGs in an Instagram-like preview.

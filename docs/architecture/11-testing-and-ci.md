@@ -45,7 +45,3 @@ flowchart LR
 7. Build the `api` and `web` Docker images, so the Dockerfiles are checked too.
 
 The `main` branch is protected: merging requires a green pipeline.
-
-## CD
-
-After a commit lands on `main`, the workflow pushes both images to the GitHub Container Registry (GHCR) with the `latest` tag and the commit SHA.

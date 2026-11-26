@@ -18,7 +18,7 @@ The application is the recipe. A reviewer can clone the repository, run `docker 
 - **Grounded:** facts come only from official pages that were actually downloaded, each with a source link. Every claim is marked `verified` or `assumption`.
 - **Human in the loop:** the run pauses after the brand analysis and after the content plan. A person approves or edits the AI proposal before the run continues.
 - **Resumable:** each phase is saved. A failed or edited phase can be re-run without starting over.
-- **Accurate visuals:** logos, product photos and text on slides come from real files, never from an image model.
+- **Accurate visuals:** the logo and the text on slides come from real files and are never drawn by an image model. The product is placed in the scene by the image model from the uploaded product photo, and the review phase checks that its label stayed the same.
 - **Easy to run:** one command for reviewers, one command for developers.
 
 ## Non-goals
