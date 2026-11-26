@@ -1,21 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
   BRIEF_LIMITS,
-  Brief,
+  type Brief,
+  type BriefMessages,
   LinkType,
   PostFormat,
+  type RunDetailDto,
+  createBriefSchema,
 } from '@ai-post-recipe/shared'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { type TFunction } from 'i18next'
 import {
   Controller,
   type FieldPath,
   useFieldArray,
   useForm,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { z } from 'zod'
 
+import { AssetGrid } from '@/components/asset-grid'
 import { AssetUploader } from '@/components/asset-uploader'
 import { CharCount } from '@/components/char-count'
 import { FormField } from '@/components/form-field'
@@ -34,40 +40,48 @@ import { Textarea } from '@/components/ui/textarea'
 
 import { useUploadAsset } from '@/hooks/queries/assets/useUploadAsset'
 import { useCreateRun } from '@/hooks/queries/runs/useCreateRun'
+import { useUpdateRun } from '@/hooks/queries/runs/useUpdateRun'
+import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 import { getApiErrorMessage } from '@/utils/helpers'
 import { type PendingUpload, rejectReason } from '@/utils/uploads'
 
-/** Field arrays need objects, so the form keeps inspiration links as { url }. */
-const BriefFormSchema = Brief.extend({
-  inspirationLinks: z.array(
-    z.object({ url: z.url({ error: 'Enter a full http(s) URL' }) }),
-  ),
+/** The shared brief rules with messages in the interface language. */
+const briefMessages = (t: TFunction): BriefMessages => ({
+  url: t('validation.url'),
+  tooLong: (max) => t('validation.tooLong', { max }),
+  brandNameRequired: t('validation.brandNameRequired'),
+  instagramProfile: t('validation.instagramProfile'),
+  reasonTooShort: t('validation.reasonTooShort'),
+  linksRequired: t('validation.linksRequired'),
+  productNameRequired: t('validation.productNameRequired'),
+  productsRequired: t('validation.productsRequired'),
+  audienceRequired: t('validation.audienceRequired'),
+  goalsRequired: t('validation.goalsRequired'),
 })
-type FormInput = z.input<typeof BriefFormSchema>
-type FormOutput = z.output<typeof BriefFormSchema>
 
-const LINK_LABELS: Record<LinkType, string> = {
-  WEBSITE: 'Website',
-  SHOP: 'Shop',
-  CATALOG: 'Catalogue',
-  OTHER: 'Other',
-}
+/** Field arrays need objects, so the form keeps inspiration links as { url }. */
+const createFormSchema = (t: TFunction) =>
+  createBriefSchema(briefMessages(t)).extend({
+    inspirationLinks: z.array(
+      z.object({ url: z.url({ error: t('validation.url') }) }),
+    ),
+  })
+type FormSchema = ReturnType<typeof createFormSchema>
+type FormInput = z.input<FormSchema>
+type FormOutput = z.output<FormSchema>
 
-const FORMAT_LABELS: Record<PostFormat, string> = {
-  IMAGE: 'Single image',
-  CAROUSEL: 'Carousel',
-  STORY: 'Story',
-}
-
-const STEPS: Array<{ title: string; fields: Array<FieldPath<FormInput>> }> = [
-  { title: 'Brand', fields: ['brandName', 'instagramUrl', 'reason'] },
-  { title: 'Sources and products', fields: ['links', 'products'] },
+const STEPS = [
+  { title: 'brand', fields: ['brandName', 'instagramUrl', 'reason'] },
+  { title: 'sources', fields: ['links', 'products'] },
   {
-    title: 'Audience and goals',
+    title: 'audience',
     fields: ['audience', 'goals', 'inspiration', 'inspirationLinks'],
   },
-  { title: 'Output and references', fields: ['language', 'formats'] },
-]
+  { title: 'output', fields: ['language', 'formats'] },
+] as const satisfies ReadonlyArray<{
+  title: string
+  fields: ReadonlyArray<FieldPath<FormInput>>
+}>
 
 const DEFAULT_VALUES: FormInput = {
   brandName: '',
@@ -83,17 +97,40 @@ const DEFAULT_VALUES: FormInput = {
   formats: [],
 }
 
-export function BriefForm() {
+/** The saved brief in the shape the form edits. */
+function toFormValues(brief: Brief): FormInput {
+  return {
+    ...brief,
+    products: brief.products.map((p) => ({ name: p.name, url: p.url ?? '' })),
+    inspirationLinks: brief.inspirationLinks.map((url) => ({ url })),
+  }
+}
+
+interface BriefFormProps {
+  /** A run that has not started yet; the form then edits its brief. */
+  run?: RunDetailDto
+}
+
+export function BriefForm({ run }: BriefFormProps) {
   const [step, setStep] = useState(0)
   const [uploads, setUploads] = useState<Array<PendingUpload>>([])
+  // Set once the brief is saved, so a retry only uploads the failed files.
   const [runId, setRunId] = useState<string>()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const localized = useLocalizedPath()
   const createRun = useCreateRun()
+  const updateRun = useUpdateRun()
   const uploadAsset = useUploadAsset()
 
+  const { language } = i18n
+  const schema = useMemo(
+    () => createFormSchema(i18n.getFixedT(language)),
+    [i18n, language],
+  )
   const form = useForm<FormInput, unknown, FormOutput>({
-    resolver: zodResolver(BriefFormSchema),
-    defaultValues: DEFAULT_VALUES,
+    resolver: zodResolver(schema),
+    defaultValues: run ? toFormValues(run.brief) : DEFAULT_VALUES,
     // Validate a field when it loses focus, then live while it is corrected.
     mode: 'onTouched',
   })
@@ -102,6 +139,15 @@ export function BriefForm() {
     control,
     formState: { errors, isSubmitting },
   } = form
+  // Shown errors follow a language switch.
+  useEffect(() => {
+    const invalid = Object.keys(form.formState.errors) as Array<
+      FieldPath<FormInput>
+    >
+    if (invalid.length) void form.trigger(invalid)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on a language switch
+  }, [schema])
+
   const links = useFieldArray({ control, name: 'links' })
   const products = useFieldArray({ control, name: 'products' })
   const inspirationLinks = useFieldArray({ control, name: 'inspirationLinks' })
@@ -110,22 +156,21 @@ export function BriefForm() {
   const hasInvalidFiles = uploads.some((u) => rejectReason(u.file, u.kind))
 
   const next = async () => {
-    if (await form.trigger(STEPS[step]?.fields)) setStep(step + 1)
+    if (await form.trigger([...(STEPS[step]?.fields ?? [])])) setStep(step + 1)
   }
 
   const patchUpload = (id: string, patch: Partial<PendingUpload>) =>
     setUploads((all) => all.map((u) => (u.id === id ? { ...u, ...patch } : u)))
 
-  /** Creates the run once, then uploads every file that is not uploaded yet. */
-  const submit = form.handleSubmit(async ({ inspirationLinks, ...brief }) => {
-    const id =
-      runId ??
-      (
-        await createRun.mutateAsync({
-          ...brief,
-          inspirationLinks: inspirationLinks.map((l) => l.url),
-        })
-      ).id
+  /** Saves the brief once, then uploads every file that is not uploaded yet. */
+  const submit = form.handleSubmit(async ({ inspirationLinks, ...values }) => {
+    const brief = {
+      ...values,
+      inspirationLinks: inspirationLinks.map((l) => l.url),
+    }
+    let id = runId
+    if (!id && run) id = (await updateRun.mutateAsync({ id: run.id, brief })).id
+    if (!id) id = (await createRun.mutateAsync(brief)).id
     setRunId(id)
 
     let failed = false
@@ -143,12 +188,12 @@ export function BriefForm() {
         failed = true
         patchUpload(upload.id, {
           status: 'failed',
-          error: getApiErrorMessage(error, 'Upload failed'),
+          error: getApiErrorMessage(error, t('uploader.uploadFailed')),
         })
       }
     }
 
-    if (!failed) await navigate(`/runs/${id}`)
+    if (!failed) await navigate(localized(`/runs/${id}`))
   })
 
   return (
@@ -159,26 +204,28 @@ export function BriefForm() {
             key={s.title}
             className={i === step ? 'font-semibold' : 'text-muted-foreground'}
           >
-            {i + 1}. {s.title}
+            {i + 1}. {t(`brief.steps.${s.title}`)}
           </li>
         ))}
       </ol>
 
       <Card>
         <CardHeader>
-          <CardTitle>{STEPS[step]?.title}</CardTitle>
+          <CardTitle>
+            {t(`brief.steps.${STEPS[step]?.title ?? 'brand'}`)}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {step === 0 && (
             <>
               <FormField
-                label="Brand name"
+                label={t('brief.brandName')}
                 htmlFor="brandName"
                 error={errors.brandName?.message}
               >
                 <Input
                   id="brandName"
-                  placeholder="e.g. GymBeam Hrvatska"
+                  placeholder={t('brief.brandNamePlaceholder')}
                   maxLength={BRIEF_LIMITS.brandName}
                   {...register('brandName')}
                 />
@@ -189,7 +236,7 @@ export function BriefForm() {
                 />
               </FormField>
               <FormField
-                label="Instagram profile URL"
+                label={t('brief.instagramUrl')}
                 htmlFor="instagramUrl"
                 error={errors.instagramUrl?.message}
               >
@@ -206,13 +253,13 @@ export function BriefForm() {
                 />
               </FormField>
               <FormField
-                label="Why this brand?"
+                label={t('brief.reason')}
                 htmlFor="reason"
                 error={errors.reason?.message}
               >
                 <Textarea
                   id="reason"
-                  placeholder="e.g. A large Croatian sports nutrition brand with an active Instagram profile and a clear product range."
+                  placeholder={t('brief.reasonPlaceholder')}
                   maxLength={BRIEF_LIMITS.reason}
                   {...register('reason')}
                 />
@@ -228,7 +275,7 @@ export function BriefForm() {
           {step === 1 && (
             <>
               <FormField
-                label="Website, shop and catalogue links"
+                label={t('brief.links')}
                 error={errors.links?.root?.message ?? errors.links?.message}
               >
                 {links.fields.map((field, i) => (
@@ -241,14 +288,14 @@ export function BriefForm() {
                           <Select value={f.value} onValueChange={f.onChange}>
                             <SelectTrigger
                               className="w-36"
-                              aria-label="Link type"
+                              aria-label={t('brief.linkType')}
                             >
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                               {LinkType.options.map((type) => (
                                 <SelectItem key={type} value={type}>
-                                  {LINK_LABELS[type]}
+                                  {t(`brief.linkTypes.${type}`)}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -257,7 +304,7 @@ export function BriefForm() {
                       />
                       <div className="flex-1 space-y-1">
                         <Input
-                          aria-label={`Link ${i + 1} URL`}
+                          aria-label={t('brief.linkUrl', { n: i + 1 })}
                           placeholder="https://"
                           maxLength={BRIEF_LIMITS.url}
                           {...register(`links.${i}.url`)}
@@ -273,7 +320,7 @@ export function BriefForm() {
                         variant="ghost"
                         onClick={() => links.remove(i)}
                       >
-                        Remove
+                        {t('common.remove')}
                       </Button>
                     </div>
                     <FieldError message={errors.links?.[i]?.url?.message} />
@@ -285,12 +332,12 @@ export function BriefForm() {
                   size="sm"
                   onClick={() => links.append({ type: 'SHOP', url: '' })}
                 >
-                  Add link
+                  {t('brief.addLink')}
                 </Button>
               </FormField>
 
               <FormField
-                label="Products to promote"
+                label={t('brief.products')}
                 error={
                   errors.products?.root?.message ?? errors.products?.message
                 }
@@ -300,8 +347,8 @@ export function BriefForm() {
                     <div className="flex items-start gap-2">
                       <div className="flex-1 space-y-1">
                         <Input
-                          aria-label={`Product ${i + 1} name`}
-                          placeholder="Product name"
+                          aria-label={t('brief.productName', { n: i + 1 })}
+                          placeholder={t('brief.productNamePlaceholder')}
                           maxLength={BRIEF_LIMITS.productName}
                           {...register(`products.${i}.name`)}
                         />
@@ -313,8 +360,8 @@ export function BriefForm() {
                       </div>
                       <div className="flex-1 space-y-1">
                         <Input
-                          aria-label={`Product ${i + 1} page`}
-                          placeholder="Product page URL (optional)"
+                          aria-label={t('brief.productPage', { n: i + 1 })}
+                          placeholder={t('brief.productPagePlaceholder')}
                           maxLength={BRIEF_LIMITS.url}
                           {...register(`products.${i}.url`)}
                         />
@@ -329,7 +376,7 @@ export function BriefForm() {
                         variant="ghost"
                         onClick={() => products.remove(i)}
                       >
-                        Remove
+                        {t('common.remove')}
                       </Button>
                     </div>
                     <FieldError
@@ -346,7 +393,7 @@ export function BriefForm() {
                   size="sm"
                   onClick={() => products.append({ name: '', url: '' })}
                 >
-                  Add product
+                  {t('brief.addProduct')}
                 </Button>
               </FormField>
             </>
@@ -355,13 +402,13 @@ export function BriefForm() {
           {step === 2 && (
             <>
               <FormField
-                label="Target audience"
+                label={t('brief.audience')}
                 htmlFor="audience"
                 error={errors.audience?.message}
               >
                 <Textarea
                   id="audience"
-                  placeholder="e.g. Active adults 18–35 in Croatia who train in the gym"
+                  placeholder={t('brief.audiencePlaceholder')}
                   maxLength={BRIEF_LIMITS.audience}
                   {...register('audience')}
                 />
@@ -372,13 +419,13 @@ export function BriefForm() {
                 />
               </FormField>
               <FormField
-                label="Goals"
+                label={t('brief.goals')}
                 htmlFor="goals"
                 error={errors.goals?.message}
               >
                 <Textarea
                   id="goals"
-                  placeholder="e.g. More saves and comments, interest in the new protein line"
+                  placeholder={t('brief.goalsPlaceholder')}
                   maxLength={BRIEF_LIMITS.goals}
                   {...register('goals')}
                 />
@@ -388,13 +435,10 @@ export function BriefForm() {
                   max={BRIEF_LIMITS.goals}
                 />
               </FormField>
-              <FormField
-                label="Role models and inspiration (optional)"
-                htmlFor="inspiration"
-              >
+              <FormField label={t('brief.inspiration')} htmlFor="inspiration">
                 <Textarea
                   id="inspiration"
-                  placeholder="e.g. Brands, creators or posts whose style you like"
+                  placeholder={t('brief.inspirationPlaceholder')}
                   maxLength={BRIEF_LIMITS.inspiration}
                   {...register('inspiration')}
                 />
@@ -404,13 +448,13 @@ export function BriefForm() {
                   max={BRIEF_LIMITS.inspiration}
                 />
               </FormField>
-              <FormField label="Inspiration links (optional)">
+              <FormField label={t('brief.inspirationLinks')}>
                 {inspirationLinks.fields.map((field, i) => (
                   <div key={field.id} className="space-y-1">
                     <div className="flex items-start gap-2">
                       <div className="flex-1 space-y-1">
                         <Input
-                          aria-label={`Inspiration link ${i + 1}`}
+                          aria-label={t('brief.inspirationLink', { n: i + 1 })}
                           placeholder="https://"
                           maxLength={BRIEF_LIMITS.url}
                           {...register(`inspirationLinks.${i}.url`)}
@@ -426,7 +470,7 @@ export function BriefForm() {
                         variant="ghost"
                         onClick={() => inspirationLinks.remove(i)}
                       >
-                        Remove
+                        {t('common.remove')}
                       </Button>
                     </div>
                     <FieldError
@@ -440,7 +484,7 @@ export function BriefForm() {
                   size="sm"
                   onClick={() => inspirationLinks.append({ url: '' })}
                 >
-                  Add inspiration link
+                  {t('brief.addInspirationLink')}
                 </Button>
               </FormField>
             </>
@@ -448,7 +492,7 @@ export function BriefForm() {
 
           {step === 3 && (
             <>
-              <FormField label="Output language">
+              <FormField label={t('brief.outputLanguage')}>
                 <Controller
                   control={control}
                   name="language"
@@ -456,19 +500,23 @@ export function BriefForm() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
                         className="w-48"
-                        aria-label="Output language"
+                        aria-label={t('brief.outputLanguage')}
                       >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="hr">Croatian</SelectItem>
-                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="hr">
+                          {t('outputLanguage.hr')}
+                        </SelectItem>
+                        <SelectItem value="en">
+                          {t('outputLanguage.en')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   )}
                 />
               </FormField>
-              <FormField label="Preferred formats (optional)">
+              <FormField label={t('brief.formats')}>
                 <Controller
                   control={control}
                   name="formats"
@@ -491,7 +539,7 @@ export function BriefForm() {
                                 )
                               }
                             />
-                            {FORMAT_LABELS[format]}
+                            {t(`brief.formatTypes.${format}`)}
                           </label>
                         ))}
                       </div>
@@ -499,7 +547,12 @@ export function BriefForm() {
                   }}
                 />
               </FormField>
-              <FormField label="Screenshots, product photos and logo">
+              {run && run.assets.length > 0 && (
+                <FormField label={t('brief.uploadedReferences')}>
+                  <AssetGrid runId={run.id} assets={run.assets} removable />
+                </FormField>
+              )}
+              <FormField label={t('brief.uploads')}>
                 <AssetUploader
                   uploads={uploads}
                   onChange={setUploads}
@@ -518,7 +571,7 @@ export function BriefForm() {
           disabled={step === 0 || isSubmitting}
           onClick={() => setStep(step - 1)}
         >
-          Back
+          {t('brief.back')}
         </Button>
         {isLastStep ? (
           <Button
@@ -526,20 +579,29 @@ export function BriefForm() {
             type="submit"
             disabled={isSubmitting || hasInvalidFiles}
           >
-            {isSubmitting
-              ? 'Creating…'
-              : runId
-                ? 'Retry uploads'
-                : 'Create run'}
+            {submitLabel(t, { editing: !!run, saved: !!runId, isSubmitting })}
           </Button>
         ) : (
           <Button key="next" type="button" onClick={() => void next()}>
-            Next
+            {t('brief.next')}
           </Button>
         )}
       </div>
     </form>
   )
+}
+
+function submitLabel(
+  t: TFunction,
+  {
+    editing,
+    saved,
+    isSubmitting,
+  }: { editing: boolean; saved: boolean; isSubmitting: boolean },
+) {
+  if (isSubmitting) return editing ? t('brief.saving') : t('brief.creating')
+  if (saved) return t('brief.retryUploads')
+  return editing ? t('brief.save') : t('brief.create')
 }
 
 function FieldError({ message }: { message?: string }) {

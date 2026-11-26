@@ -18,7 +18,7 @@ const createdRun = {
 describe('Brief form', () => {
   it('stays on the first step until its fields are valid', async () => {
     const user = userEvent.setup()
-    renderRoute('/runs/new')
+    renderRoute('/en/runs/new')
 
     await user.type(
       screen.getByLabelText('Instagram profile URL'),
@@ -63,7 +63,7 @@ describe('Brief form', () => {
         }),
       ),
     )
-    const router = renderRoute('/runs/new')
+    const router = renderRoute('/en/runs/new')
 
     await user.type(screen.getByLabelText('Brand name'), 'GymBeam Hrvatska')
     await user.type(
@@ -98,7 +98,9 @@ describe('Brief form', () => {
     )
     await user.click(screen.getByRole('button', { name: 'Create run' }))
 
-    await waitFor(() => expect(router.state.location.pathname).toBe('/runs/r1'))
+    await waitFor(() =>
+      expect(router.state.location.pathname).toBe('/en/runs/r1'),
+    )
     expect(sentBrief).toMatchObject({
       brandName: 'GymBeam Hrvatska',
       links: [{ type: 'WEBSITE', url: 'https://gymbeam.hr' }],

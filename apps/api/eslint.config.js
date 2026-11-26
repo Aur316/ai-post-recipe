@@ -19,6 +19,25 @@ export default defineConfig(
       'no-console': 'off',
     },
   },
+  {
+    // Only the queue provider may know about pg-boss, so it stays swappable (ADR 0002).
+    files: ['**/*.ts'],
+    ignores: ['src/providers/queue/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'pg-boss',
+              message:
+                'Use the JobQueue interface from providers/queue instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
   { ignores: ['eslint.config.js'] },
   prettier,
 )

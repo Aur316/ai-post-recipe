@@ -1,4 +1,5 @@
 import { DEFAULT_PAGE_SIZE } from '@ai-post-recipe/shared'
+import { useTranslation } from 'react-i18next'
 import useInfiniteScroll from 'react-infinite-scroll-hook'
 import { Link } from 'react-router'
 
@@ -7,8 +8,11 @@ import { RunStatusBadge } from '@/components/run-status-badge'
 import { Button } from '@/components/ui/button'
 
 import { useGetRunsInfinite } from '@/hooks/queries/runs/useGetRunsInfinite'
+import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 
 export function Runs() {
+  const { t, i18n } = useTranslation()
+  const localized = useLocalizedPath()
   const { runs, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useGetRunsInfinite({ params: { page: 1, size: DEFAULT_PAGE_SIZE } })
 
@@ -21,17 +25,17 @@ export function Runs() {
   return (
     <section className="flex h-full flex-col gap-6">
       <div className="flex shrink-0 items-center justify-between">
-        <h1 className="text-2xl font-semibold">Runs</h1>
+        <h1 className="text-2xl font-semibold">{t('runs.title')}</h1>
         <Button asChild>
-          <Link to="/runs/new">New run</Link>
+          <Link to={localized('/runs/new')}>{t('runs.newRun')}</Link>
         </Button>
       </div>
 
-      {isPending && <p className="text-muted-foreground">Loading…</p>}
+      {isPending && (
+        <p className="text-muted-foreground">{t('common.loading')}</p>
+      )}
       {!isPending && runs.length === 0 && (
-        <p className="text-muted-foreground">
-          No runs yet. Start one with a brand brief.
-        </p>
+        <p className="text-muted-foreground">{t('runs.empty')}</p>
       )}
       {runs.length > 0 && (
         <div
@@ -42,13 +46,13 @@ export function Runs() {
             {runs.map((run) => (
               <li key={run.id}>
                 <Link
-                  to={`/runs/${run.id}`}
+                  to={localized(`/runs/${run.id}`)}
                   className="flex items-center justify-between gap-4 p-4 hover:bg-muted"
                 >
                   <div>
                     <p className="font-medium">{run.brandName}</p>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(run.createdAt).toLocaleString()}
+                      {new Date(run.createdAt).toLocaleString(i18n.language)}
                     </p>
                   </div>
                   <RunStatusBadge status={run.status} />

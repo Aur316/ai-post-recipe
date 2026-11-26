@@ -98,6 +98,64 @@ describe('runs', () => {
     expect(run.assets.map((a) => a.kind)).toEqual(['UPLOAD_LOGO'])
   })
 
+  describe('editing the brief', () => {
+    const edited = () => ({
+      ...gymbeamBrief(),
+      brandName: 'GymBeam HR',
+      audience: 'Students who train at home',
+      language: 'en',
+    })
+
+    it('replaces the brief of a run that has not started', async () => {
+      const { id } = RunSummaryDto.parse((await createRun()).body)
+
+      const res = await request(ctx.app).put(`/api/runs/${id}`).send(edited())
+
+      expect(res.status).toBe(200)
+      const run = RunDetailDto.parse(res.body)
+      expect(run).toMatchObject({
+        brandName: 'GymBeam HR',
+        language: 'en',
+        status: 'DRAFT',
+      })
+      expect(run.brief.audience).toBe('Students who train at home')
+    })
+
+    it('refuses once the run has started', async () => {
+      const { id } = RunSummaryDto.parse((await createRun()).body)
+      await request(ctx.app).post(`/api/runs/${id}/start`)
+
+      const res = await request(ctx.app).put(`/api/runs/${id}`).send(edited())
+
+      expect(res.status).toBe(409)
+      expect(ErrorResponse.parse(res.body).error.code).toBe(
+        'RUN_ALREADY_STARTED',
+      )
+      const run = RunDetailDto.parse(
+        (await request(ctx.app).get(`/api/runs/${id}`)).body,
+      )
+      expect(run.brandName).toBe('GymBeam Hrvatska')
+    })
+
+    it('rejects an invalid brief', async () => {
+      const { id } = RunSummaryDto.parse((await createRun()).body)
+
+      const res = await request(ctx.app)
+        .put(`/api/runs/${id}`)
+        .send({ ...edited(), products: [] })
+
+      expect(res.status).toBe(400)
+    })
+
+    it('returns 404 for an unknown run', async () => {
+      const res = await request(ctx.app)
+        .put(`/api/runs/${UNKNOWN_ID}`)
+        .send(edited())
+
+      expect(res.status).toBe(404)
+    })
+  })
+
   it('returns 404 for an unknown run', async () => {
     expect((await request(ctx.app).get(`/api/runs/${UNKNOWN_ID}`)).status).toBe(
       404,

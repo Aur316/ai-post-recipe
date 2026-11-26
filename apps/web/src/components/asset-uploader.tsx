@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 
 import { UploadAssetKind } from '@ai-post-recipe/shared'
 import { FileIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -17,7 +18,6 @@ import { cn } from '@/lib/utils'
 
 import {
   type PendingUpload,
-  UPLOAD_KIND_LABELS,
   rejectReason,
   toPendingUpload,
 } from '@/utils/uploads'
@@ -33,6 +33,7 @@ export function AssetUploader({
   onChange,
   disabled,
 }: AssetUploaderProps) {
+  const { t } = useTranslation()
   const input = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
 
@@ -53,7 +54,7 @@ export function AssetUploader({
       <div
         role="button"
         tabIndex={0}
-        aria-label="Add files"
+        aria-label={t('uploader.addFiles')}
         onClick={() => input.current?.click()}
         onKeyDown={(e) => e.key === 'Enter' && input.current?.click()}
         onDragOver={(e) => {
@@ -72,8 +73,7 @@ export function AssetUploader({
           disabled && 'pointer-events-none opacity-50',
         )}
       >
-        Drop Instagram screenshots, product photos and the logo here, or click
-        to choose. PNG, JPEG, WebP (SVG for logos), up to 10 MB each.
+        {t('uploader.dropHint')}
         <input
           ref={input}
           type="file"
@@ -113,7 +113,9 @@ export function AssetUploader({
                   <Progress value={upload.progress} />
                 )}
                 {upload.status === 'done' && (
-                  <p className="text-sm text-muted-foreground">Uploaded</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t('uploader.uploaded')}
+                  </p>
                 )}
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
@@ -124,13 +126,16 @@ export function AssetUploader({
                   setKind(upload.id, UploadAssetKind.parse(kind))
                 }
               >
-                <SelectTrigger className="w-48" aria-label="File type">
+                <SelectTrigger
+                  className="w-48"
+                  aria-label={t('uploader.fileType')}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {UploadAssetKind.options.map((kind) => (
                     <SelectItem key={kind} value={kind}>
-                      {UPLOAD_KIND_LABELS[kind]}
+                      {t(`assets.kinds.${kind}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -142,7 +147,7 @@ export function AssetUploader({
                 disabled={disabled}
                 onClick={() => remove(upload)}
               >
-                Remove
+                {t('common.remove')}
               </Button>
             </li>
           )

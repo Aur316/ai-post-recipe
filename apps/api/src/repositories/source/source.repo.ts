@@ -1,8 +1,8 @@
-import type { Db } from '../../db/prisma.js'
+import type { DbClient } from '../../db/prisma.js'
 import type { Prisma } from '../../generated/prisma/client.js'
 
 export class SourceRepo {
-  constructor(private readonly db: Db) {}
+  constructor(private readonly db: DbClient) {}
 
   createMany(data: Array<Prisma.SourceCreateManyInput>) {
     return this.db.source.createMany({ data })

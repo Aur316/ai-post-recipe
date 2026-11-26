@@ -1,8 +1,13 @@
-import type { UploadAssetKind } from '@ai-post-recipe/shared'
+import { UploadAssetKind } from '@ai-post-recipe/shared'
 import sharp from 'sharp'
 import { v7 as uuidv7 } from 'uuid'
 
-import { NotFoundError, UnsupportedMediaTypeError } from '../../lib/errors.js'
+import {
+  ConflictError,
+  NotFoundError,
+  UnsupportedMediaTypeError,
+} from '../../lib/errors.js'
+import { logger } from '../../lib/logger.js'
 import type { StorageProvider } from '../../providers/storage/storage.provider.js'
 import type { AssetRepo } from '../../repositories/asset/asset.repo.js'
 import type { RunRepo } from '../../repositories/run/run.repo.js'
@@ -31,6 +36,7 @@ export class AssetService {
   async upload({ runId, kind, mimeType, buffer }: UploadInput) {
     if (!(await this.runs.findById(runId)))
       throw new NotFoundError('Run', runId)
+    if (await this.runs.hasStarted(runId)) throw runAlreadyStarted()
 
     if (mimeType === 'image/svg+xml' && kind !== 'UPLOAD_LOGO') {
       throw new UnsupportedMediaTypeError('SVG is only allowed for logos')
@@ -58,11 +64,40 @@ export class AssetService {
     }
   }
 
+  /** Removes a reference the operator uploaded, while the run has not started. */
+  async remove(id: string) {
+    const asset = await this.assets.findById(id)
+    if (!asset) throw new NotFoundError('Asset', id)
+    if (!UploadAssetKind.safeParse(asset.kind).success) {
+      throw new ConflictError(
+        'ASSET_NOT_DELETABLE',
+        'Only uploaded references can be deleted',
+      )
+    }
+    if (!(await this.assets.deleteIfRunNotStarted(id))) {
+      throw runAlreadyStarted()
+    }
+    // The database row is gone, so a leftover file is only wasted space.
+    await this.storage.delete(asset.storageKey).catch((error: unknown) => {
+      logger.warn(
+        { err: error, storageKey: asset.storageKey },
+        'Could not delete a stored file',
+      )
+    })
+  }
+
   async open(id: string) {
     const asset = await this.assets.findById(id)
     if (!asset) throw new NotFoundError('Asset', id)
     return { asset, object: await this.storage.get(asset.storageKey) }
   }
+}
+
+function runAlreadyStarted() {
+  return new ConflictError(
+    'RUN_ALREADY_STARTED',
+    'References can only be changed before the run is started',
+  )
 }
 
 async function readSize(buffer: Buffer) {

@@ -26,5 +26,7 @@ export const assetsQueryFunctions = {
       },
     })
   },
+  remove: ({ id }: { id: string; runId: string }): Promise<void> =>
+    httpClient.delete(`/api/assets/${id}`),
   url: (id: string) => `/api/assets/${id}`,
 }

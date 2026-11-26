@@ -4,7 +4,6 @@ export type Theme = 'dark' | 'light'
 
 const STORAGE_KEY = 'theme'
 
-/** Dark by default; the choice is kept in localStorage. index.html applies it before first paint. */
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(() =>
     document.documentElement.classList.contains('dark') ? 'dark' : 'light',

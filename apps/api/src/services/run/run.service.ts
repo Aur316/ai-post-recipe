@@ -1,22 +1,31 @@
 import type { Brief, ListQuery } from '@ai-post-recipe/shared'
 
-import { NotFoundError } from '../../lib/errors.js'
+import { ConflictError, NotFoundError } from '../../lib/errors.js'
 import type { AssetRepo } from '../../repositories/asset/asset.repo.js'
+import type { PhaseRunRepo } from '../../repositories/phase-run/phase-run.repo.js'
 import type { RunRepo } from '../../repositories/run/run.repo.js'
 
 export class RunService {
   constructor(
     private readonly runs: RunRepo,
     private readonly assets: AssetRepo,
+    private readonly phaseRuns: PhaseRunRepo,
   ) {}
 
   create(brief: Brief) {
-    return this.runs.create({
-      brandName: brief.brandName,
-      instagram: brief.instagramUrl,
-      language: brief.language,
-      brief,
-    })
+    return this.runs.create(briefColumns(brief))
+  }
+
+  /** Replaces the brief while the run has not been started. */
+  async update(id: string, brief: Brief) {
+    if (await this.runs.updateIfNotStarted(id, briefColumns(brief))) {
+      return this.get(id)
+    }
+    if (!(await this.runs.findById(id))) throw new NotFoundError('Run', id)
+    throw new ConflictError(
+      'RUN_ALREADY_STARTED',
+      'The brief can only be edited before the run is started',
+    )
   }
 
   async list(query: ListQuery) {
@@ -33,6 +42,19 @@ export class RunService {
   async get(id: string) {
     const run = await this.runs.findById(id)
     if (!run) throw new NotFoundError('Run', id)
-    return { run, assets: await this.assets.listByRun(id) }
+    const [assets, phases] = await Promise.all([
+      this.assets.listByRun(id),
+      this.phaseRuns.latestByRun(id),
+    ])
+    return { run, assets, phases }
+  }
+}
+
+function briefColumns(brief: Brief) {
+  return {
+    brandName: brief.brandName,
+    instagram: brief.instagramUrl,
+    language: brief.language,
+    brief,
   }
 }

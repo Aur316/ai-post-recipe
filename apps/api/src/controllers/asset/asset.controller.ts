@@ -27,6 +27,12 @@ export class AssetController {
     res.status(201).json(toAssetDto(asset))
   }
 
+  remove = async (req: Request, res: Response) => {
+    const { id } = validate(IdParams, req.params)
+    await this.assets.remove(id)
+    res.status(204).end()
+  }
+
   download = async (req: Request, res: Response) => {
     const { id } = validate(IdParams, req.params)
     const { asset, object } = await this.assets.open(id)
