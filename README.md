@@ -32,9 +32,10 @@ Stop the stack with `docker compose --profile full down`. Add `-v` to also delet
 ```bash
 corepack enable
 pnpm install
-cp .env.example .env
 pnpm dev
 ```
+
+`pnpm install` creates `.env` from `.env.example` when it does not exist yet. When `.env.example` gains a variable later, the next `pnpm install` adds it to your `.env` with the example value and says so; values you have set are never changed.
 
 `pnpm dev` starts PostgreSQL in Docker (and waits until it is healthy), then runs both apps with hot reload:
 
@@ -61,7 +62,7 @@ Run these from the repository root. Turborepo runs each one in every workspace t
 
 ## Configuration
 
-Copy `.env.example` to `.env`. API keys are never committed and never reach the browser.
+`pnpm install` creates `.env` from `.env.example` (see [Local development](#local-development)); for the Docker-only quick start, copy it by hand. API keys are never committed and never reach the browser.
 
 | Variable       | Default                                      | Purpose                                                                                |
 | -------------- | -------------------------------------------- | -------------------------------------------------------------------------------------- |
