@@ -85,12 +85,12 @@ function PhaseItem({
   return (
     <li
       className={cn(
-        'rounded-lg border p-4',
+        'rounded-lg border p-3 sm:p-4',
         status === 'AWAITING_APPROVAL' && 'border-primary',
         status === 'STALE' && 'opacity-60',
       )}
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <div className="flex items-center gap-3">
           <span className="w-5 text-sm text-muted-foreground tabular-nums">
             {index}
@@ -98,7 +98,7 @@ function PhaseItem({
           <span className="font-medium">{t(`phases.${phaseKey}`)}</span>
           {isPhaseActive(status) && <Spinner className="size-4" />}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           {meta.length > 0 && (
             <span className="text-xs text-muted-foreground">
               {meta.join(' · ')}

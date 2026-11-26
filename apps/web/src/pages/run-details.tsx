@@ -43,9 +43,12 @@ export function RunDetails() {
   return (
     <section className="space-y-6">
       <BackLink to={runsListPath()} label={t('runs.title')} />
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{run.brandName}</h1>
-        <div className="flex items-center gap-3">
+      {/* On a narrow screen the actions wrap under the brand name. */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="min-w-0 text-2xl font-semibold break-words">
+          {run.brandName}
+        </h1>
+        <div className="flex flex-wrap items-center gap-3">
           <RunStatusBadge status={run.status} />
           {totalTokens(run.usage) > 0 && (
             <UsageButton usage={run.usage} byPhase={run.usageByPhase} />
@@ -82,7 +85,8 @@ export function RunDetails() {
             <CardHeader>
               <CardTitle>{t('runDetails.phases')}</CardTitle>
             </CardHeader>
-            <CardContent>
+            {/* Less side padding on a phone: the phases nest cards in cards. */}
+            <CardContent className="px-2 sm:px-(--card-spacing)">
               <PhaseTimeline run={run} />
             </CardContent>
           </Card>

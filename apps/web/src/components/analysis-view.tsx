@@ -15,7 +15,7 @@ export function AnalysisView({ analysis }: AnalysisViewProps) {
     <div className="space-y-4 text-sm">
       <p>{analysis.summary}</p>
 
-      <dl className="grid gap-3 sm:grid-cols-2">
+      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label={t('analysis.tone')}>{analysis.tone}</Field>
         <Field label={t('analysis.audience')}>{analysis.audience}</Field>
         <Field label={t('analysis.visualStyle')}>{analysis.visualStyle}</Field>
@@ -28,7 +28,12 @@ export function AnalysisView({ analysis }: AnalysisViewProps) {
         <Field label={t('analysis.themes')}>
           <span className="flex flex-wrap gap-1">
             {analysis.themes.map((theme) => (
-              <Badge key={theme} variant="neutral">
+              // A long theme wraps instead of running off a phone screen.
+              <Badge
+                key={theme}
+                variant="neutral"
+                className="h-auto max-w-full shrink rounded-md py-0.5 whitespace-normal"
+              >
                 {theme}
               </Badge>
             ))}
@@ -123,7 +128,7 @@ function Field({
   return (
     <div>
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd>{children}</dd>
+      <dd className="break-words">{children}</dd>
     </div>
   )
 }

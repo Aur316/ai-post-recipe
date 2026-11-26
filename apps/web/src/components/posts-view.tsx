@@ -6,7 +6,7 @@ import { PostPreview } from '@/components/post-preview'
 export function PostsView({ run }: { run: RunDetailDto }) {
   return (
     <div className="@container">
-      <div className="grid gap-4 @3xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 @3xl:grid-cols-3">
         {run.posts.map((post) => (
           <PostPreview
             key={post.id}

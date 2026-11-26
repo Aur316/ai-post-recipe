@@ -102,15 +102,16 @@ export function Runs() {
               <li key={run.id}>
                 <Link
                   to={localized(`/runs/${run.id}`)}
-                  className="flex items-center justify-between gap-4 p-4 hover:bg-muted"
+                  // On a phone the badges go under the name instead of squeezing it.
+                  className="flex flex-col gap-2 p-4 hover:bg-muted sm:flex-row sm:items-center sm:justify-between sm:gap-4"
                 >
-                  <div>
-                    <p className="font-medium">{run.brandName}</p>
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{run.brandName}</p>
                     <p className="text-sm text-muted-foreground">
                       {new Date(run.createdAt).toLocaleString(i18n.language)}
                     </p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="flex shrink-0 flex-wrap items-center gap-2">
                     {run.status === 'COMPLETED' && (
                       <UsageBadge usage={run.usage} />
                     )}

@@ -51,7 +51,7 @@ export function ResearchView({
           <p className="text-xs text-muted-foreground">
             {t('research.captures')}
           </p>
-          <ul className="grid gap-3 sm:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {research.captures.flatMap((capture) => {
               const ids = capture.assetIds.length
                 ? capture.assetIds

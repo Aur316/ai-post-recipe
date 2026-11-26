@@ -9,7 +9,7 @@ export function PlanView({ plan }: { plan: PhaseOutputs['PLAN'] }) {
   return (
     // Three columns when the card is wide enough, whatever the screen.
     <div className="@container">
-      <ol className="grid gap-3 @3xl:grid-cols-3">
+      <ol className="grid grid-cols-1 gap-3 @3xl:grid-cols-3">
         {plan.posts.map((post) => (
           <li
             key={post.index}

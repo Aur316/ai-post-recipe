@@ -33,7 +33,7 @@ export function CopyView({ copy }: { copy: PhaseOutputs['COPY'] }) {
       )}
 
       <div className="@container">
-        <ol className="grid gap-3 @3xl:grid-cols-3">
+        <ol className="grid grid-cols-1 gap-3 @3xl:grid-cols-3">
           {copy.posts.map((post) => (
             <li key={post.index} className="space-y-3 rounded-lg border p-3">
               <p className="font-semibold">
