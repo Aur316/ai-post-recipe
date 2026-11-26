@@ -1,0 +1,155 @@
+{
+  "phase": "ANALYSIS",
+  "status": "APPROVED",
+  "attempt": 1,
+  "promptId": "analysis@v3",
+  "model": "anthropic/claude-sonnet-5.5",
+  "tokensIn": 11056,
+  "tokensOut": 3435,
+  "costUsd": 0.056462,
+  "output": {
+    "gaps": [
+      "Nema popisa web boja iz stilova stranice, pa su hex kodovi procijenjeni iz logotipa i slika.",
+      "Instagram feed vidljiv samo kroz dva screenshota (prvih nekoliko redova); nisu vidljivi opisi objava, angažman i učestalost objavljivanja.",
+      "Nije vidljivo kako je Cappuccino Tiramisu dosad komuniciran na Instagramu.",
+      "Zadnji izvor (213.186.1.22, instant cappuccino) bio je nedostupan.",
+      "Wikipedia tekst je djelomično nepouzdan (članak traži dodatne izvore) pa nije korišten za ključne tvrdnje o proizvodu.",
+      "Nije potvrđen vremenski okvir Black Friday akcije i novog proizvoda za potrebe plana objava.",
+      "Nema službenih smjernica brenda (font, ton komunikacije, hashtagovi)."
+    ],
+    "tone": "Topao, prijateljski i razigran; kratki naslovi na hrvatskom, uz emotivne i svakodnevne poruke (npr. prijateljica i kava). Poziv na slatki trenutak uživanja.",
+    "claims": [
+      {
+        "text": "Franck webshop promovira novi proizvod Cappuccino Tiramisu kao kombinaciju okusa kave, kakaa i nježnih kremastih nota, inspiriranu tiramisu desertom.",
+        "status": "verified",
+        "evidence": "NOVO! Cappuccino Tiramisu Otkrij neodoljivu kombinaciju okusa kave, kakaa i nježnih kremastih nota, inspiriranu omiljenim tiramisu desertom.",
+        "sourceUrl": "https://shop.franck.eu/hr/"
+      },
+      {
+        "text": "Cappuccino Tiramisu dolazi u kutiji od 144 g (8 x 18 g).",
+        "status": "verified",
+        "evidence": "Kutija 144 g (8 x 18 g)",
+        "sourceUrl": "https://shop.franck.eu/hr/kava/cappuccino/cappuccino-tiramisu/"
+      },
+      {
+        "text": "Cijena Cappuccino Tiramisua u webshopu je 3,89 €.",
+        "status": "verified",
+        "evidence": "Cijena 3,89 €",
+        "sourceUrl": "https://shop.franck.eu/hr/kava/cappuccino/cappuccino-tiramisu/"
+      },
+      {
+        "text": "Priprema: sadržaj vrećice preliti sa 180 ml vruće (ne kipuće) vode i promiješati.",
+        "status": "verified",
+        "evidence": "preliti sa 180 ml vruće (ne kipuće/ključale vode) i promiješati.",
+        "sourceUrl": "https://shop.franck.eu/hr/kava/cappuccino/cappuccino-tiramisu/"
+      },
+      {
+        "text": "Besplatna dostava u Hrvatskoj vrijedi za narudžbe iznad 30 €.",
+        "status": "verified",
+        "evidence": "Besplatna dostava iznad €30 za Hrvatsku | €60 za ostale EU zemlje",
+        "sourceUrl": "https://shop.franck.eu/hr/kava/cappuccino/cappuccino-tiramisu/"
+      },
+      {
+        "text": "Proizvod sadrži instant kavu (7%) i može sadržavati soju; sadrži mlijeko.",
+        "status": "verified",
+        "evidence": "instant kava/kafa (7%), kakao prah smanjene masti, laktoza (mlijeko)... Može sadržavati soju.",
+        "sourceUrl": "https://shop.franck.eu/hr/kava/cappuccino/cappuccino-tiramisu/"
+      },
+      {
+        "text": "Registracijom u webshopu članovi Franck Cluba dobivaju 200 bodova dobrodošlice i 2 € popusta na prvu kupnju.",
+        "status": "verified",
+        "evidence": "Registracijom ostvaruješ 200 bodova dobrodošlice ... Iskoristi 2 € popusta na prvu kupnju",
+        "sourceUrl": "https://shop.franck.eu/hr/"
+      },
+      {
+        "text": "Franck u webshopu najavljuje Black Friday s 20% popusta na odabrane proizvode od 27. do 30. 11.",
+        "status": "verified",
+        "evidence": "Iskoristi 20% popusta na odabrane proizvode od 27. do 30. 11.",
+        "sourceUrl": "https://shop.franck.eu/hr/"
+      },
+      {
+        "text": "Franck ističe 125 godina vrhunske kvalitete i tvrdi da su generacije odrastale uz njegove proizvode.",
+        "status": "verified",
+        "evidence": "generacije odrastale uz naše proizvode te da i danas, 125 godina od utemeljenja tvornice, ime Franck znači garanciju vrhunske kvalitete",
+        "sourceUrl": "https://www.franck.eu/hr/"
+      },
+      {
+        "text": "Franck poziva na društvene mreže uz poruku o toplim pričama u svako doba dana.",
+        "status": "verified",
+        "evidence": "Uz Franck vas očekuju tople priče u svako doba dana.",
+        "sourceUrl": "https://www.franck.eu/hr/"
+      },
+      {
+        "text": "Franck je hrvatska tvrtka za kavu i čaj sa sjedištem u Zagrebu.",
+        "status": "verified",
+        "evidence": "Franck is a Croatian coffee and tea company. Based in the city of Zagreb",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Franck_(company)"
+      },
+      {
+        "text": "Instagram profil franck_global je verificiran, ima oko 34,5 tis. pratitelja i 2690 objava, a bio glasi 'Get inspired by Franck!'.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      },
+      {
+        "text": "Highlighti profila su: Badel&Franck, Franck&Kraš, FranckLovers, Collabs, Events, BaristaClub, News.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      },
+      {
+        "text": "Ciljna publika (20–40 godina) i ton 'topli kućni trenuci' odgovaraju prikazanom sadržaju feeda.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      },
+      {
+        "text": "Na pakiranju Cappuccino Tiramisu dominiraju karamel-smeđi tonovi, crveni logo i prikaz tiramisua uz šalicu cappuccina.",
+        "status": "assumption",
+        "evidence": null,
+        "sourceUrl": null
+      }
+    ],
+    "colors": [
+      {
+        "hex": "#D6212A",
+        "name": "Franck crvena",
+        "usage": "Logo, pozadina avatara i highlight ikona, crveni element na pakiranju i promotivnim vizualima"
+      },
+      {
+        "hex": "#FFFFFF",
+        "name": "Bijela",
+        "usage": "Natpis logotipa, linijski crteži na highlight ikonama, čista pozadina grafičkih postova"
+      },
+      {
+        "hex": "#C98B55",
+        "name": "Karamel smeđa",
+        "usage": "Pozadina pakiranja Cappuccino Tiramisu, topli tonovi fotografija i napitaka"
+      },
+      {
+        "hex": "#6B3E26",
+        "name": "Kakao smeđa",
+        "usage": "Posipanje kakaa, tiramisu, kava i drveni elementi u kadrovima"
+      },
+      {
+        "hex": "#0F1115",
+        "name": "Tamna pozadina profila",
+        "usage": "Tamno sučelje Instagram profila i noćni billboard vizual"
+      }
+    ],
+    "themes": [
+      "Topli kućni trenuci uz kavu i čaj",
+      "Slastice i recepti uz kavu (keksi od cimeta i kave, nougat cappuccino)",
+      "Sezonski napitci (jabuka, cimet, topli napitci)",
+      "Prijateljstvo i druženje uz kavu",
+      "Novi proizvodi i promocije (Black Friday, PURE/DEEP espresso)",
+      "Franck Club i zajednica (kolaboracije, događanja, Barista Club)"
+    ],
+    "summary": "Franck je hrvatski brend kave i čaja s dugom tradicijom. Instagram profil franck_global (verificiran, oko 34,5 tis. pratitelja prema screenshotu) kombinira crvenu brend boju s toplim, domaćim prizorima: šalice kave, slastice, začinjeni napitci i prijateljska druženja. Webshop za novi Cappuccino Tiramisu ističe okus kave, kakaa i kremastih nota, uz kratke i prijateljske poruke.",
+    "audience": "Odrasli u Hrvatskoj koji uživaju u kavi i čaju kao dnevnom ritualu kod kuće, na poslu ili s prijateljima; vjerojatno mlađa i srednja dob, otvoreni za nove okuse i sezonske recepte.",
+    "visualStyle": "Toplo, uredno i uglavnom u tonovima smeđe, karamele i narančaste uz crvene brend akcente. Miješaju se video reels s tekstualnim natpisima, fotografije proizvoda u domaćem interijeru, flat-lay kompozicije i grafički postovi na bijeloj pozadini. Highlight ikone su crvene s bijelim linijskim crtežom. Prisutni su i jači promotivni vizuali (billboard Black Friday) na tamnoj pozadini.",
+    "peoplePresentation": "Prikazuju se prirodne, mlade žene u svakodnevnim situacijama: pijenje kave s prijateljicom, kuhanje, opuštanje u kafiću ili kod kuće. Kadrovi su nenametljivi, često s tekstom preko slike, u stilu autentičnog lifestylea i influencer sadržaja.",
+    "productPresentation": "Proizvodi se prikazuju u domaćem, toplom ambijentu (na drvenom stolu uz šalicu espressa, vaze i dekor), a na pakiranju je šalica cappuccina s kakaom i kriškom tiramisua. Uz proizvod ide i hrana i napitci kao kontekst (kolači, začinjeni čaj, krafne). Promocije se prikazuju grafički, s više kutija u nizu."
+  },
+  "editedOutput": null
+}

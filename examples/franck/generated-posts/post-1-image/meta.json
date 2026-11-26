@@ -1,0 +1,15 @@
+{
+  "post": 1,
+  "format": "IMAGE",
+  "goal": "Svjesnost o novom okusu i predstavljanje proizvoda",
+  "concept": "Jedna topla fotografija na drvenom stolu u domaćem interijeru: kutija Cappuccino Tiramisu, šalica cappuccina posuta kakaom i kriška tiramisua pokraj nje. Prevladavaju karamel i kakao smeđi tonovi, uz crveni Franck logo kao jedini jaki akcent. Na slici je kratki natpis „NOVO! Tiramisu u šalici.“ Opis ima dvije do tri kratke rečenice o okusu kave, kakaa i nježnih kremastih nota, inspiriranom omiljenim tiramisu desertom. Završava pitanjem za komentare: „S kim bi podijelio/la ovaj slatki trenutak?“ i emotikonom šalice.",
+  "rationale": "Prvi post mora jasno najaviti novi okus. Jedna vizualno jaka fotografija odgovara toplom, domaćem stilu profila i publici od 20 do 40 godina koja voli isprobavati nove okuse. Pitanje na kraju potiče komentare i spominjanje prijatelja, što je jedan od ciljeva brenda. Tvrdnje o okusu preuzete su izravno s webshopa.",
+  "product": "Cappuccino Tiramisu",
+  "slides": [
+    {
+      "order": 1,
+      "text": "NOVO! Tiramisu u šalici.",
+      "file": "slide-1.png"
+    }
+  ]
+}

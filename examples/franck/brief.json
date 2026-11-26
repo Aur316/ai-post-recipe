@@ -1,0 +1,21 @@
+{
+  "brandName": "Franck",
+  "instagramUrl": "https://www.instagram.com/franck_global/",
+  "reason": "A well-known Croatian coffee and tea brand with its own webshop, a verified Instagram profile with Croatian content, and product pages with clear facts (pack size, servings, price).",
+  "links": [
+    { "type": "WEBSITE", "url": "https://www.franck.eu/hr/" },
+    { "type": "SHOP", "url": "https://shop.franck.eu/hr/" }
+  ],
+  "products": [
+    {
+      "name": "Cappuccino Tiramisu",
+      "url": "https://shop.franck.eu/hr/kava/cappuccino/cappuccino-tiramisu/"
+    }
+  ],
+  "audience": "Adults aged 20–40 in Croatia who enjoy a sweet coffee moment at home or at work and like trying new flavours.",
+  "goals": "Awareness of the new Cappuccino Tiramisu flavour, more saves and comments, and visits to the webshop.",
+  "inspiration": "Warm, cosy home moments with coffee and dessert; short, friendly copy.",
+  "inspirationLinks": [],
+  "language": "hr",
+  "formats": []
+}

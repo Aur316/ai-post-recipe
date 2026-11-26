@@ -1,0 +1,98 @@
+{
+  "phase": "COPY",
+  "status": "DONE",
+  "attempt": 1,
+  "promptId": "copy@v2",
+  "model": "anthropic/claude-sonnet-5.5",
+  "tokensIn": 6721,
+  "tokensOut": 1898,
+  "costUsd": 0.032422,
+  "output": {
+    "posts": [
+      {
+        "index": 1,
+        "slides": [
+          {
+            "text": "NOVO! Tiramisu u šalici.",
+            "order": 1
+          }
+        ],
+        "caption": "NOVO! Tiramisu u šalici ☕🤎 Franck Cappuccino Tiramisu spaja okuse kave, kakaa i nježnih kremastih nota, inspirirane omiljenim tiramisu desertom. Slatki trenutak za dom, posao ili malu pauzu usred dana. S kim bi podijelio/la ovaj slatki trenutak? Napiši nam u komentarima i označi osobu uz koju bi ga popio/la ☕",
+        "hashtags": [
+          "#Franck",
+          "#CappuccinoTiramisu",
+          "#TiramisuUSalici",
+          "#kava",
+          "#slatkipauza",
+          "#novo"
+        ]
+      },
+      {
+        "index": 2,
+        "slides": [
+          {
+            "text": "Tiramisu trenutak u tri koraka",
+            "order": 1
+          },
+          {
+            "text": "Prvi korak: otvori vrećicu i izlij sadržaj u šalicu",
+            "order": 2
+          },
+          {
+            "text": "Drugi korak: prelij sa 180 ml vruće vode (vruće, ne kipuće)",
+            "order": 3
+          },
+          {
+            "text": "Treći korak: promiješaj i uživaj",
+            "order": 4
+          },
+          {
+            "text": "Kutija 144 g (8 x 18 g). Spremi za sljedeću pauzu uz kavu ☕",
+            "order": 5
+          }
+        ],
+        "caption": "Tiramisu trenutak u tri jednostavna koraka 🤎 Otvori, prelij, promiješaj i uživaj u kavi, kakau i kremastim notama. Spremi ovu objavu za sljedeću pauzu uz kavu, a u komentarima nam reci tko će s tobom probati Cappuccino Tiramisu ☕",
+        "hashtags": [
+          "#Franck",
+          "#CappuccinoTiramisu",
+          "#priprema",
+          "#kavavrijeme",
+          "#slatkipauza",
+          "#spremi"
+        ]
+      },
+      {
+        "index": 3,
+        "slides": [
+          {
+            "text": "Tiramisu u šalici je stigao 🤎 Slatka pauza: jutro ili popodne?",
+            "order": 1
+          },
+          {
+            "text": "Kutija 144 g (8 x 18 g). Cijena 3,89 €",
+            "order": 2
+          },
+          {
+            "text": "Besplatna dostava iznad 30 € u Hrvatskoj. Registracijom u Franck Clubu dobiješ 200 bodova dobrodošlice i 2 € popusta na prvu kupnju.",
+            "order": 3
+          },
+          {
+            "text": "Pogledaj u webshopu ⬆️",
+            "order": 4
+          }
+        ],
+        "caption": "Tiramisu u šalici je stigao 🤎 Pogledaj Cappuccino Tiramisu u Franck webshopu i priušti si slatku pauzu uz kavu. Link je u storyju, samo dodirni i zaviri!",
+        "hashtags": [
+          "#Franck",
+          "#CappuccinoTiramisu",
+          "#webshop",
+          "#FranckClub",
+          "#slatkipauza",
+          "#novo"
+        ]
+      }
+    ],
+    "unsupported": []
+  },
+  "editedOutput": null
+}

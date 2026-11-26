@@ -1,0 +1,35 @@
+{
+  "post": 2,
+  "format": "CAROUSEL",
+  "goal": "Edukacija i više spremanja objave",
+  "concept": "Karusel od 5 slajdova pod naslovom „Tiramisu trenutak u 3 koraka“. Slajd 1 je naslovnica s kutijom i šalicom na karamel pozadini. Slajd 2: „1. Otvori vrećicu“ i izlij sadržaj u šalicu. Slajd 3: „2. Prelij sa 180 ml vruće vode“, uz napomenu „vruće, ne kipuće“. Slajd 4: „3. Promiješaj i uživaj“, uz kadar kreme i kakaa u šalici. Slajd 5 donosi podatak da je u kutiji 8 vrećica (144 g) i poziv „Spremi za sljedeću pauzu uz kavu“. Grafika je čista, s bijelim tekstom na toplim smeđim pločama i crvenim brojevima koraka.",
+  "rationale": "Praktičan vodič koji se isplati spremiti povećava broj spremanja, a priprema je navedena na stranici proizvoda. Jednostavni koraci i kratki tekstovi odgovaraju prijateljskom tonu brenda. Slajd o pakiranju daje korisnu informaciju bez izmišljenih tvrdnji.",
+  "product": "Cappuccino Tiramisu",
+  "slides": [
+    {
+      "order": 1,
+      "text": "Tiramisu trenutak u tri koraka",
+      "file": "slide-1.png"
+    },
+    {
+      "order": 2,
+      "text": "Prvi korak: otvori vrećicu i izlij sadržaj u šalicu",
+      "file": "slide-2.png"
+    },
+    {
+      "order": 3,
+      "text": "Drugi korak: prelij sa 180 ml vruće vode (vruće, ne kipuće)",
+      "file": "slide-3.png"
+    },
+    {
+      "order": 4,
+      "text": "Treći korak: promiješaj i uživaj",
+      "file": "slide-4.png"
+    },
+    {
+      "order": 5,
+      "text": "Kutija 144 g (8 x 18 g). Spremi za sljedeću pauzu uz kavu ☕",
+      "file": "slide-5.png"
+    }
+  ]
+}
