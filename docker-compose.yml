@@ -47,16 +47,14 @@ services:
         storage: { condition: service_healthy },
       }
     ports: ['3000:3000']
-    healthcheck:
-      {
+    healthcheck: {
+        # The Playwright base image has no wget; Node can do the check.
         test:
           [
             'CMD',
-            'wget',
-            '-q',
-            '-O',
-            '/dev/null',
-            'http://127.0.0.1:3000/api/health',
+            'node',
+            '-e',
+            "fetch('http://127.0.0.1:3000/api/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
           ],
         interval: 2s,
         retries: 60,

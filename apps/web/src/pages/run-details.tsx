@@ -33,6 +33,8 @@ export function RunDetails() {
   if (!run) return <NotFound title={t('common.runNotFound')} />
 
   const { brief } = run
+  // References are the person's uploads; generated backgrounds and slides show in the posts.
+  const uploads = run.assets.filter((a) => a.kind.startsWith('UPLOAD_'))
   return (
     <section className="space-y-6">
       <BackLink to="/" label={t('runs.title')} />
@@ -153,13 +155,13 @@ export function RunDetails() {
           <Card>
             <CardHeader>
               <CardTitle>
-                {t('runDetails.references', { count: run.assets.length })}
+                {t('runDetails.references', { count: uploads.length })}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <AssetGrid
                 runId={run.id}
-                assets={run.assets}
+                assets={uploads}
                 removable={run.phases.length === 0}
               />
             </CardContent>

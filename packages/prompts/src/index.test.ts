@@ -85,6 +85,11 @@ describe('PromptLibrary', () => {
 
   it('loads the prompts that ship with the package', () => {
     const library = PromptLibrary.load()
-    expect(library.ids().sort()).toEqual(['analysis', 'copy', 'plan'])
+    expect(library.ids().sort()).toEqual([
+      'analysis',
+      'background',
+      'copy',
+      'plan',
+    ])
   })
 })

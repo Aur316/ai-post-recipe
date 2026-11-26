@@ -35,10 +35,10 @@ In the `full` profile the API reaches the other containers by service name, so C
 
 ## Images
 
-| Image | Build                                                                         | Runtime                                                                                                     |
-| ----- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `api` | Multi-stage: install with a frozen lockfile, build, then `pnpm deploy --prod` | Only production dependencies and `dist/`. Switches to the Playwright base image in M7 for headless Chromium |
-| `web` | Multi-stage: install and `vite build`                                         | `nginx:alpine` with the static files and `docker/nginx.conf`                                                |
+| Image | Build                                                                         | Runtime                                                                                                                                                                                                                     |
+| ----- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api` | Multi-stage: install with a frozen lockfile, build, then `pnpm deploy --prod` | Only production dependencies and `dist/`, on the Playwright base image (headless Chromium for the slide renderer). Locally, `pnpm install` downloads Chromium once (`playwright install chromium` in the API's postinstall) |
+| `web` | Multi-stage: install and `vite build`                                         | `nginx:alpine` with the static files and `docker/nginx.conf`                                                                                                                                                                |
 
 ## Configuration
 

@@ -9,6 +9,7 @@ import {
   type PhaseStatus,
   PlanOutput,
   ResearchOutput,
+  VisualsOutput,
 } from '@ai-post-recipe/shared'
 
 import type { Db, DbClient } from '../../db/prisma.js'
@@ -186,6 +187,12 @@ export class PipelineService {
       })
       if (done.phase === 'RESEARCH') {
         await this.saveSources(tx, done.runId, result.output)
+      }
+      if (done.phase === 'VISUALS') {
+        await new PostRepo(tx).saveSlides(
+          done.runId,
+          VisualsOutput.parse(result.output).slides,
+        )
       }
       if (done.phase === 'COPY') {
         await new PostRepo(tx).saveCopy(

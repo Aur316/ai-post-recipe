@@ -11,10 +11,10 @@ import {
   type SourceDto,
 } from '@ai-post-recipe/shared'
 import type { Request, Response } from 'express'
-import { z } from 'zod'
 
 import type { Post, Run, Source } from '../../generated/prisma/client.js'
 import { validate } from '../../lib/validate.js'
+import { toSlides } from '../../repositories/post/post.repo.js'
 import type { RunService } from '../../services/run/run.service.js'
 import { toAssetDto } from '../asset/asset.controller.js'
 import { toPhaseRunDto } from '../pipeline/pipeline.controller.js'
@@ -66,7 +66,7 @@ function toRunDetailDto({
   }
 }
 
-function toPostDto(post: Post): PostDto {
+export function toPostDto(post: Post): PostDto {
   return {
     id: post.id,
     index: post.index,
@@ -77,10 +77,7 @@ function toPostDto(post: Post): PostDto {
     product: post.product,
     caption: post.caption,
     hashtags: post.hashtags,
-    slides: z
-      .array(z.object({ order: z.number().int(), text: z.string() }))
-      .catch([])
-      .parse(post.slides),
+    slides: toSlides(post.slides),
   }
 }
 

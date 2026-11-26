@@ -57,6 +57,22 @@ export class PhaseRunRepo {
     return this.db.phaseRun.update({ where: { id }, data })
   }
 
+  /** Adds the usage of later calls, e.g. a regenerated slide, to a phase run. */
+  async addUsage(
+    id: string,
+    usage: { tokensIn: number; tokensOut: number; costUsd: number },
+  ) {
+    if (!usage.costUsd && !usage.tokensIn && !usage.tokensOut) return
+    await this.db.phaseRun.update({
+      where: { id },
+      data: {
+        tokensIn: { increment: usage.tokensIn },
+        tokensOut: { increment: usage.tokensOut },
+        costUsd: { increment: usage.costUsd },
+      },
+    })
+  }
+
   /** Sum of `costUsd` over every attempt of every phase of the run. */
   async totalCost(runId: string) {
     const { _sum } = await this.db.phaseRun.aggregate({

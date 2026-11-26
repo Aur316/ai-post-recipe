@@ -17,34 +17,34 @@ Files live in S3-compatible object storage. Slides are not drawn by an AI model:
 ```mermaid
 sequenceDiagram
   participant P as Visuals phase
-  participant L as LLM provider
+  participant I as Image provider (OpenRouter)
   participant S as Storage
   participant R as Renderer (Playwright)
-  participant T as /render/:templateId
 
-  P->>L: generate background for slide
-  L-->>P: image
+  P->>I: background prompt (scene, brand colours, aspect ratio)
+  I-->>P: image
   P->>S: save GENERATED_BACKGROUND
-  P->>R: render(templateId, props, size)
-  R->>T: open page with props
-  T-->>R: slide with real logo, product photo and text
-  R-->>P: PNG at exact size
-  P->>S: save RENDERED_SLIDE
+  loop every slide of the post
+    P->>R: Slide props (text, layout, tokens, background, logo, product)
+    R->>R: react-dom/server → HTML, page.setContent, screenshot
+    R-->>P: PNG at exact size
+    P->>S: save RENDERED_SLIDE
+  end
 ```
 
-1. Templates live in `packages/slide-templates` (carousel, single image, story).
-2. Template props: `brandTokens` (colours and font from the brand analysis), `text`, `backgroundUrl`, `productImageUrl`, `logoUrl`, `slideIndex`.
-3. The API serves an internal `/render/:templateId` page that shows a template with the given props.
-4. Headless Chromium takes a screenshot at the exact size: 1080×1350 for feed and carousel, 1080×1920 for stories.
-5. The PNG is saved to storage as a `RENDERED_SLIDE` asset.
-6. The same template runs in the frontend preview, so what the user approves is exactly what is exported.
+1. One template, `Slide` in `packages/slide-templates`, with three layouts: **cover** (first slide; product photo in the middle, headline at the bottom), **text** (middle slides; text over a darkened background) and **closing** (last slide; text and a brand button). A single-image post uses only its first slide text, as a cover.
+2. Props: `format`, `layout`, `text`, `order`/`total` (shown as 2/5 on carousels and stories), `brandName`, `tokens` (accent colour from the analysis, Geist font), `backgroundUrl`, `productImageUrl`, `logoUrl`. All images are data URLs.
+3. The logo is the uploaded `UPLOAD_LOGO` (SVG turned into PNG); each post takes one uploaded product photo in turn. Without uploads the slide shows the brand name and no product.
+4. One background per post: the image model gets the brand, colours, visual style and a scene theme (product and goal), and is told to draw no text, design elements, products or people. Feed and carousel use 4:5, stories 9:16.
+5. Chromium screenshots the page at 1080×1350 (feed, carousel) or 1080×1920 (story) after the fonts have loaded. Text is real text, never part of the generated image.
+6. The PNGs are saved as `RENDERED_SLIDE` assets and written onto the post's slides. The web app shows these PNGs in an Instagram-like preview.
 
 ## Regenerating a slide
 
-`POST /api/runs/:id/posts/:index/slides/:order/regenerate` re-runs the background and render steps for one slide, with an optional instruction such as "darker background". The review phase uses the same path when a slide fails a check.
+`POST /api/runs/:id/posts/:index/slides/:order/regenerate` makes a new background (with an optional instruction such as "darker background") and renders that one slide again; the other slides stay. It runs in the request (about 10 s), is refused while a phase runs, counts toward the cost cap, and its cost is added to the visuals phase. The review phase will use the same path when a slide fails a check.
 
 ## Video (optional)
 
 Not in the MVP. If time allows, ffmpeg can turn the story images into a simple slideshow reel.
 
-> **Current state:** storage, uploads and streaming work. The API image is based on `node:24-alpine`; it moves to the Playwright base image in M7, when rendering is added.
+> **Current state:** storage, uploads, background generation, slide rendering and regeneration work; the API image is based on the Playwright image.

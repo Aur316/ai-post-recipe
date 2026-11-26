@@ -42,8 +42,9 @@ apps/api/src/
 │  ├─ fetcher/              # downloads a page, HTML → clean text, respects robots.txt
 │  ├─ storage/              # StorageProvider: S3Storage, MemoryStorage (tests)
 │  ├─ queue/                # JobQueue: PgBossQueue (+ an in-memory queue for tests)
-│  └─ renderer/             # SlideRenderer: Playwright, slide templates → PNG
-├─ jobs/                    # phase-runner.ts (claim, execute, validate, retry), metered-llm.ts (usage, cost cap), queue names
+│  ├─ image/                # ImageProvider: OpenRouterImageProvider, FakeImageProvider
+│  └─ renderer/             # SlideRenderer: PlaywrightRenderer (template → HTML → PNG), FakeRenderer
+├─ jobs/                    # phase-runner.ts (claim, execute, validate, retry), cost-meter.ts (usage and cost cap for text and image calls), queue names
 ├─ middleware/              # error handler, upload (multer)
 ├─ lib/                     # logger (pino), errors (AppError hierarchy), validate
 └─ test/                    # shared test helpers: test context, fixtures
@@ -117,4 +118,4 @@ Phases call the model through `runPrompt(ctx, promptId, schema, values, images?)
 
 The phase runner wraps the provider in `MeteredLlm` for each attempt: it adds up tokens and cost of every call (failed ones too) and refuses a call once the run has spent `MAX_COST_USD_PER_RUN`. Without `OPENROUTER_API_KEY` the API uses `FakeLlmProvider` with recorded answers, logs a warning, reports `llm: "fake"` in `/api/health`, and the web app shows a demo-mode banner.
 
-> **Current state:** research and analysis are real (fetcher, Serper, OpenRouter vision); plan and copy have first prompts that M6 refines; visuals, review and export are placeholders until M7–M8.
+> **Current state:** research, analysis, plan, post text and visuals are real (fetcher, Serper, OpenRouter text, vision and image models, Playwright); review and export are placeholders until M8.

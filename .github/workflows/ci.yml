@@ -45,6 +45,8 @@ jobs:
           restore-keys: turbo-${{ runner.os }}-
 
       - run: pnpm install --frozen-lockfile
+      # The slide renderer test needs headless Chromium.
+      - run: pnpm --filter api exec playwright install --with-deps chromium
       - run: pnpm lint
       - run: pnpm format:check
       - run: pnpm typecheck

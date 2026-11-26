@@ -9,9 +9,11 @@ import type {
   FetchedPage,
   PageFetcher,
 } from '../providers/fetcher/web-fetcher.js'
+import { FakeImageProvider } from '../providers/image/fake-image.provider.js'
 import { FakeLlmProvider } from '../providers/llm/fake-llm.provider.js'
 import type { LlmProvider } from '../providers/llm/llm.provider.js'
 import { MemoryQueue } from '../providers/queue/memory.queue.js'
+import { FakeRenderer } from '../providers/renderer/fake.renderer.js'
 import {
   NoopSearchProvider,
   type SearchProvider,
@@ -68,16 +70,21 @@ export function createTestContext(
   })
   const llm = options.llm ?? new FakeLlmProvider()
   const search = options.search ?? new NoopSearchProvider()
+  const images = new FakeImageProvider()
+  const renderer = new FakeRenderer()
+  const prompts = PromptLibrary.load()
   const fetcher = options.fetcher ?? new FakeFetcher()
   void registerWorkers({
     db,
     queue,
     phases,
     llm,
-    prompts: PromptLibrary.load(),
+    prompts,
     search,
     fetcher,
     storage,
+    images,
+    renderer,
     costCapUsd: options.costCapUsd ?? 100,
   })
   const runs = new RunRepo(db)
@@ -93,10 +100,18 @@ export function createTestContext(
     storage,
     queue,
     llm,
+    images,
+    renderer,
     app: createApp({
       db,
       storage,
       queue,
+      slides: {
+        images,
+        renderer,
+        prompts,
+        costCapUsd: options.costCapUsd ?? 100,
+      },
       providers: { llm: llm.name, search: search.name },
     }),
     /** Deletes this run after the test file, e.g. one created through the API. */

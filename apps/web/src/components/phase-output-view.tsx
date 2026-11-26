@@ -15,6 +15,7 @@ import { AnalysisView } from '@/components/analysis-view'
 import { BriefSummaryView } from '@/components/brief-summary-view'
 import { CopyView } from '@/components/copy-view'
 import { PlanView } from '@/components/plan-view'
+import { PostsView } from '@/components/posts-view'
 import { ResearchView } from '@/components/research-view'
 import { Button } from '@/components/ui/button'
 
@@ -32,6 +33,10 @@ export function OutputView({
   run?: RunDetailDto
 }) {
   if (phase === 'BRIEF') return run ? <BriefSummaryView run={run} /> : null
+  // The rendered slides live on the posts, with their current text.
+  if (phase === 'VISUALS') {
+    return run?.posts.length ? <PostsView run={run} /> : null
+  }
   if (phase === 'RESEARCH') {
     const parsed = ResearchOutput.safeParse(value)
     return parsed.success ? <ResearchView research={parsed.data} /> : null
@@ -52,7 +57,7 @@ export function OutputView({
 }
 
 export const hasOutputView = (phase: PhaseKey) =>
-  ['BRIEF', 'RESEARCH', 'ANALYSIS', 'PLAN', 'COPY'].includes(phase)
+  ['BRIEF', 'RESEARCH', 'ANALYSIS', 'PLAN', 'COPY', 'VISUALS'].includes(phase)
 
 /**
  * A finished phase as it reads. When the person edited it at approval, the

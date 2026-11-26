@@ -278,6 +278,99 @@ describe('Run details', () => {
     ).toBeGreaterThan(0)
   })
 
+  describe('post preview', () => {
+    const postDto = {
+      id: crypto.randomUUID(),
+      index: 2,
+      format: 'CAROUSEL',
+      goal: 'Saves',
+      concept: 'c',
+      rationale: 'r',
+      product: 'Kreatin',
+      caption: 'Kreatin bez mitova',
+      hashtags: ['#kreatin'],
+      slides: [
+        { order: 1, text: 'Prvi slajd', assetId: 'a1' },
+        { order: 2, text: 'Drugi slajd', assetId: 'a2' },
+      ],
+    }
+
+    beforeEach(() => {
+      server.use(
+        http.get(`/api/runs/${RUN_ID}`, () =>
+          HttpResponse.json({
+            ...run('COMPLETED', [phaseRun('VISUALS', 'DONE', { slides: [] })]),
+            posts: [postDto],
+          }),
+        ),
+      )
+    })
+
+    it('swipes through the rendered slides', async () => {
+      const user = userEvent.setup()
+      renderRoute(`/en/runs/${RUN_ID}`)
+
+      expect(
+        await screen.findByRole('img', { name: 'Prvi slajd' }),
+      ).toHaveAttribute('src', '/api/assets/a1')
+      await user.click(screen.getByRole('button', { name: 'Next slide' }))
+      expect(
+        screen.getByRole('img', { name: 'Drugi slajd' }),
+      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Next slide' })).toBeDisabled()
+    })
+
+    it('edits the caption', async () => {
+      const user = userEvent.setup()
+      let sent: unknown
+      server.use(
+        http.patch(`/api/runs/${RUN_ID}/posts/2`, async ({ request }) => {
+          sent = await request.json()
+          return HttpResponse.json({ ...postDto, caption: 'Nova' })
+        }),
+      )
+      renderRoute(`/en/runs/${RUN_ID}`)
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Edit caption' }),
+      )
+      const caption = screen.getByLabelText('Caption')
+      await user.clear(caption)
+      await user.type(caption, 'Nova')
+      await user.click(screen.getByRole('button', { name: 'Save' }))
+
+      await waitFor(() =>
+        expect(sent).toEqual({ caption: 'Nova', hashtags: ['#kreatin'] }),
+      )
+    })
+
+    it('regenerates the current slide with an instruction', async () => {
+      const user = userEvent.setup()
+      let sent: unknown
+      server.use(
+        http.post(
+          `/api/runs/${RUN_ID}/posts/2/slides/1/regenerate`,
+          async ({ request }) => {
+            sent = await request.json()
+            return HttpResponse.json(postDto)
+          },
+        ),
+      )
+      renderRoute(`/en/runs/${RUN_ID}`)
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Regenerate slide 1' }),
+      )
+      await user.type(
+        screen.getByLabelText('Instruction for the new slide'),
+        'darker',
+      )
+      await user.click(screen.getByRole('button', { name: 'Regenerate' }))
+
+      await waitFor(() => expect(sent).toEqual({ instruction: 'darker' }))
+    })
+  })
+
   describe('plan and copy', () => {
     const plan = {
       posts: [1, 2, 3].map((index) => ({

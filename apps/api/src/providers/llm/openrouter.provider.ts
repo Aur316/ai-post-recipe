@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { logger } from '../../lib/logger.js'
-import { LlmOutputError, LlmRequestError } from '../../lib/phase-errors.js'
+import { LlmOutputError } from '../../lib/phase-errors.js'
 import { toStructuredSchema } from './json-schema.js'
 import {
   type LlmProvider,
@@ -10,18 +10,10 @@ import {
   NO_USAGE,
   addUsage,
 } from './llm.provider.js'
-
-export interface OpenRouterOptions {
-  apiKey: string
-  baseUrl?: string
-  /** Per request; a vision analysis can take a while. */
-  timeoutMs?: number
-  /** Tries per request on network errors, 429 and 5xx. */
-  maxAttempts?: number
-  /** First backoff delay; doubles on each try. */
-  retryDelayMs?: number
-  fetch?: typeof fetch
-}
+import {
+  OpenRouterClient,
+  type OpenRouterOptions,
+} from './openrouter.client.js'
 
 type Message =
   | { role: 'system' | 'assistant'; content: string }
@@ -49,10 +41,6 @@ const Completion = z.object({
     .optional(),
 })
 
-const ErrorBody = z.object({ error: z.object({ message: z.string() }) })
-
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
-
 /** Models sometimes wrap JSON in a Markdown code fence. */
 const unfence = (text: string) =>
   text
@@ -67,18 +55,10 @@ const unfence = (text: string) =>
  */
 export class OpenRouterProvider implements LlmProvider {
   readonly name = 'openrouter'
-  private readonly baseUrl: string
-  private readonly timeoutMs: number
-  private readonly maxAttempts: number
-  private readonly retryDelayMs: number
-  private readonly fetch: typeof fetch
+  private readonly client: OpenRouterClient
 
-  constructor(private readonly options: OpenRouterOptions) {
-    this.baseUrl = options.baseUrl ?? 'https://openrouter.ai/api/v1'
-    this.timeoutMs = options.timeoutMs ?? 120_000
-    this.maxAttempts = options.maxAttempts ?? 3
-    this.retryDelayMs = options.retryDelayMs ?? 1000
-    this.fetch = options.fetch ?? globalThis.fetch
+  constructor(options: OpenRouterOptions) {
+    this.client = new OpenRouterClient(options)
   }
 
   async complete<T extends z.ZodType>({
@@ -156,51 +136,14 @@ export class OpenRouterProvider implements LlmProvider {
     )
   }
 
-  /** One chat completion, with retries for network errors, 429 and 5xx. */
+  /** One chat completion through the shared client. */
   private async request(body: object) {
-    let lastError: unknown
-    for (let attempt = 1; attempt <= this.maxAttempts; attempt++) {
-      try {
-        const response = await this.fetch(`${this.baseUrl}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${this.options.apiKey}`,
-            'Content-Type': 'application/json',
-            'X-Title': 'AI Post Recipe',
-          },
-          body: JSON.stringify(body),
-          signal: AbortSignal.timeout(this.timeoutMs),
-        })
-        const json: unknown = await response.json().catch(() => undefined)
-
-        if (response.ok) {
-          const completion = Completion.parse(json)
-          return {
-            model: completion.model,
-            content: completion.choices[0]?.message.content ?? null,
-            usage: toUsage(completion.usage),
-          }
-        }
-        const message =
-          ErrorBody.safeParse(json).data?.error.message ?? response.statusText
-        const error = `OpenRouter ${response.status}: ${message}`
-        if (response.status !== 429 && response.status < 500) {
-          throw new LlmRequestError(error)
-        }
-        lastError = new Error(error)
-      } catch (error) {
-        if (error instanceof LlmRequestError) throw error
-        lastError = error
-      }
-      if (attempt < this.maxAttempts) {
-        await sleep(this.retryDelayMs * 2 ** (attempt - 1))
-      }
+    const completion = Completion.parse(await this.client.post(body))
+    return {
+      model: completion.model,
+      content: completion.choices[0]?.message.content ?? null,
+      usage: toUsage(completion.usage),
     }
-    const reason =
-      lastError instanceof Error ? lastError.message : String(lastError)
-    throw new Error(
-      `OpenRouter request failed after ${this.maxAttempts} tries: ${reason}`,
-    )
   }
 }
 

@@ -34,6 +34,8 @@ flowchart LR
 
 **Plan and post text.** The plan prompt returns exactly three posts (index, format, goal, concept, rationale, product). Approving the plan, with the person's edits, creates the three `Post` rows. The copy prompt writes caption, hashtags and slide texts in the language of the run, using only verified facts and no words of real people; its answer is then checked by fixed rules: every number and quote that appears in neither the brief, a source page nor an analysis evidence quote is listed as "check before publishing". The copy is written onto the `Post` rows.
 
+**Visuals.** One AI background per post (no text, products or people in it), then every slide is rendered from the React template with the uploaded logo and product photo and the post text, and saved as a PNG; see [09 · Storage and rendering](09-storage-and-rendering.md). The operator can regenerate a single slide with an instruction and edit the caption afterwards.
+
 **Language.** The brief's language (Croatian or English) is the language of the whole run: the analysis, the plan and the posts are written in it. It is chosen in the brief and cannot change once the run has started, so a run's results are in one language. JSON keys and fixed values (`IMAGE`, `verified`) stay in English, and `evidence` quotes stay word for word in the language of their source. The interface language (EN/HR switch) does not change it.
 
 ## Phase state machine
