@@ -4,8 +4,10 @@ import {
   type PhaseKey,
   PostDto,
   RunDetailDto,
+  RunListResponse,
   RunSummaryDto,
 } from '@ai-post-recipe/shared'
+import { strFromU8, unzipSync } from 'fflate'
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
 
@@ -363,6 +365,7 @@ describe('slides', () => {
     expect(png.status).toBe(200)
     expect(png.headers['content-type']).toBe('image/png')
     expect(run.assets.map((a) => a.kind).sort()).toEqual([
+      'EXPORT_ZIP',
       ...Array<string>(3).fill('GENERATED_BACKGROUND'),
       ...Array<string>(3).fill('RENDERED_SLIDE'),
     ])
@@ -413,5 +416,108 @@ describe('slides', () => {
       .patch(`/api/runs/${id}/posts/1`)
       .send({ caption: 'x', hashtags: ['no hash'] })
     expect(bad.status).toBe(400)
+  })
+})
+
+describe('export', () => {
+  it('downloads a ZIP with a folder per post, sources and every phase', async () => {
+    const s = setup()
+    const id = await s.createRun()
+    await s.post(`/api/runs/${id}/start`)
+    await s.ctx.queue.drain()
+    await s.post(`/api/runs/${id}/phases/ANALYSIS/approve`)
+    await s.ctx.queue.drain()
+    await s.post(`/api/runs/${id}/phases/PLAN/approve`)
+    await s.ctx.queue.drain()
+    await request(s.ctx.app)
+      .patch(`/api/runs/${id}/posts/1`)
+      .send({ caption: 'Edited caption', hashtags: ['#edited'] })
+
+    const res = await request(s.ctx.app)
+      .get(`/api/runs/${id}/export`)
+      .buffer(true)
+      .parse((r, done) => {
+        const chunks: Array<Buffer> = []
+        r.on('data', (c: Buffer) => chunks.push(c))
+        r.on('end', () => done(null, Buffer.concat(chunks)))
+      })
+
+    expect(res.status).toBe(200)
+    expect(res.headers['content-type']).toBe('application/zip')
+    expect(res.headers['content-disposition']).toContain(
+      'gymbeam-hrvatska-posts.zip',
+    )
+    const files = unzipSync(new Uint8Array(res.body as Buffer))
+    const names = Object.keys(files).sort()
+    expect(names).toEqual(
+      expect.arrayContaining([
+        'README.md',
+        'brief.json',
+        'sources.md',
+        'post-1-image/slide-1.png',
+        'post-1-image/caption.txt',
+        'post-1-image/meta.json',
+        'post-2-carousel/slide-1.png',
+        'phases/03-analysis.json',
+        'phases/08-export.json',
+      ]),
+    )
+    // The ZIP follows later edits.
+    expect(
+      strFromU8(files['post-1-image/caption.txt'] ?? new Uint8Array()),
+    ).toBe('Edited caption\n\n#edited\n')
+    expect(
+      JSON.parse(
+        strFromU8(files['post-2-carousel/meta.json'] ?? new Uint8Array()),
+      ),
+    ).toMatchObject({
+      format: 'CAROUSEL',
+      goal: 'More saves',
+      slides: [{ order: 1, file: 'slide-1.png' }],
+    })
+    expect(
+      (await s.get(id)).phases.find((p) => p.phase === 'EXPORT')?.output,
+    ).toMatchObject({
+      files: expect.any(Number) as number,
+    })
+  })
+
+  it('refuses a run without posts', async () => {
+    const s = setup()
+    const id = await s.createRun()
+    const res = await request(s.ctx.app).get(`/api/runs/${id}/export`)
+    expect(res.status).toBe(409)
+  })
+})
+
+describe('usage', () => {
+  it('adds up tokens and cost over every attempt, per phase and per run', async () => {
+    const llm = new FakeLlmProvider(undefined, {
+      tokensIn: 100,
+      tokensOut: 10,
+      costUsd: 0.01,
+    })
+    const s = setup({ llm })
+    const id = await s.createRun()
+    await s.post(`/api/runs/${id}/start`)
+    await s.ctx.queue.drain()
+    // Run the analysis twice: both attempts count.
+    await s.post(`/api/runs/${id}/phases/ANALYSIS/rerun`)
+    await s.ctx.queue.drain()
+
+    const run = await s.get(id)
+    const analysis = run.usageByPhase.find((p) => p.phase === 'ANALYSIS')
+    expect(analysis).toMatchObject({
+      attempts: 2,
+      tokensIn: 200,
+      tokensOut: 20,
+    })
+    expect(analysis?.costUsd).toBeCloseTo(0.02)
+    expect(run.usage).toMatchObject({ tokensIn: 200, tokensOut: 20 })
+
+    const list = RunListResponse.parse(
+      (await request(s.ctx.app).get('/api/runs?size=50')).body,
+    )
+    expect(list.items.find((r) => r.id === id)?.usage.tokensIn).toBe(200)
   })
 })

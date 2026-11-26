@@ -1,4 +1,5 @@
 import type { PromptLibrary } from '@ai-post-recipe/prompts'
+import { PostFormat } from '@ai-post-recipe/shared'
 
 import type { Db } from '../db/prisma.js'
 import { logger } from '../lib/logger.js'
@@ -11,6 +12,8 @@ import type { SlideRenderer } from '../providers/renderer/slide-renderer.js'
 import type { SearchProvider } from '../providers/search/search.provider.js'
 import type { StorageProvider } from '../providers/storage/storage.provider.js'
 import { AssetRepo } from '../repositories/asset/asset.repo.js'
+import { PostRepo, toSlides } from '../repositories/post/post.repo.js'
+import { ExportService } from '../services/export/export.service.js'
 import {
   loadUploads,
   saveGeneratedAsset,
@@ -82,6 +85,30 @@ export class PhaseRunner {
         loadUploads: () => loadUploads(assets, storage, runId),
         loadImages: async () =>
           toLlmImages(await loadUploads(assets, storage, runId)),
+        loadPosts: async () =>
+          (await new PostRepo(this.db).listByRun(runId)).map((p) => ({
+            index: p.index,
+            format: PostFormat.parse(p.format),
+            goal: p.goal,
+            concept: p.concept,
+            product: p.product,
+            slides: toSlides(p.slides),
+          })),
+        readAsset: async (id) => {
+          const asset = await assets.findById(id)
+          if (asset?.runId !== runId) throw new Error(`Asset ${id} not found`)
+          const { body } = await storage.get(asset.storageKey)
+          const chunks: Array<Buffer> = []
+          for await (const chunk of body)
+            chunks.push(Buffer.from(chunk as Uint8Array))
+          return {
+            data: Buffer.concat(chunks),
+            mimeType: asset.mimeType,
+            width: asset.width,
+            height: asset.height,
+          }
+        },
+        buildExport: () => new ExportService(this.db, storage).build(runId),
         saveAsset: async (kind, data, mimeType) =>
           (
             await saveGeneratedAsset(

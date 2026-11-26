@@ -159,12 +159,42 @@ export type RenderedSlide = z.infer<typeof RenderedSlide>
 
 export const VisualsOutput = z.object({ slides: z.array(RenderedSlide) })
 
-export const ReviewOutput = z.object({
-  score: z.number(),
+/** What the vision model reports for one slide. */
+export const SlideCheck = z.object({
+  postIndex: z.number().int(),
+  order: z.number().int(),
+  passed: z.boolean(),
+  /** Short, concrete problems, e.g. "text overlaps the product". */
   issues: z.array(z.string()),
 })
+export type SlideCheck = z.infer<typeof SlideCheck>
 
-export const ExportOutput = z.object({ assetId: z.string().optional() })
+/** What the review model writes. */
+export const ReviewDraft = z.object({ slides: z.array(SlideCheck) })
+
+export const ReviewOutput = z.object({
+  /** Share of slides that passed, 0–1, after the regenerated ones were checked again. */
+  score: z.number().min(0).max(1),
+  slides: z.array(
+    SlideCheck.extend({
+      /** Rule checks (size, missing image) rather than the model. */
+      ruleIssues: z.array(z.string()),
+      /** The slide failed and was made again once, with its issues as the instruction. */
+      regenerated: z.boolean(),
+    }),
+  ),
+  /** Run-wide findings: numbers or quotes in the text that no source contains. */
+  issues: z.array(z.string()),
+  /** Slides that were made again; they replace the earlier PNGs on the posts. */
+  replaced: z.array(RenderedSlide),
+})
+export type ReviewOutput = z.infer<typeof ReviewOutput>
+
+export const ExportOutput = z.object({
+  /** The ZIP as built when the phase ran; GET /export always builds a fresh one. */
+  assetId: z.string(),
+  files: z.number().int(),
+})
 
 export const PHASE_OUTPUT_SCHEMAS = {
   BRIEF: BriefOutput,

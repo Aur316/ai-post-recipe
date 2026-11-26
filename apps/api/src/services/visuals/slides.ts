@@ -19,7 +19,7 @@ export interface SlideTools {
   uploads: Array<Upload>
   /** Stores a file of the run and returns its asset id. */
   saveAsset(
-    kind: 'GENERATED_BACKGROUND' | 'RENDERED_SLIDE',
+    kind: 'GENERATED_BACKGROUND' | 'RENDERED_SLIDE' | 'EXPORT_ZIP',
     data: Buffer,
     mimeType: string,
   ): Promise<string>

@@ -4,16 +4,19 @@ import { Link, useParams } from 'react-router'
 import { AssetGrid } from '@/components/asset-grid'
 import { BackLink } from '@/components/back-link'
 import { DeleteRunButton } from '@/components/delete-run-button'
+import { DownloadZipButton } from '@/components/download-zip-button'
 import { PhaseTimeline } from '@/components/phase-timeline'
 import { RunStatusBadge } from '@/components/run-status-badge'
 import { SourcesList } from '@/components/sources-list'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { UsageButton } from '@/components/usage-summary'
 
 import { useGetRunById } from '@/hooks/queries/runs/useGetRunById'
 import { useStartRun } from '@/hooks/queries/runs/useStartRun'
 import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 import { NotFound } from '@/pages/not-found'
+import { totalTokens } from '@/utils/usage'
 
 export function RunDetails() {
   const { t } = useTranslation()
@@ -43,6 +46,12 @@ export function RunDetails() {
         <h1 className="text-2xl font-semibold">{run.brandName}</h1>
         <div className="flex items-center gap-3">
           <RunStatusBadge status={run.status} />
+          {totalTokens(run.usage) > 0 && (
+            <UsageButton usage={run.usage} byPhase={run.usageByPhase} />
+          )}
+          {run.posts.some((p) => p.caption) && (
+            <DownloadZipButton runId={run.id} />
+          )}
           <DeleteRunButton run={run} />
           {run.phases.length === 0 && (
             <Button asChild variant="outline">

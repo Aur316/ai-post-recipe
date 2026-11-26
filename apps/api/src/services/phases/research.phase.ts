@@ -66,6 +66,26 @@ const hostOf = (raw: string) => {
   }
 }
 
+const fold = (text: string) =>
+  text
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+
+/** The brand name (or its first word, e.g. "GymBeam" of "GymBeam Hrvatska") in the title, snippet or URL. */
+export function mentionsBrand(
+  result: { title: string; url: string; snippet: string },
+  brandName: string,
+) {
+  const haystack = fold(`${result.title} ${result.snippet} ${result.url}`)
+  const name = fold(brandName)
+  const first = name.split(/\s+/)[0] ?? name
+  return (
+    haystack.includes(name) ||
+    haystack.replace(/[^a-z0-9]/g, '').includes(first.replace(/[^a-z0-9]/g, ''))
+  )
+}
+
 const isSocial = (url: string) => {
   try {
     return SOCIAL.test(new URL(url).hostname)
@@ -78,7 +98,14 @@ const isSocial = (url: string) => {
 export function searchQueries(brief: Brief) {
   return [
     brief.brandName,
-    ...brief.products.slice(0, 2).map((p) => `${brief.brandName} ${p.name}`),
+    // "Revyan work management" already names the brand; do not repeat it.
+    ...brief.products
+      .slice(0, 2)
+      .map((p) =>
+        fold(p.name).includes(fold(brief.brandName).split(/\s+/)[0] ?? '')
+          ? p.name
+          : `${brief.brandName} ${p.name}`,
+      ),
   ]
 }
 
@@ -109,6 +136,12 @@ async function findCandidates({ brief, search }: PhaseContext) {
       found.push(
         ...results
           .filter((r) => !isSocial(r.url))
+          // A result elsewhere must at least name the brand; searches for
+          // short names also find unrelated companies and people.
+          .filter(
+            (r) =>
+              official.has(hostOf(r.url)) || mentionsBrand(r, brief.brandName),
+          )
           .map((r) => ({
             url: withoutTracking(r.url),
             title: r.title,

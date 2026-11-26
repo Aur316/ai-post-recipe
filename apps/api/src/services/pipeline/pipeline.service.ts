@@ -9,6 +9,7 @@ import {
   type PhaseStatus,
   PlanOutput,
   ResearchOutput,
+  ReviewOutput,
   VisualsOutput,
 } from '@ai-post-recipe/shared'
 
@@ -192,6 +193,12 @@ export class PipelineService {
         await new PostRepo(tx).saveSlides(
           done.runId,
           VisualsOutput.parse(result.output).slides,
+        )
+      }
+      if (done.phase === 'REVIEW') {
+        await new PostRepo(tx).replaceSlides(
+          done.runId,
+          ReviewOutput.parse(result.output).replaced,
         )
       }
       if (done.phase === 'COPY') {

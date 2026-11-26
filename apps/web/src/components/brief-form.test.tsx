@@ -13,6 +13,7 @@ const createdRun = {
   status: 'DRAFT',
   createdAt: '2026-11-25T10:00:00.000Z',
   updatedAt: '2026-11-25T10:00:00.000Z',
+  usage: { costUsd: 0, tokensIn: 0, tokensOut: 0 },
 }
 
 describe('Brief form', () => {

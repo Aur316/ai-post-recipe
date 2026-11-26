@@ -66,8 +66,12 @@ export class RunService {
 
   async list(query: ListQuery) {
     const { items, total } = await this.runs.list(query)
+    const usage = await this.phaseRuns.usageOfRuns(items.map((r) => r.id))
     return {
-      items,
+      items: items.map((run) => ({
+        run,
+        usage: usage.get(run.id) ?? NO_USAGE,
+      })),
       total,
       page: query.page,
       size: query.size,
@@ -84,7 +88,16 @@ export class RunService {
       this.sources.listByRun(id),
       this.posts.listByRun(id),
     ])
-    return { run, assets, phases, sources, posts }
+    const usageByPhase = await this.phaseRuns.usageByPhase(id)
+    return {
+      run,
+      assets,
+      phases,
+      sources,
+      posts,
+      usageByPhase,
+      usage: sumUsage(usageByPhase),
+    }
   }
 }
 
@@ -96,3 +109,17 @@ function briefColumns(brief: Brief) {
     brief,
   }
 }
+
+const NO_USAGE = { costUsd: 0, tokensIn: 0, tokensOut: 0 }
+
+export const sumUsage = (
+  rows: Array<{ costUsd: number; tokensIn: number; tokensOut: number }>,
+) =>
+  rows.reduce(
+    (sum, r) => ({
+      costUsd: sum.costUsd + r.costUsd,
+      tokensIn: sum.tokensIn + r.tokensIn,
+      tokensOut: sum.tokensOut + r.tokensOut,
+    }),
+    NO_USAGE,
+  )

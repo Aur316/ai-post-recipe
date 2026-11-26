@@ -5,14 +5,15 @@ import { HttpResponse, http } from 'msw'
 import { renderRoute } from '@/test/render'
 import { server } from '@/test/server'
 
-const run = (id: string, brandName: string) => ({
+const run = (id: string, brandName: string, status = 'DRAFT') => ({
   id,
   brandName,
   instagram: 'https://www.instagram.com/gymbeamhr/',
   language: 'hr',
-  status: 'DRAFT',
+  status,
   createdAt: '2026-11-25T10:00:00.000Z',
   updatedAt: '2026-11-25T10:00:00.000Z',
+  usage: { costUsd: 0.7593, tokensIn: 98_000, tokensOut: 17_000 },
 })
 
 const page = (
@@ -66,5 +67,23 @@ describe('Runs page', () => {
     renderRoute('/en')
 
     expect(await screen.findByText(/No runs yet/)).toBeInTheDocument()
+  })
+
+  it('shows cost and tokens for completed runs only', async () => {
+    server.use(
+      http.get('/api/runs', () =>
+        HttpResponse.json(
+          page(
+            [run('r1', 'Revyan', 'COMPLETED'), run('r2', 'Draft brand')],
+            1,
+            1,
+          ),
+        ),
+      ),
+    )
+    renderRoute('/en')
+
+    expect(await screen.findByText('$0.76 · 115K tokens')).toBeInTheDocument()
+    expect(screen.getAllByText(/tokens/)).toHaveLength(1)
   })
 })

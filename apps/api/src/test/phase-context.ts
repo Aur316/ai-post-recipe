@@ -27,6 +27,10 @@ export function phaseContext(
     images: new FakeImageProvider(),
     renderer: new FakeRenderer(),
     saveAsset: (kind) => Promise.resolve(`${kind}-${crypto.randomUUID()}`),
+    loadPosts: () => Promise.resolve([]),
+    readAsset: () =>
+      Promise.reject(new Error('No assets in this test context')),
+    buildExport: () => Promise.resolve({ data: Buffer.from('zip'), files: 1 }),
     ...overrides,
   }
 }

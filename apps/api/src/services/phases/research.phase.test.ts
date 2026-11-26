@@ -10,6 +10,7 @@ import { gymbeamBrief } from '../../test/fixtures.js'
 import { phaseContext } from '../../test/phase-context.js'
 import {
   MAX_SOURCES,
+  mentionsBrand,
   normalizeUrl,
   researchPhase,
   searchQueries,
@@ -65,7 +66,9 @@ describe('research phase', () => {
       'GymBeam Hrvatska True Whey': [
         'https://gymbeam.hr/true-whey#reviews',
         'https://gymbeam.hr/true-whey?review-page=3',
-        'https://review.example/true-whey',
+        // Names neither the brand nor its site: an unrelated company.
+        'https://other-company.example/true-whey',
+        'https://review.example/gymbeam-true-whey',
       ],
     })
     const fetcher = new FakeFetcher()
@@ -85,9 +88,12 @@ describe('research phase', () => {
       ['https://gymbeam.hr/true-whey', 'BRIEF'],
       ['https://www.gymbeam.hr/kreatin?page=2', 'SEARCH'],
       ['https://blog.example/gymbeam', 'SEARCH'],
-      ['https://review.example/true-whey', 'SEARCH'],
+      ['https://review.example/gymbeam-true-whey', 'SEARCH'],
     ])
     expect(fetcher.requested).toHaveLength(5)
+    expect(fetcher.requested).not.toContain(
+      'https://other-company.example/true-whey',
+    )
   })
 
   it('lists a social link from the brief as unreachable without fetching it', async () => {
@@ -131,5 +137,37 @@ describe('research phase', () => {
     expect(normalizeUrl('https://GymBeam.hr/a/#x')).toBe(
       normalizeUrl('https://gymbeam.hr/a'),
     )
+  })
+})
+
+describe('mentionsBrand', () => {
+  it.each([
+    ['GymBeam Hrvatska', 'GymBeam BCAA price', true],
+    // Spaces and punctuation do not matter.
+    ['GymBeam Hrvatska', 'Gym Beam review', true],
+    ['Revyan', 'EliseAI: AI for property management', false],
+    ['Dida Boža', 'dida-boza.hr shop', true],
+  ])('%s in "%s" → %s', (brand, title, expected) => {
+    expect(
+      mentionsBrand({ title, snippet: '', url: 'https://x.example/' }, brand),
+    ).toBe(expected)
+  })
+})
+
+describe('searchQueries', () => {
+  it('does not repeat the brand when the product already names it', () => {
+    const brief = Brief.parse({
+      ...gymbeamBrief(),
+      brandName: 'Revyan',
+      products: [
+        { name: 'Revyan work management' },
+        { name: 'Elyse AI assistant' },
+      ],
+    })
+    expect(searchQueries(brief)).toEqual([
+      'Revyan',
+      'Revyan work management',
+      'Revyan Elyse AI assistant',
+    ])
   })
 })

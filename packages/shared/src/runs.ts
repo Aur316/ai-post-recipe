@@ -126,6 +126,21 @@ export const RunStatus = z.enum([
 ])
 export type RunStatus = z.infer<typeof RunStatus>
 
+/** Tokens and cost of AI calls, over every attempt (re-runs and regenerated slides included). */
+export const Usage = z.object({
+  costUsd: z.number(),
+  tokensIn: z.number().int(),
+  tokensOut: z.number().int(),
+})
+export type Usage = z.infer<typeof Usage>
+
+export const PhaseUsage = Usage.extend({
+  phase: z.string(),
+  /** How many times the phase ran. */
+  attempts: z.number().int(),
+})
+export type PhaseUsage = z.infer<typeof PhaseUsage>
+
 export const RunSummaryDto = z.object({
   id: z.uuid(),
   brandName: z.string(),
@@ -134,6 +149,7 @@ export const RunSummaryDto = z.object({
   status: RunStatus,
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
+  usage: Usage,
 })
 export type RunSummaryDto = z.infer<typeof RunSummaryDto>
 
@@ -146,6 +162,8 @@ export const RunDetailDto = RunSummaryDto.extend({
   sources: z.array(SourceDto),
   /** The three posts, once the plan is approved. */
   posts: z.array(PostDto),
+  /** Usage per phase, in phase order; `usage` is their sum. */
+  usageByPhase: z.array(PhaseUsage),
 })
 export type RunDetailDto = z.infer<typeof RunDetailDto>
 

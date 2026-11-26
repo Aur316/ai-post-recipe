@@ -1,0 +1,22 @@
+{
+  "brandName": "GymBeam Hrvatska",
+  "instagramUrl": "https://www.instagram.com/gymbeamhr/",
+  "reason": "The recommended brand: a large sports nutrition shop with a wide product range, an active Croatian Instagram profile and product pages full of verifiable facts (doses, ingredients, ratings).",
+  "links": [{ "type": "SHOP", "url": "https://gymbeam.hr" }],
+  "products": [
+    {
+      "name": "Just Whey Grass-Fed Protein",
+      "url": "https://gymbeam.hr/protein-just-whey-gymbeam.html"
+    },
+    {
+      "name": "Kreatin monohidrat",
+      "url": "https://gymbeam.hr/kreatin-monohidrat"
+    }
+  ],
+  "audience": "Active adults aged 18–35 in Croatia who train in the gym or at home: beginners who want clear guidance and regulars who compare supplements.",
+  "goals": "More saves and comments, and interest in the protein and creatine range.",
+  "inspiration": "Short, practical tips with clear numbers; product shots that look premium but approachable.",
+  "inspirationLinks": [],
+  "language": "hr",
+  "formats": []
+}

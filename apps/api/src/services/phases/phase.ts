@@ -1,5 +1,10 @@
 import type { PromptLibrary } from '@ai-post-recipe/prompts'
-import type { Brief, PhaseKey, PhaseOutputs } from '@ai-post-recipe/shared'
+import type {
+  Brief,
+  PhaseKey,
+  PhaseOutputs,
+  PostFormat,
+} from '@ai-post-recipe/shared'
 import type { z } from 'zod'
 
 import type { PageFetcher } from '../../providers/fetcher/web-fetcher.js'
@@ -27,10 +32,30 @@ export interface PhaseTools {
   renderer: SlideRenderer
   /** Stores a file the phase made and returns its asset id. */
   saveAsset(
-    kind: 'GENERATED_BACKGROUND' | 'RENDERED_SLIDE',
+    kind: 'GENERATED_BACKGROUND' | 'RENDERED_SLIDE' | 'EXPORT_ZIP',
     data: Buffer,
     mimeType: string,
   ): Promise<string>
+  /** The posts as they are now, with caption edits and regenerated slides. */
+  loadPosts(): Promise<Array<RunPost>>
+  /** A stored file of the run, with its size for images. */
+  readAsset(id: string): Promise<{
+    data: Buffer
+    mimeType: string
+    width: number | null
+    height: number | null
+  }>
+  /** The hand-over ZIP, built from the run's current state. */
+  buildExport(): Promise<{ data: Buffer; files: number }>
+}
+
+export interface RunPost {
+  index: number
+  format: PostFormat
+  goal: string
+  concept: string
+  product: string
+  slides: Array<{ order: number; text: string; assetId: string | null }>
 }
 
 export interface PhaseContext extends PhaseTools {

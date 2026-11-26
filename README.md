@@ -4,7 +4,7 @@ AI Post Recipe turns an Instagram brand brief into three ready-to-publish posts 
 
 Every phase runs as a background job and stores its output in PostgreSQL, so a run can be paused, resumed or re-run from any finished phase. After the brand analysis and the content plan the run stops and waits for a person to approve or edit the result. The final export is a ZIP with the images, captions, sources and every intermediate result.
 
-> **Status:** milestones M1–M7 done. A run goes through all eight phases as background jobs and stops twice for approval; research reads real pages, the brand analysis comes from a real vision model, and the plan and copy are checked against the sources (with an OpenRouter key). Each post gets finished PNG slides (AI background, real logo, product photo and text). Review and export follow in M8. See [the milestones](docs/milestones/README.md) for what comes next.
+> **Status:** milestones M1–M8 done (the GymBeam example posts follow). A run goes through all eight phases as background jobs and stops twice for approval; research reads real pages, the brand analysis comes from a real vision model, and the plan and copy are checked against the sources (with an OpenRouter key). Each post gets finished PNG slides (AI background, real logo, product photo and text). A review checks every slide, remakes failing ones once, and the run exports a ZIP with everything. See [the milestones](docs/milestones/README.md) for what comes next.
 
 ## Prerequisites
 
@@ -59,6 +59,7 @@ Run these from the repository root. Turborepo runs each one in every workspace t
 | `pnpm test`      | Runs all tests with Vitest                                                                                   |
 | `pnpm format`    | Formats every file with Prettier (`format:check` only checks)                                                |
 | `pnpm seed`      | Adds 30 draft runs to the development database (`pnpm seed 50` for another number); re-running replaces them |
+| `pnpm seed:demo` | Creates the GymBeam demo run from `examples/gymbeam` (brief and reference images); start it in the app       |
 
 ## Configuration
 

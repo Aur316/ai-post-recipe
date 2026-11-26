@@ -25,6 +25,7 @@ export const runsQueryFunctions = {
     id: string
     brief: BriefInput
   }): Promise<RunDetailDto> => httpClient.put(`${ROOT}/${id}`, brief),
+  exportUrl: (id: string) => `${ROOT}/${id}/export`,
   remove: (id: string): Promise<void> => httpClient.delete(`${ROOT}/${id}`),
   start: (id: string): Promise<void> => httpClient.post(`${ROOT}/${id}/start`),
   approvePhase: ({

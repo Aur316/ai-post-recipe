@@ -2,7 +2,7 @@
 
 **Goal:** the app checks its own output, sends failing slides back, and exports everything as a ZIP. The three finished demo posts are produced and committed.
 
-**Status:** Not started
+**Status:** In progress: the code is done; the finished GymBeam posts follow once the reference images are in `examples/gymbeam/references`
 
 ## Requirements
 
@@ -27,15 +27,22 @@ FR-14, FR-15, FR-16
 
 ## Tasks
 
-- [ ] Review prompt and phase: vision checks plus rule checks (size, sources, attributed statements)
-- [ ] Loop back to visuals for failing slides, with a retry limit
-- [ ] `export.service`: build the ZIP and store it as an `EXPORT_ZIP` asset
-- [ ] `GET /api/runs/:id/export`
-- [ ] Review result view and export button
-- [ ] `examples/gymbeam`: brief, reference uploads and `pnpm seed`
+- [x] Review prompt (`review@v1`) and phase: a vision model checks every slide (readable text, no stray text or faces in the background, logo and product visible, brand fit); rule checks for the image and its size; the copy's unsupported numbers and quotes listed as run-wide issues
+- [x] A failing slide is made again once (`MAX_REGENERATIONS`), with its issues as the instruction, and checked again; the new PNG replaces the old one on the post
+- [x] `ExportService` builds the ZIP from the run's current state; the export phase stores it as an `EXPORT_ZIP` asset
+- [x] `GET /api/runs/:id/export`: always a fresh ZIP, so later caption edits and regenerated slides are included
+- [x] Review view (score, verdict and issues per slide, made-again marker) and a Download ZIP button in the run header and on the export phase
+- [x] `examples/gymbeam`: `brief.json`, a `references/` folder (file name sets the kind) and `pnpm seed:demo`
 - [ ] Run the GymBeam recipe and commit the three finished posts to `examples/gymbeam`
-- [ ] Tests: rule checks, loop-back limit, ZIP structure
+- [x] Tests: rule checks, one regeneration and a second check, score; ZIP structure and that it follows edits
 
 ## Exit criteria
 
 - The GymBeam run is complete, and its three posts and ZIP are in `examples/gymbeam`.
+
+## Notes
+
+- **Live run (GymBeam, without uploads):** the review checked 11 slides for $0.02 and passed them all; the ZIP has 28 files (16 MB).
+- The ZIP's PNGs are about 1.4 MB each; they are kept lossless for Instagram.
+- **Live run (Revyan, a B2B SaaS):** the review found fake app screens on laptops in five backgrounds, made them again once, and three still failed (score 73%). `background@v3` now asks for switched-off screens. Search also brought unrelated results (a musician and other companies with similar names); results on other sites must now name the brand.
+- **Usage:** cost and tokens over every attempt are shown in the list (completed runs), the run header (with a per-phase breakdown) and the export (screen and ZIP README).
