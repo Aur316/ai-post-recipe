@@ -96,6 +96,8 @@ interface JobQueue {
 }
 ```
 
+**Lost jobs and shutdown.** pg-boss marks a job active when a worker takes it. If the process stops half way, the job stays active until it expires, and the run waits meanwhile. So every job expires after 5 minutes (`expireInSeconds: 300`; the slowest phase takes about two) and is then retried, and the API stops gracefully: on SIGINT or SIGTERM it stops the queue first, waits up to a minute for running phases to finish, and only then closes the browsers and exits. (Before this, a restart during `pnpm dev` left a phase waiting for pg-boss's default 15 minutes.)
+
 `PgBossQueue` (`providers/queue/`) implements it on the existing Postgres ([ADR 0002](adr/0002-postgres-job-queue-with-pg-boss.md)). `send` can join the caller's transaction, so a phase status change and its job are committed together. Tests use `MemoryQueue`, which runs jobs (and the jobs they send) when the test calls `drain()`.
 
 > [!TIP]

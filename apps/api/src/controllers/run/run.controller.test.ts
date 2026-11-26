@@ -33,6 +33,24 @@ describe('runs', () => {
     })
   })
 
+  it('creates a run without an Instagram profile, and with the website as style source', async () => {
+    const res = await createRun({
+      ...gymbeamBrief(),
+      instagramUrl: '',
+      styleSource: 'WEBSITE',
+    })
+
+    expect(res.status).toBe(201)
+    const { id } = RunSummaryDto.parse(res.body)
+    const run = RunDetailDto.parse(
+      (await request(ctx.app).get(`/api/runs/${id}`)).body,
+    )
+    expect(run.brief).toMatchObject({
+      instagramUrl: '',
+      styleSource: 'WEBSITE',
+    })
+  })
+
   it('rejects an invalid brief with field errors', async () => {
     const res = await createRun({
       ...gymbeamBrief(),
@@ -63,6 +81,21 @@ describe('runs', () => {
     expect(page2.items.map((r) => r.id)).toEqual([first.id])
     expect(page1).toMatchObject({ page: 1, size: 1 })
     expect(page1.totalPages).toBe(page1.total)
+  })
+
+  it('searches by brand name, ignoring case', async () => {
+    const brand = `Searchable ${crypto.randomUUID().slice(0, 8)}`
+    const { id } = RunSummaryDto.parse(
+      (await createRun({ ...gymbeamBrief(), brandName: brand })).body,
+    )
+
+    const res = await request(ctx.app)
+      .get('/api/runs')
+      .query({ search: brand.toUpperCase() })
+
+    const list = RunListResponse.parse(res.body)
+    expect(list.items.map((r) => r.id)).toEqual([id])
+    expect(list.total).toBe(1)
   })
 
   it('uses the default page size', async () => {

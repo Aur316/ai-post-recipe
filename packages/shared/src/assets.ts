@@ -14,6 +14,7 @@ export const AssetKind = z.enum([
   'GENERATED_BACKGROUND',
   'RENDERED_SLIDE',
   'EXPORT_ZIP',
+  'CAPTURED_SCREENSHOT',
 ])
 
 export type AssetKind = z.infer<typeof AssetKind>

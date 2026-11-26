@@ -10,7 +10,6 @@ import { toast } from 'sonner'
 
 import { getApiErrorMessage } from '@/utils/helpers'
 
-/** 4xx: the request itself is wrong (unknown id, bad input); trying again will not help. */
 const isClientError = (error: unknown) => {
   const status = isAxiosError(error) ? error.response?.status : undefined
   return status !== undefined && status >= 400 && status < 500
@@ -19,7 +18,6 @@ const isClientError = (error: unknown) => {
 export const createQueryClient = () =>
   new QueryClient({
     queryCache: new QueryCache({
-      // A missing record is shown by the page (404), not as a toast.
       onError: (error) => {
         if (!isClientError(error)) toast.error(getApiErrorMessage(error))
       },

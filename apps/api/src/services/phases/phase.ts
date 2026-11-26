@@ -7,6 +7,7 @@ import type {
 } from '@ai-post-recipe/shared'
 import type { z } from 'zod'
 
+import type { PageCapturer } from '../../providers/capture/page-capturer.js'
 import type { PageFetcher } from '../../providers/fetcher/web-fetcher.js'
 import type { ImageProvider } from '../../providers/image/image.provider.js'
 import type {
@@ -18,34 +19,31 @@ import type { SlideRenderer } from '../../providers/renderer/slide-renderer.js'
 import type { SearchProvider } from '../../providers/search/search.provider.js'
 import type { Upload } from './images.js'
 
-/** What a phase may use; tests pass fakes. */
 export interface PhaseTools {
   llm: LlmProvider
   prompts: PromptLibrary
   search: SearchProvider
   fetcher: PageFetcher
-  /** The run's uploaded images, ready to send to a vision model. */
-  loadImages(): Promise<Array<LlmImage>>
-  /** The run's uploads as stored, for slides. */
   loadUploads(): Promise<Array<Upload>>
   images: ImageProvider
   renderer: SlideRenderer
-  /** Stores a file the phase made and returns its asset id. */
+  capturer: PageCapturer
   saveAsset(
-    kind: 'GENERATED_BACKGROUND' | 'RENDERED_SLIDE' | 'EXPORT_ZIP',
+    kind:
+      | 'GENERATED_BACKGROUND'
+      | 'RENDERED_SLIDE'
+      | 'EXPORT_ZIP'
+      | 'CAPTURED_SCREENSHOT',
     data: Buffer,
     mimeType: string,
   ): Promise<string>
-  /** The posts as they are now, with caption edits and regenerated slides. */
   loadPosts(): Promise<Array<RunPost>>
-  /** A stored file of the run, with its size for images. */
   readAsset(id: string): Promise<{
     data: Buffer
     mimeType: string
     width: number | null
     height: number | null
   }>
-  /** The hand-over ZIP, built from the run's current state. */
   buildExport(): Promise<{ data: Buffer; files: number }>
 }
 
@@ -61,7 +59,6 @@ export interface RunPost {
 export interface PhaseContext extends PhaseTools {
   runId: string
   brief: Brief
-  /** Outputs of earlier finished phases; the edited version where a person approved one. */
   outputs: Partial<PhaseOutputs>
 }
 
@@ -72,14 +69,12 @@ export interface PhaseResult<T> {
   usage?: LlmUsage
 }
 
-/** One step of the recipe. A phase only computes; the runner saves and advances. */
 export interface Phase<K extends PhaseKey = PhaseKey> {
   key: K
   outputSchema: z.ZodType<PhaseOutputs[K]>
   execute(ctx: PhaseContext): Promise<PhaseResult<PhaseOutputs[K]>>
 }
 
-/** Renders a prompt from the library, calls the model and maps the result. */
 export async function runPrompt<T extends z.ZodType>(
   ctx: PhaseContext,
   promptName: string,

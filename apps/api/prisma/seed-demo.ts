@@ -1,10 +1,5 @@
-/**
- * The GymBeam demo: creates a draft run from examples/gymbeam/brief.json and
- * uploads every image in examples/gymbeam/references/. Start it in the app.
- *
- *   pnpm seed:demo
- */
 import { Brief, type UploadAssetKind } from '@ai-post-recipe/shared'
+import { existsSync } from 'node:fs'
 import { readFileSync, readdirSync } from 'node:fs'
 import { extname, join } from 'node:path'
 
@@ -33,11 +28,7 @@ const kindOf = (file: string): UploadAssetKind => {
   return 'UPLOAD_OTHER'
 }
 
-try {
-  process.loadEnvFile('../../.env')
-} catch {
-  // Variables come from the environment.
-}
+if (existsSync('../../.env')) process.loadEnvFile('../../.env')
 const env = loadEnv()
 const db = createDb(env.DATABASE_URL)
 const storage = new S3Storage({

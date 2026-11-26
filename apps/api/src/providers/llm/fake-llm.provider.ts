@@ -49,7 +49,6 @@ const DEFAULT_FIXTURES: Record<string, Fixture> = {
       product: 'True Whey',
     })),
   }),
-  // Passes every slide listed in the prompt ("post 2, slide 3 of 4").
   review: (request) => ({
     slides: [
       ...request.prompt.user.matchAll(/post (\d+), slide (\d+) of/g),
@@ -70,18 +69,12 @@ const DEFAULT_FIXTURES: Record<string, Fixture> = {
   }),
 }
 
-/**
- * Returns recorded, schema-valid answers per prompt id, without a key or cost.
- * Used in tests and when OPENROUTER_API_KEY is not set.
- */
 export class FakeLlmProvider implements LlmProvider {
   readonly name = 'fake'
-  /** Every request, for assertions in tests. */
   readonly requests: Array<LlmRequest<z.ZodType>> = []
 
   constructor(
     private readonly fixtures: Record<string, Fixture> = DEFAULT_FIXTURES,
-    /** Usage reported per call, e.g. to test the cost cap. */
     private readonly usage: LlmUsage = NO_USAGE,
   ) {}
 

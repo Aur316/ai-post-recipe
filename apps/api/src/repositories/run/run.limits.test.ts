@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest'
 import { createTestContext } from '../../test/context.js'
 import { RunRepo } from './run.repo.js'
 
-/** The database limits must match BRIEF_LIMITS, which the API and the form use. */
 describe('Run length limits in the database', () => {
   const ctx = createTestContext()
   const runs = new RunRepo(ctx.db)

@@ -1,6 +1,7 @@
 import { Brief } from '@ai-post-recipe/shared'
 import { describe, expect, it } from 'vitest'
 
+import { FakeCapturer } from '../../providers/capture/fake.capturer.js'
 import type {
   SearchOptions,
   SearchProvider,
@@ -66,7 +67,6 @@ describe('research phase', () => {
       'GymBeam Hrvatska True Whey': [
         'https://gymbeam.hr/true-whey#reviews',
         'https://gymbeam.hr/true-whey?review-page=3',
-        // Names neither the brand nor its site: an unrelated company.
         'https://other-company.example/true-whey',
         'https://review.example/gymbeam-true-whey',
       ],
@@ -82,7 +82,6 @@ describe('research phase', () => {
       language: 'hr',
       country: 'hr',
     })
-    // The brand's own pages first, without tracking parameters.
     expect(output.sources.map((s) => [s.url, s.origin])).toEqual([
       ['https://gymbeam.hr', 'BRIEF'],
       ['https://gymbeam.hr/true-whey', 'BRIEF'],
@@ -143,7 +142,6 @@ describe('research phase', () => {
 describe('mentionsBrand', () => {
   it.each([
     ['GymBeam Hrvatska', 'GymBeam BCAA price', true],
-    // Spaces and punctuation do not matter.
     ['GymBeam Hrvatska', 'Gym Beam review', true],
     ['Revyan', 'EliseAI: AI for property management', false],
     ['Dida Boža', 'dida-boza.hr shop', true],
@@ -169,5 +167,60 @@ describe('searchQueries', () => {
       'Revyan work management',
       'Revyan Elyse AI assistant',
     ])
+  })
+})
+
+describe('research in website mode', () => {
+  it("captures the brand's own readable pages, not search results", async () => {
+    const brief = Brief.parse({ ...gymbeamBrief(), styleSource: 'WEBSITE' })
+    const capturer = new FakeCapturer({
+      'https://gymbeam.hr/true-whey': {
+        images: [],
+        colors: [],
+        error: 'Timeout',
+      },
+    })
+    const search = new FakeSearch({
+      'GymBeam Hrvatska': ['https://blog.example/gymbeam'],
+    })
+    const saved: Array<string> = []
+
+    const { output } = await researchPhase.execute(
+      phaseContext({
+        brief,
+        capturer,
+        search,
+        saveAsset: (kind) => {
+          saved.push(kind)
+          return Promise.resolve(`${kind}-${saved.length}`)
+        },
+      }),
+    )
+
+    expect(capturer.captured).toEqual([
+      'https://gymbeam.hr',
+      'https://gymbeam.hr/true-whey',
+    ])
+    expect(output.captures).toEqual([
+      {
+        url: 'https://gymbeam.hr',
+        assetIds: ['CAPTURED_SCREENSHOT-1', 'CAPTURED_SCREENSHOT-2'],
+        colors: ['#7C3AED'],
+        error: null,
+      },
+      {
+        url: 'https://gymbeam.hr/true-whey',
+        assetIds: [],
+        colors: [],
+        error: 'Timeout',
+      },
+    ])
+  })
+
+  it('captures nothing when the style comes from the uploads', async () => {
+    const capturer = new FakeCapturer()
+    const { output } = await researchPhase.execute(phaseContext({ capturer }))
+    expect(output.captures).toEqual([])
+    expect(capturer.captured).toEqual([])
   })
 })

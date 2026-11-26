@@ -6,12 +6,13 @@ import { BriefForm } from '@/components/brief-form'
 import { cn } from '@/lib/utils'
 
 import { PAGE_WIDTH } from '@/utils/layout'
+import { runsListPath } from '@/utils/runs-search'
 
 export function AddRun() {
   const { t } = useTranslation()
   return (
     <section className={cn(PAGE_WIDTH, 'space-y-6')}>
-      <BackLink to="/" label={t('runs.title')} />
+      <BackLink to={runsListPath()} label={t('runs.title')} />
       <h1 className="text-2xl font-semibold">{t('addRun.title')}</h1>
       <BriefForm />
     </section>

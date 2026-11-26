@@ -5,11 +5,8 @@ import { LlmRequestError } from '../../lib/phase-errors.js'
 export interface OpenRouterOptions {
   apiKey: string
   baseUrl?: string
-  /** Per request; a vision analysis or an image can take a while. */
   timeoutMs?: number
-  /** Tries per request on network errors, 429 and 5xx. */
   maxAttempts?: number
-  /** First backoff delay; doubles on each try. */
   retryDelayMs?: number
   fetch?: typeof fetch
 }
@@ -18,11 +15,6 @@ const ErrorBody = z.object({ error: z.object({ message: z.string() }) })
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
-/**
- * POSTs to OpenRouter's chat completions endpoint, shared by the text and
- * image providers. Network errors, 429 and 5xx are retried with backoff;
- * other refusals (400, 401, 402) throw LlmRequestError at once.
- */
 export class OpenRouterClient {
   private readonly baseUrl: string
   private readonly timeoutMs: number
@@ -38,7 +30,6 @@ export class OpenRouterClient {
     this.fetchFn = options.fetch ?? globalThis.fetch
   }
 
-  /** The parsed JSON of a successful response. */
   async post(body: object): Promise<unknown> {
     let lastError: unknown
     for (let attempt = 1; attempt <= this.maxAttempts; attempt++) {

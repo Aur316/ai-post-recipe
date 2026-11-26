@@ -22,7 +22,6 @@ import { useDeleteAsset } from '@/hooks/queries/assets/useDeleteAsset'
 interface AssetGridProps {
   runId: string
   assets: Array<AssetDto>
-  /** Shows a remove button on each image; only before the run starts. */
   removable?: boolean
 }
 
@@ -49,7 +48,6 @@ export function AssetGrid({ runId, assets, removable }: AssetGridProps) {
 
   return (
     <>
-      {/* Columns follow the space of the card, not the screen. */}
       <div className="@container">
         <ul className="grid grid-cols-2 gap-4 @lg:grid-cols-3 @2xl:grid-cols-4">
           {assets.map((asset) => (
@@ -113,7 +111,6 @@ export function AssetGrid({ runId, assets, removable }: AssetGridProps) {
               variant="destructive"
               disabled={deleteAsset.isPending}
               onClick={(e) => {
-                // Keep the dialog open until the delete has finished.
                 e.preventDefault()
                 confirmRemove()
               }}

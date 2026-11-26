@@ -18,7 +18,6 @@ const SerperResponse = z.object({
     .default([]),
 })
 
-/** Google results through serper.dev. */
 export class SerperProvider implements SearchProvider {
   readonly name = 'serper'
 

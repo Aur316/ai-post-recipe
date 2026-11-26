@@ -1,4 +1,4 @@
-import type { ListQuery } from '@ai-post-recipe/shared'
+import type { RunListQuery } from '@ai-post-recipe/shared'
 
 import type { DbClient } from '../../db/prisma.js'
 import type { RunStatus } from '../../generated/prisma/client.js'
@@ -15,24 +15,27 @@ export class RunRepo {
     return this.db.run.findUnique({ where: { id } })
   }
 
-  /** One page of runs, newest first, with the total count. */
-  async list({ page, size }: ListQuery) {
+  async list({ page, size, search }: RunListQuery) {
+    const where: Prisma.RunWhereInput = search
+      ? {
+          OR: [
+            { brandName: { contains: search, mode: 'insensitive' } },
+            { instagram: { contains: search, mode: 'insensitive' } },
+          ],
+        }
+      : {}
     const [items, total] = await Promise.all([
       this.db.run.findMany({
+        where,
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         skip: (page - 1) * size,
         take: size,
       }),
-      this.db.run.count(),
+      this.db.run.count({ where }),
     ])
     return { items, total }
   }
 
-  /**
-   * Replaces the brief of a run that has no phase runs yet. The check is part
-   * of the update, so a run that was started meanwhile is left alone.
-   * Returns whether the run was updated.
-   */
   async updateIfNotStarted(
     id: string,
     data: Prisma.RunUpdateManyMutationInput,
@@ -44,7 +47,6 @@ export class RunRepo {
     return count === 1
   }
 
-  /** True when at least one phase of the run has been queued. */
   async hasStarted(id: string) {
     return (
       (await this.db.run.count({ where: { id, phases: { some: {} } } })) > 0

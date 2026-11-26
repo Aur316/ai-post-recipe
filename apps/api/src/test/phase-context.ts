@@ -1,16 +1,15 @@
 import { PromptLibrary } from '@ai-post-recipe/prompts'
 import { Brief } from '@ai-post-recipe/shared'
 
+import { FakeCapturer } from '../providers/capture/fake.capturer.js'
 import { FakeImageProvider } from '../providers/image/fake-image.provider.js'
 import { FakeLlmProvider } from '../providers/llm/fake-llm.provider.js'
-import type { LlmImage } from '../providers/llm/llm.provider.js'
 import { FakeRenderer } from '../providers/renderer/fake.renderer.js'
 import { NoopSearchProvider } from '../providers/search/search.provider.js'
 import type { PhaseContext } from '../services/phases/phase.js'
 import { FakeFetcher } from './context.js'
 import { gymbeamBrief } from './fixtures.js'
 
-/** A phase context with fakes; override what a test needs. */
 export function phaseContext(
   overrides: Partial<PhaseContext> = {},
 ): PhaseContext {
@@ -22,10 +21,10 @@ export function phaseContext(
     prompts: PromptLibrary.load(),
     search: new NoopSearchProvider(),
     fetcher: new FakeFetcher(),
-    loadImages: () => Promise.resolve<Array<LlmImage>>([]),
     loadUploads: () => Promise.resolve([]),
     images: new FakeImageProvider(),
     renderer: new FakeRenderer(),
+    capturer: new FakeCapturer(),
     saveAsset: (kind) => Promise.resolve(`${kind}-${crypto.randomUUID()}`),
     loadPosts: () => Promise.resolve([]),
     readAsset: () =>

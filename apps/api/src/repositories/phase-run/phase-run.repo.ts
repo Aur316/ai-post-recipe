@@ -23,7 +23,6 @@ export class PhaseRunRepo {
     })
   }
 
-  /** The newest attempt of every phase that has started, in phase order. */
   latestByRun(runId: string) {
     return this.db.phaseRun.findMany({
       where: { runId },
@@ -41,10 +40,6 @@ export class PhaseRunRepo {
     return (last?.attempt ?? 0) + 1
   }
 
-  /**
-   * Moves a phase run to RUNNING only if it is in one of the given states.
-   * Returns false when another worker or an earlier delivery already took it.
-   */
   async claim(id: string, from: Array<PhaseStatus>) {
     const { count } = await this.db.phaseRun.updateMany({
       where: { id, status: { in: from } },
@@ -57,7 +52,6 @@ export class PhaseRunRepo {
     return this.db.phaseRun.update({ where: { id }, data })
   }
 
-  /** Adds the usage of later calls, e.g. a regenerated slide, to a phase run. */
   async addUsage(
     id: string,
     usage: { tokensIn: number; tokensOut: number; costUsd: number },
@@ -73,7 +67,6 @@ export class PhaseRunRepo {
     })
   }
 
-  /** Usage per phase over every attempt, in phase order. */
   async usageByPhase(runId: string) {
     const rows = await this.db.phaseRun.groupBy({
       by: ['phase'],
@@ -91,7 +84,6 @@ export class PhaseRunRepo {
     }))
   }
 
-  /** Total usage of each run, for a page of the runs list. */
   async usageOfRuns(runIds: Array<string>) {
     const rows = await this.db.phaseRun.groupBy({
       by: ['runId'],
@@ -110,7 +102,6 @@ export class PhaseRunRepo {
     )
   }
 
-  /** Sum of `costUsd` over every attempt of every phase of the run. */
   async totalCost(runId: string) {
     const { _sum } = await this.db.phaseRun.aggregate({
       where: { runId },

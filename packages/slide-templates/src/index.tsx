@@ -1,33 +1,21 @@
 import type { CSSProperties } from 'react'
 
-/**
- * Instagram slide templates. A slide is plain React with inline styles, so the
- * same component can be rendered to static HTML for the PNG renderer and shown
- * in the browser. The image model only provides `backgroundUrl`; the logo,
- * product photo and text are the real ones, laid out here.
- */
-
 export type SlideFormat = 'IMAGE' | 'CAROUSEL' | 'STORY'
 export type SlideLayout = 'cover' | 'text' | 'closing'
 
 export const SLIDE_SIZES = {
-  /** Feed posts and carousels: 4:5. */
   feed: { width: 1080, height: 1350 },
-  /** Stories: 9:16. */
   story: { width: 1080, height: 1920 },
 } as const
 
 export const sizeFor = (format: SlideFormat) =>
   format === 'STORY' ? SLIDE_SIZES.story : SLIDE_SIZES.feed
 
-/** The aspect ratio to ask the image model for. */
 export const aspectRatioFor = (format: SlideFormat) =>
   format === 'STORY' ? '9:16' : '4:5'
 
 export interface BrandTokens {
-  /** Accent for bars, numbers and the call to action. */
   primary: string
-  /** Text on top of the primary colour. */
   onPrimary: string
   fontFamily: string
 }
@@ -36,7 +24,6 @@ export interface SlideProps {
   format: SlideFormat
   layout: SlideLayout
   text: string
-  /** 1-based position and count, shown on carousel and story slides. */
   order: number
   total: number
   brandName: string
@@ -46,7 +33,6 @@ export interface SlideProps {
   logoUrl?: string
 }
 
-/** The first slide is the cover; the last of several closes with the call to action. */
 export function layoutFor(order: number, total: number): SlideLayout {
   if (order === 1) return 'cover'
   if (order === total) return 'closing'
@@ -55,7 +41,6 @@ export function layoutFor(order: number, total: number): SlideLayout {
 
 const FALLBACK_PRIMARY = '#F97316'
 
-/** Relative luminance (WCAG) of a #RRGGBB colour. */
 function luminance(hex: string) {
   const channels = [1, 3, 5].map((i) => {
     const c = parseInt(hex.slice(i, i + 2), 16) / 255
@@ -65,16 +50,11 @@ function luminance(hex: string) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
-/** How far a colour is from grey: black, white and greys make poor accents. */
 function saturation(hex: string) {
   const values = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
   return Math.max(...values) - Math.min(...values)
 }
 
-/**
- * Brand tokens from the analysis colours: the most saturated colour becomes
- * the accent, with black or white text on it, whichever reads better.
- */
 export function brandTokens(
   colors: Array<{ hex: string }>,
   fontFamily = 'Geist, system-ui, sans-serif',
@@ -90,11 +70,9 @@ export function brandTokens(
   return { primary, onPrimary, fontFamily }
 }
 
-/** "3–5 g" must not break at the dash. */
 const keepRangesTogether = (text: string) =>
   text.replace(/(\d)\s*([–-])\s*(\d)/g, '$1\u2060$2\u2060$3')
 
-/** Long text gets a smaller size so it always fits. */
 function fontSize(text: string, layout: SlideLayout, story: boolean) {
   const base = layout === 'text' ? 76 : 84
   const length = text.length
@@ -141,7 +119,6 @@ export function Slide(props: SlideProps) {
           }}
         />
       )}
-      {/* Darkens the image where text sits, so the text is always readable. */}
       <div
         style={{
           position: 'absolute',

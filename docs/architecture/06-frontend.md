@@ -81,7 +81,7 @@ Every path below sits under the language prefix (`/en`, `/hr`).
 
 | Page                          | Purpose                                                                                                                                                                                                                                                           |
 | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Runs (`/`)                    | Lists earlier runs with their status; starts a new run                                                                                                                                                                                                            |
+| Runs (`/`)                    | Lists earlier runs with their status; starts a new run. A search field filters by brand or Instagram profile; `useDebounce` (`hooks/utils/`, as in Revyan) waits 200 ms after the last keystroke before it asks the API                                           |
 | New run (`/runs/new`)         | Collects the brief in a multi-step wizard and uploads the reference files                                                                                                                                                                                         |
 | Edit brief (`/runs/:id/edit`) | The same wizard, filled with the saved brief, where uploads can be added or removed; only while the run has not started                                                                                                                                           |
 | Run details (`/runs/:id`)     | Shows the brief and uploads; later the phase timeline and each phase result; hosts the approval panel, the slide previews and the export button. **Delete run** (with a confirmation dialog; disabled while a phase runs) removes the run and returns to the list |
@@ -94,7 +94,7 @@ Every path below sits under the language prefix (`/en`, `/hr`).
 3. Products to promote (name and product page URL).
 4. Target audience, goals, role models and inspiration (text and links).
 5. Uploads: Instagram screenshots, product photos, logo (PNG or SVG), other references.
-6. Language of the run (Croatian or English): the analysis, the plan and the posts are written in it; locked once the run starts. Preferred formats (optional preselection).
+6. Style source switch: read the brand's style from the website (then only logo and product photos can be uploaded) or from uploaded screenshots. Language of the run (Croatian or English): the analysis, the plan and the posts are written in it; locked once the run starts. Preferred formats (optional preselection).
 
 ## Status updates
 

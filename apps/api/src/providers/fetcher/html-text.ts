@@ -9,7 +9,6 @@ export interface PageContent {
   text: string
 }
 
-/** The readable text of a page: title, meta description and the main content. */
 export function htmlToText(html: string): PageContent {
   const root = parse(html, { comment: false })
   const meta = (selector: string) =>

@@ -35,7 +35,6 @@ const ImageCompletion = z.object({
 
 const DATA_URL = /^data:(image\/[\w+.-]+);base64,(.+)$/
 
-/** Image models on OpenRouter (e.g. Gemini image) through chat completions. */
 export class OpenRouterImageProvider implements ImageProvider {
   readonly name = 'openrouter'
   private readonly client: OpenRouterClient
@@ -44,14 +43,34 @@ export class OpenRouterImageProvider implements ImageProvider {
     this.client = new OpenRouterClient(options)
   }
 
-  async generate({ prompt, aspectRatio }: ImageRequest): Promise<ImageResult> {
+  async generate({
+    prompt,
+    aspectRatio,
+    images = [],
+  }: ImageRequest): Promise<ImageResult> {
     const json = await this.client.post({
       model: prompt.model,
       modalities: ['image', 'text'],
       image_config: { aspect_ratio: aspectRatio },
       messages: [
         { role: 'system', content: prompt.system },
-        { role: 'user', content: prompt.user },
+        {
+          role: 'user',
+          content: images.length
+            ? [
+                { type: 'text', text: prompt.user },
+                ...images.flatMap((image) => [
+                  { type: 'text', text: image.label },
+                  {
+                    type: 'image_url',
+                    image_url: {
+                      url: `data:${image.mimeType};base64,${image.data.toString('base64')}`,
+                    },
+                  },
+                ]),
+              ]
+            : prompt.user,
+        },
       ],
       usage: { include: true },
     })

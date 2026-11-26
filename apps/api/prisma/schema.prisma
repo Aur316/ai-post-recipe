@@ -38,7 +38,6 @@ enum PhaseStatus {
   STALE
 }
 
-/// A link from the brief, or a page found by web search.
 enum SourceOrigin {
   BRIEF
   SEARCH
@@ -52,10 +51,9 @@ enum AssetKind {
   GENERATED_BACKGROUND
   RENDERED_SLIDE
   EXPORT_ZIP
+  CAPTURED_SCREENSHOT
 }
 
-/// Length limits mirror BRIEF_LIMITS in packages/shared; the brief JSON fields are
-/// limited by the run_brief_text_limits CHECK constraint (see the migrations).
 model Run {
   id        String     @id @default(uuid(7)) @db.Uuid
   brandName String     @db.VarChar(120)
@@ -79,11 +77,8 @@ model PhaseRun {
   attempt      Int         @default(1)
   status       PhaseStatus @default(PENDING)
   input        Json?
-  /// The original AI output.
   output       Json?
-  /// The version edited by a person at approval.
   editedOutput Json?
-  /// Prompt id and version, e.g. analysis@v3.
   promptId     String?
   model        String?
   tokensIn     Int?
@@ -104,7 +99,6 @@ model Source {
   title     String?
   excerpt   String?
   reachable Boolean
-  /// Why the page could not be read, e.g. "HTTP 404".
   error     String?
   origin    SourceOrigin @default(BRIEF)
   fetchedAt DateTime     @default(now())
@@ -116,18 +110,14 @@ model Post {
   id        String   @id @default(uuid(7)) @db.Uuid
   runId     String   @db.Uuid
   run       Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
-  /// 1, 2 or 3.
   index     Int
-  /// IMAGE | CAROUSEL | STORY
   format    String
   goal      String
   concept   String
   rationale String
-  /// The product from the brief that the post features.
   product   String   @default("")
   caption   String?
   hashtags  String[]
-  /// [{ order, templateId, text, assetId }]
   slides    Json
 
   @@unique([runId, index])

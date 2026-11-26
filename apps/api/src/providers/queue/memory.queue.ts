@@ -11,10 +11,6 @@ interface Pending {
   retryCount: number
 }
 
-/**
- * In-memory JobQueue for tests. Jobs wait until drain() runs them, so a test
- * decides when the "worker" acts; failed jobs are retried like pg-boss does.
- */
 export class MemoryQueue implements JobQueue {
   private readonly handlers = new Map<
     string,
@@ -57,7 +53,6 @@ export class MemoryQueue implements JobQueue {
     return this.pending.length
   }
 
-  /** Runs jobs, including the ones they send, until the queue is empty. */
   async drain() {
     while (this.pending.length) {
       const [next, ...rest] = this.pending

@@ -13,15 +13,10 @@ import {
   addUsage,
 } from '../providers/llm/llm.provider.js'
 
-/**
- * Adds up the usage of every AI call in one phase attempt (failed ones too)
- * and refuses a call once the run has spent its budget.
- */
 export class CostMeter {
   usage: LlmUsage = NO_USAGE
 
   constructor(
-    /** Cost of the run before this attempt. */
     private readonly spentBefore: number,
     private readonly capUsd: number,
   ) {}
@@ -39,7 +34,6 @@ export class CostMeter {
     this.usage = addUsage(this.usage, usage)
   }
 
-  /** Runs one call: checks the budget first, counts the usage after. */
   async call<T extends { usage: LlmUsage }>(run: () => Promise<T>) {
     this.check()
     try {

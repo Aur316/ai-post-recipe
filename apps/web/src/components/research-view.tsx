@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { Stat } from '@/components/brief-summary-view'
 import { Badge } from '@/components/ui/badge'
 
-/** What research looked for and which pages it could read. */
+import { assetsQueryFunctions } from '@/data/query-functions/assets'
+
 export function ResearchView({
   research,
 }: {
@@ -43,6 +44,57 @@ export function ResearchView({
           <p className="text-muted-foreground">{t('research.noSearch')}</p>
         )}
       </div>
+
+      {research.captures.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs text-muted-foreground">
+            {t('research.captures')}
+          </p>
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {research.captures.flatMap((capture) => {
+              const ids = capture.assetIds.length
+                ? capture.assetIds
+                : capture.assetId
+                  ? [capture.assetId]
+                  : []
+              if (ids.length === 0) {
+                return [
+                  <li key={capture.url} className="space-y-1">
+                    <p className="text-xs text-destructive">{capture.error}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {capture.url}
+                    </p>
+                  </li>,
+                ]
+              }
+              return ids.map((id, i) => (
+                <li key={id} className="space-y-1">
+                  <img
+                    src={assetsQueryFunctions.url(id)}
+                    alt={`${capture.url} (${i + 1})`}
+                    className="aspect-[16/10] w-full rounded-md border object-cover object-top"
+                  />
+                  <p className="truncate text-xs text-muted-foreground">
+                    {capture.url}
+                  </p>
+                  {i === 0 && (
+                    <div className="flex gap-1">
+                      {capture.colors.map((hex) => (
+                        <span
+                          key={hex}
+                          title={hex}
+                          className="size-4 rounded-sm border"
+                          style={{ backgroundColor: hex }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </li>
+              ))
+            })}
+          </ul>
+        </div>
+      )}
 
       <ul className="space-y-1">
         {research.sources.map((source) => (

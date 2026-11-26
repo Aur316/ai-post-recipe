@@ -3,19 +3,18 @@ import {
   ResearchOutput,
   type ResearchSource,
   type SourceOrigin,
+  type WebsiteCapture,
 } from '@ai-post-recipe/shared'
 
 import { logger } from '../../lib/logger.js'
 import type { Phase, PhaseContext } from './phase.js'
 
-/** At most this many pages are read per run. */
 export const MAX_SOURCES = 12
 const RESULTS_PER_QUERY = 4
 const CONCURRENCY = 4
 const TEXT_LIMIT = 6000
 const EXCERPT_LIMIT = 300
 
-/** Pages behind a login or built by scripts; the uploaded screenshots cover them. */
 const SOCIAL =
   /(^|\.)(instagram|facebook|tiktok|youtube|x|twitter|linkedin|pinterest)\.com$/i
 
@@ -25,7 +24,6 @@ interface Candidate {
   origin: SourceOrigin
 }
 
-/** Same page: no hash, no trailing slash, lower-case host. */
 export function normalizeUrl(raw: string) {
   try {
     const url = new URL(raw)
@@ -37,15 +35,10 @@ export function normalizeUrl(raw: string) {
   }
 }
 
-/**
- * The page without its query: search results often list one product page
- * several times with review or sort parameters.
- */
 const pageKey = (raw: string) => normalizeUrl(raw).split('?')[0] ?? raw
 
 const TRACKING = /^(utm_\w+|srsltid|gclid|fbclid|msclkid)$/i
 
-/** The URL without tracking parameters that search results carry. */
 export function withoutTracking(raw: string) {
   try {
     const url = new URL(raw)
@@ -72,7 +65,6 @@ const fold = (text: string) =>
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
 
-/** The brand name (or its first word, e.g. "GymBeam" of "GymBeam Hrvatska") in the title, snippet or URL. */
 export function mentionsBrand(
   result: { title: string; url: string; snippet: string },
   brandName: string,
@@ -94,11 +86,9 @@ const isSocial = (url: string) => {
   }
 }
 
-/** The brand name alone, then with each of the first two products. */
 export function searchQueries(brief: Brief) {
   return [
     brief.brandName,
-    // "Revyan work management" already names the brand; do not repeat it.
     ...brief.products
       .slice(0, 2)
       .map((p) =>
@@ -121,7 +111,6 @@ async function findCandidates({ brief, search }: PhaseContext) {
     ),
   ]
 
-  // The brand's own sites: their search results come before third-party pages.
   const official = new Set(candidates.map((c) => hostOf(c.url)))
   const found: Array<Candidate> = []
 
@@ -136,8 +125,6 @@ async function findCandidates({ brief, search }: PhaseContext) {
       found.push(
         ...results
           .filter((r) => !isSocial(r.url))
-          // A result elsewhere must at least name the brand; searches for
-          // short names also find unrelated companies and people.
           .filter(
             (r) =>
               official.has(hostOf(r.url)) || mentionsBrand(r, brief.brandName),
@@ -149,7 +136,6 @@ async function findCandidates({ brief, search }: PhaseContext) {
           })),
       )
     } catch (error) {
-      // Research goes on with the brief's links.
       logger.warn({ query, err: error }, 'Search failed')
     }
   }
@@ -199,7 +185,6 @@ async function read(
   }
 }
 
-/** Runs `task` over `items`, at most `limit` at a time, keeping the order. */
 async function mapLimited<T, R>(
   items: Array<T>,
   limit: number,
@@ -219,11 +204,6 @@ async function mapLimited<T, R>(
   return results
 }
 
-/**
- * Collects the brand's official pages: the brief's links and product pages,
- * plus web search results when a search key is set. Every page is fetched and
- * kept, readable or not, so the analysis can name unavailable sources.
- */
 export const researchPhase: Phase<'RESEARCH'> = {
   key: 'RESEARCH',
   outputSchema: ResearchOutput,
@@ -232,6 +212,42 @@ export const researchPhase: Phase<'RESEARCH'> = {
     const sources = await mapLimited(candidates, CONCURRENCY, (c) =>
       read(ctx, c),
     )
-    return { output: { sources, queries } }
+    const captures =
+      ctx.brief.styleSource === 'WEBSITE'
+        ? await captureWebsite(ctx, sources)
+        : []
+    return { output: { sources, queries, captures } }
   },
+}
+
+export const MAX_CAPTURES = 3
+export const MAX_SHOTS = 5
+
+async function captureWebsite(
+  ctx: PhaseContext,
+  sources: Array<ResearchSource>,
+): Promise<Array<WebsiteCapture>> {
+  const pages = sources
+    .filter((s) => s.origin === 'BRIEF' && s.reachable)
+    .slice(0, MAX_CAPTURES)
+  const captures: Array<WebsiteCapture> = []
+  let left = MAX_SHOTS
+  for (const page of pages) {
+    if (left <= 0) break
+    const shot = await ctx.capturer.capture(page.url)
+    const assetIds: Array<string> = []
+    for (const image of shot.images.slice(0, left)) {
+      assetIds.push(
+        await ctx.saveAsset('CAPTURED_SCREENSHOT', image, 'image/jpeg'),
+      )
+    }
+    left -= assetIds.length
+    captures.push({
+      url: page.url,
+      assetIds,
+      colors: shot.colors,
+      error: shot.error,
+    })
+  }
+  return captures
 }

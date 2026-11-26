@@ -14,9 +14,7 @@ export const useTheme = () => {
     document.documentElement.classList.toggle('dark', next === 'dark')
     try {
       localStorage.setItem(STORAGE_KEY, next)
-    } catch {
-      // Storage can be blocked (private mode); the theme still switches.
-    }
+    } catch {}
     setTheme(next)
   }
 

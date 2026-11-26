@@ -16,6 +16,7 @@ import {
   type FieldPath,
   useFieldArray,
   useForm,
+  useWatch,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
@@ -36,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 
 import { useUploadAsset } from '@/hooks/queries/assets/useUploadAsset'
@@ -45,7 +47,6 @@ import { useLocalizedPath } from '@/hooks/useLocalizedPath'
 import { getApiErrorMessage } from '@/utils/helpers'
 import { type PendingUpload, rejectReason } from '@/utils/uploads'
 
-/** The shared brief rules with messages in the interface language. */
 const briefMessages = (t: TFunction): BriefMessages => ({
   url: t('validation.url'),
   tooLong: (max) => t('validation.tooLong', { max }),
@@ -59,7 +60,6 @@ const briefMessages = (t: TFunction): BriefMessages => ({
   goalsRequired: t('validation.goalsRequired'),
 })
 
-/** Field arrays need objects, so the form keeps inspiration links as { url }. */
 const createFormSchema = (t: TFunction) =>
   createBriefSchema(briefMessages(t)).extend({
     inspirationLinks: z.array(
@@ -77,7 +77,7 @@ const STEPS = [
     title: 'audience',
     fields: ['audience', 'goals', 'inspiration', 'inspirationLinks'],
   },
-  { title: 'output', fields: ['language', 'formats'] },
+  { title: 'output', fields: ['language', 'formats', 'styleSource'] },
 ] as const satisfies ReadonlyArray<{
   title: string
   fields: ReadonlyArray<FieldPath<FormInput>>
@@ -95,9 +95,9 @@ const DEFAULT_VALUES: FormInput = {
   inspirationLinks: [],
   language: 'hr',
   formats: [],
+  styleSource: 'UPLOADS',
 }
 
-/** The saved brief in the shape the form edits. */
 function toFormValues(brief: Brief): FormInput {
   return {
     ...brief,
@@ -107,14 +107,12 @@ function toFormValues(brief: Brief): FormInput {
 }
 
 interface BriefFormProps {
-  /** A run that has not started yet; the form then edits its brief. */
   run?: RunDetailDto
 }
 
 export function BriefForm({ run }: BriefFormProps) {
   const [step, setStep] = useState(0)
   const [uploads, setUploads] = useState<Array<PendingUpload>>([])
-  // Set once the brief is saved, so a retry only uploads the failed files.
   const [runId, setRunId] = useState<string>()
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
@@ -131,7 +129,6 @@ export function BriefForm({ run }: BriefFormProps) {
   const form = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: run ? toFormValues(run.brief) : DEFAULT_VALUES,
-    // Validate a field when it loses focus, then live while it is corrected.
     mode: 'onTouched',
   })
   const {
@@ -139,7 +136,6 @@ export function BriefForm({ run }: BriefFormProps) {
     control,
     formState: { errors, isSubmitting },
   } = form
-  // Shown errors follow a language switch.
   useEffect(() => {
     const invalid = Object.keys(form.formState.errors) as Array<
       FieldPath<FormInput>
@@ -153,7 +149,10 @@ export function BriefForm({ run }: BriefFormProps) {
   const inspirationLinks = useFieldArray({ control, name: 'inspirationLinks' })
 
   const isLastStep = step === STEPS.length - 1
-  const hasInvalidFiles = uploads.some((u) => rejectReason(u.file, u.kind))
+  const styleSource = useWatch({ control, name: 'styleSource' })
+  const hasInvalidFiles = uploads.some((u) =>
+    rejectReason(u.file, u.kind, styleSource ?? 'UPLOADS'),
+  )
 
   const next = async () => {
     if (await form.trigger([...(STEPS[step]?.fields ?? [])])) setStep(step + 1)
@@ -162,7 +161,6 @@ export function BriefForm({ run }: BriefFormProps) {
   const patchUpload = (id: string, patch: Partial<PendingUpload>) =>
     setUploads((all) => all.map((u) => (u.id === id ? { ...u, ...patch } : u)))
 
-  /** Saves the brief once, then uploads every file that is not uploaded yet. */
   const submit = form.handleSubmit(async ({ inspirationLinks, ...values }) => {
     const brief = {
       ...values,
@@ -519,6 +517,34 @@ export function BriefForm({ run }: BriefFormProps) {
                   )}
                 />
               </FormField>
+              <Controller
+                control={control}
+                name="styleSource"
+                render={({ field }) => (
+                  <div className="flex items-start justify-between gap-4 rounded-lg border p-3">
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="styleSource"
+                        className="text-sm font-medium"
+                      >
+                        {t('brief.styleFromWebsite')}
+                      </label>
+                      <p className="text-sm text-muted-foreground">
+                        {field.value === 'WEBSITE'
+                          ? t('brief.styleFromWebsiteOn')
+                          : t('brief.styleFromWebsiteOff')}
+                      </p>
+                    </div>
+                    <Switch
+                      id="styleSource"
+                      checked={field.value === 'WEBSITE'}
+                      onCheckedChange={(on) =>
+                        field.onChange(on ? 'WEBSITE' : 'UPLOADS')
+                      }
+                    />
+                  </div>
+                )}
+              />
               <FormField label={t('brief.formats')}>
                 <Controller
                   control={control}
@@ -555,11 +581,18 @@ export function BriefForm({ run }: BriefFormProps) {
                   <AssetGrid runId={run.id} assets={run.assets} removable />
                 </FormField>
               )}
-              <FormField label={t('brief.uploads')}>
+              <FormField
+                label={
+                  styleSource === 'WEBSITE'
+                    ? t('brief.uploadsWebsite')
+                    : t('brief.uploads')
+                }
+              >
                 <AssetUploader
                   uploads={uploads}
                   onChange={setUploads}
                   disabled={isSubmitting}
+                  styleSource={styleSource ?? 'UPLOADS'}
                 />
               </FormField>
             </>

@@ -46,18 +46,12 @@ export interface PhaseCompletion {
   usage?: LlmUsage
 }
 
-/**
- * The run's state machine: starting, approving and re-running phases, and the
- * transitions the phase runner reports. Every status change and the job it
- * queues are committed in one transaction.
- */
 export class PipelineService {
   constructor(
     private readonly db: Db,
     private readonly queue: JobQueue,
   ) {}
 
-  /** Queues the first phase that has not finished yet. */
   start(runId: string) {
     return this.db.$transaction(async (tx) => {
       const latest = await this.latest(tx, runId)
@@ -75,7 +69,6 @@ export class PipelineService {
     })
   }
 
-  /** Accepts a waiting phase, optionally with a person's edits, and queues the next one. */
   approve(runId: string, phase: PhaseKey, editedOutput?: unknown) {
     return this.db.$transaction(async (tx) => {
       const current = (await this.latest(tx, runId)).find(
@@ -105,7 +98,6 @@ export class PipelineService {
         editedOutput: edited,
       })
       if (phase === 'PLAN') {
-        // The approved plan, with the person's edits, becomes the three posts.
         await new PostRepo(tx).replaceWithPlan(
           runId,
           PlanOutput.parse(edited ?? current.output),
@@ -117,7 +109,6 @@ export class PipelineService {
     })
   }
 
-  /** Runs a phase again; every later phase becomes stale. */
   rerun(runId: string, phase: PhaseKey) {
     return this.db.$transaction(async (tx) => {
       const latest = await this.latest(tx, runId)
@@ -143,12 +134,6 @@ export class PipelineService {
     })
   }
 
-  // ── Called by the phase runner ────────────────────────────────────────────
-
-  /**
-   * Takes a queued phase run. A redelivered job (retryCount > 0) may also take
-   * a RUNNING one, because its previous worker stopped mid-way.
-   */
   async claim(phaseRunId: string, retryCount: number) {
     const from: Array<PhaseStatus> =
       retryCount > 0 ? ['PENDING', 'RUNNING'] : ['PENDING']
@@ -157,7 +142,6 @@ export class PipelineService {
     return phases.findById(phaseRunId)
   }
 
-  /** The brief and the finished outputs of the phases before this one. */
   async context(phaseRun: PhaseRun) {
     const run = await new RunRepo(this.db).findById(phaseRun.runId)
     if (!run) throw new NotFoundError('Run', phaseRun.runId)
@@ -215,7 +199,6 @@ export class PipelineService {
     })
   }
 
-  /** Puts the phase back in the queue's hands for another try. */
   async release(phaseRunId: string, error: string, usage?: LlmUsage) {
     await new PhaseRunRepo(this.db).update(phaseRunId, {
       status: 'PENDING',
@@ -236,14 +219,10 @@ export class PipelineService {
     })
   }
 
-  /** Everything the run has spent on LLM calls, over all attempts. */
   costOfRun(runId: string) {
     return new PhaseRunRepo(this.db).totalCost(runId)
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
-
-  /** The latest research replaces the run's sources. */
   private async saveSources(
     tx: Prisma.TransactionClient,
     runId: string,
@@ -297,7 +276,6 @@ export class PipelineService {
   }
 }
 
-/** Usage columns; a phase without LLM calls leaves them empty. */
 function usageColumns(usage?: LlmUsage) {
   if (!usage) return {}
   return {

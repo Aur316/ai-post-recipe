@@ -27,11 +27,9 @@ interface PostPreviewProps {
   post: PostDto
   brandName: string
   logo?: AssetDto
-  /** Editing and regenerating are off while a phase runs. */
   locked: boolean
 }
 
-/** One post as it would look on Instagram: the rendered slides, then the caption. */
 export function PostPreview({
   runId,
   post,
@@ -143,20 +141,24 @@ function SlideButton({
   onClick: () => void
 }) {
   return (
-    <Button
-      type="button"
-      size="icon"
-      variant="secondary"
-      aria-label={label}
-      disabled={disabled}
-      onClick={onClick}
+    <div
       className={cn(
-        'absolute top-1/2 -translate-y-1/2 rounded-full opacity-90',
+        'pointer-events-none absolute inset-y-0 flex items-center',
         side === 'left' ? 'left-2' : 'right-2',
       )}
     >
-      {side === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-    </Button>
+      <Button
+        type="button"
+        size="icon"
+        variant="secondary"
+        aria-label={label}
+        disabled={disabled}
+        onClick={onClick}
+        className="pointer-events-auto rounded-full opacity-90"
+      >
+        {side === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+      </Button>
+    </div>
   )
 }
 
@@ -252,7 +254,6 @@ function Caption({
   }
   if (!editing) {
     return (
-      // Grows to the bottom of the card, so the edit buttons of all posts line up.
       <div className="flex flex-1 flex-col gap-2 p-3">
         <p className="whitespace-pre-line">
           <span className="font-semibold">{post.product}</span> {post.caption}

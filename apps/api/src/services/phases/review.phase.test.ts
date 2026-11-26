@@ -49,7 +49,6 @@ describe('review phase', () => {
   it('checks sizes, makes a failing slide again once, and scores the result', async () => {
     let reviews = 0
     const llm = new FakeLlmProvider({
-      // First review: post 1 slide 2 fails; the second review passes it.
       review: (request) => {
         reviews++
         const second = reviews > 1
@@ -96,7 +95,6 @@ describe('review phase', () => {
     )
 
     expect(reviews).toBe(2)
-    // The failing slide got a new background with the issue as its instruction.
     expect(images.requests).toHaveLength(1)
     expect(images.requests[0]?.prompt.user).toContain('Text overlaps the shelf')
     expect(result.output.replaced).toEqual([
@@ -120,7 +118,6 @@ describe('review phase', () => {
         passed: true,
         regenerated: true,
       }),
-      // Wrong size: a rule issue fails the slide whatever the model says.
       expect.objectContaining({
         postIndex: 2,
         order: 1,

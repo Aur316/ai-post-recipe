@@ -25,6 +25,8 @@ describe('withLanguage', () => {
     ['/en', 'hr', '/hr'],
     ['/en/runs/1/edit', 'hr', '/hr/runs/1/edit'],
     ['/runs/1', 'en', '/en/runs/1'],
+    ['/?search=rev', 'hr', '/hr?search=rev'],
+    ['/en/runs?search=a#top', 'hr', '/hr/runs?search=a#top'],
   ] as const)('%s in %s is %s', (path, language, expected) => {
     expect(withLanguage(path, language)).toBe(expected)
   })

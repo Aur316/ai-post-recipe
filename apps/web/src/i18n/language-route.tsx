@@ -12,11 +12,6 @@ import {
   withLanguage,
 } from '@/i18n'
 
-/**
- * Wraps every page under `/:lang`. Applies the URL's language, adds the SEO
- * tags that link the language versions, and sends a path without a valid
- * language (`/`, `/runs/1`) to the same page in the preferred language.
- */
 export function LanguageRoute() {
   const { lang } = useParams()
   const { pathname, search, hash } = useLocation()
@@ -38,7 +33,6 @@ export function LanguageRoute() {
   const url = (path: string) => `${window.location.origin}${path}`
   return (
     <>
-      {/* React places these in <head>. */}
       <meta name="description" content={t('meta.description')} />
       <link rel="canonical" href={url(pathname)} />
       {LANGUAGES.map((language) => (

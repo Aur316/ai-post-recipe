@@ -26,7 +26,6 @@ export function EditRun() {
       {run.phases.length > 0 ? (
         <p className="text-muted-foreground">{t('editRun.alreadyStarted')}</p>
       ) : (
-        // Keyed by id, so the form starts from this run's brief.
         <BriefForm key={run.id} run={run} />
       )}
     </section>

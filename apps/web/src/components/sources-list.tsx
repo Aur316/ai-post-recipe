@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
 
-/** Every page the research phase read or tried to read, with why it failed. */
 export function SourcesList({ sources }: { sources: Array<SourceDto> }) {
   const { t } = useTranslation()
   const unreachable = sources.filter((s) => !s.reachable).length

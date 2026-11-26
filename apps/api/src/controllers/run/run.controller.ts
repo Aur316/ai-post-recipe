@@ -1,11 +1,11 @@
 import {
   Brief,
   IdParams,
-  ListQuery,
   OutputLanguage,
   type PostDto,
   PostFormat,
   type RunDetailDto,
+  RunListQuery,
   type RunListResponse,
   type RunSummaryDto,
   type SourceDto,
@@ -32,7 +32,7 @@ export class RunController {
   }
 
   list = async (req: Request, res: Response) => {
-    const result = await this.runs.list(validate(ListQuery, req.query))
+    const result = await this.runs.list(validate(RunListQuery, req.query))
     const body: RunListResponse = {
       ...result,
       items: result.items.map(({ run, usage }) => toRunSummaryDto(run, usage)),

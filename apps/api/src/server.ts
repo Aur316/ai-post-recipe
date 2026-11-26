@@ -5,6 +5,7 @@ import { loadEnv } from './config/env.js'
 import { createDb } from './db/prisma.js'
 import { registerWorkers } from './jobs/phase-runner.js'
 import { logger } from './lib/logger.js'
+import { PlaywrightCapturer } from './providers/capture/playwright.capturer.js'
 import { WebFetcher } from './providers/fetcher/web-fetcher.js'
 import { FakeImageProvider } from './providers/image/fake-image.provider.js'
 import type { ImageProvider } from './providers/image/image.provider.js'
@@ -34,6 +35,7 @@ const storage = new S3Storage({
 const queue = new PgBossQueue(env.DATABASE_URL, {
   retryLimit: 2,
   retryDelaySeconds: 5,
+  expireInSeconds: 300,
 })
 
 const llm: LlmProvider = env.OPENROUTER_API_KEY
@@ -53,6 +55,7 @@ const images: ImageProvider = env.OPENROUTER_API_KEY
     })
   : new FakeImageProvider()
 const renderer = new PlaywrightRenderer()
+const capturer = new PlaywrightCapturer()
 
 const search: SearchProvider = env.SERPER_API_KEY
   ? new SerperProvider(env.SERPER_API_KEY)
@@ -73,6 +76,7 @@ await registerWorkers({
   storage,
   images,
   renderer,
+  capturer,
   costCapUsd: env.MAX_COST_USD_PER_RUN,
 })
 
@@ -86,8 +90,15 @@ createApp({
   logger.info(`api: http://localhost:${env.PORT}`)
 })
 
-for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-  process.once(signal, () => {
-    void renderer.close().finally(() => process.exit(0))
+async function shutdown() {
+  logger.info('Stopping: waiting for running phases to finish')
+  await queue.stop().catch((error: unknown) => {
+    logger.warn({ err: error }, 'The queue did not stop cleanly')
   })
+  await Promise.allSettled([renderer.close(), capturer.close()])
+  process.exit(0)
+}
+
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.once(signal, () => void shutdown())
 }

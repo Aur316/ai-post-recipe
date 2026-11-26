@@ -7,7 +7,6 @@ import {
 
 const FINISHED: ReadonlyArray<PhaseStatus> = ['DONE', 'APPROVED']
 
-/** The run status follows from the latest attempt of each phase. */
 export function deriveRunStatus(
   latest: Array<{ phase: PhaseKey; status: PhaseStatus }>,
 ): RunStatus {
@@ -19,11 +18,9 @@ export function deriveRunStatus(
     latest.some((p) => p.phase === phase && FINISHED.includes(p.status)),
   )
   if (finished) return 'COMPLETED'
-  // Not started yet, or paused with stale phases: Start continues it.
   return 'DRAFT'
 }
 
-/** The first phase that still has to run, if any. */
 export function nextPhaseToRun(
   latest: Array<{ phase: PhaseKey; status: PhaseStatus }>,
 ): PhaseKey | undefined {

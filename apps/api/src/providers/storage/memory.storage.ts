@@ -2,7 +2,6 @@ import { Readable } from 'node:stream'
 
 import type { StorageProvider } from './storage.provider.js'
 
-/** In-memory storage for tests. */
 export class MemoryStorage implements StorageProvider {
   readonly objects = new Map<string, { body: Buffer; contentType: string }>()
 

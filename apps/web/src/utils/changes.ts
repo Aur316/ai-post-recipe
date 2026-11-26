@@ -1,5 +1,4 @@
 export interface Change {
-  /** e.g. "posts.1.concept" */
   path: string
   before: unknown
   after: unknown
@@ -8,7 +7,6 @@ export interface Change {
 const isObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null
 
-/** Every leaf value that differs between the AI proposal and the edited version. */
 export function findChanges(
   before: unknown,
   after: unknown,

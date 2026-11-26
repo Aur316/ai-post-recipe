@@ -15,12 +15,10 @@ export default defineConfig(
       },
     },
     rules: {
-      // Until the pino logger arrives in M2.
       'no-console': 'off',
     },
   },
   {
-    // Only the queue provider may know about pg-boss, so it stays swappable (ADR 0002).
     files: ['**/*.ts'],
     ignores: ['src/providers/queue/**'],
     rules: {

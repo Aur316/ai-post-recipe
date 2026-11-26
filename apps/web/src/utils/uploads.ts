@@ -1,7 +1,8 @@
 import {
   MAX_UPLOAD_BYTES,
+  type StyleSource,
   UPLOAD_MIME_TYPES,
-  type UploadAssetKind,
+  UploadAssetKind,
 } from '@ai-post-recipe/shared'
 
 import i18n from '@/i18n'
@@ -16,7 +17,24 @@ export interface PendingUpload {
   error?: string
 }
 
-export const rejectReason = (file: File, kind: UploadAssetKind) => {
+export const WEBSITE_MODE_KINDS: ReadonlyArray<UploadAssetKind> = [
+  'UPLOAD_LOGO',
+  'UPLOAD_PRODUCT',
+]
+
+export const allowedKinds = (
+  styleSource: StyleSource,
+): ReadonlyArray<UploadAssetKind> =>
+  styleSource === 'WEBSITE' ? WEBSITE_MODE_KINDS : UploadAssetKind.options
+
+export const rejectReason = (
+  file: File,
+  kind: UploadAssetKind,
+  styleSource: StyleSource = 'UPLOADS',
+) => {
+  if (!allowedKinds(styleSource).includes(kind)) {
+    return i18n.t('uploader.notInWebsiteMode')
+  }
   if (!(UPLOAD_MIME_TYPES as ReadonlyArray<string>).includes(file.type)) {
     return i18n.t('uploader.onlyImages')
   }
@@ -27,18 +45,25 @@ export const rejectReason = (file: File, kind: UploadAssetKind) => {
   return undefined
 }
 
-export const guessKind = (file: File): UploadAssetKind => {
+export const guessKind = (
+  file: File,
+  styleSource: StyleSource = 'UPLOADS',
+): UploadAssetKind => {
   const name = file.name.toLowerCase()
   if (file.type === 'image/svg+xml' || name.includes('logo'))
     return 'UPLOAD_LOGO'
-  if (name.includes('screen')) return 'UPLOAD_SCREENSHOT'
+  if (name.includes('screen') && styleSource === 'UPLOADS')
+    return 'UPLOAD_SCREENSHOT'
   return 'UPLOAD_PRODUCT'
 }
 
-export const toPendingUpload = (file: File): PendingUpload => ({
+export const toPendingUpload = (
+  file: File,
+  styleSource: StyleSource = 'UPLOADS',
+): PendingUpload => ({
   id: crypto.randomUUID(),
   file,
-  kind: guessKind(file),
+  kind: guessKind(file, styleSource),
   previewUrl: URL.createObjectURL(file),
   progress: 0,
   status: 'ready',

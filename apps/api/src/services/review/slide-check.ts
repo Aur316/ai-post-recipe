@@ -10,7 +10,6 @@ export interface StoredSlideImage {
   height: number | null
 }
 
-/** Fixed checks that need no model: the PNG exists and has the Instagram size. */
 export function ruleIssues(slide: StoredSlideImage): Array<string> {
   if (!slide.assetId) return ['The slide has no rendered image']
   const expected = sizeFor(slide.format)

@@ -1,10 +1,7 @@
+import { existsSync } from 'node:fs'
 import { defineConfig } from 'prisma/config'
 
-try {
-  process.loadEnvFile('../../.env')
-} catch {
-  // No .env file: the variables come from the environment (Docker, CI).
-}
+if (existsSync('../../.env')) process.loadEnvFile('../../.env')
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',

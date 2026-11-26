@@ -13,7 +13,6 @@ const LABELS: Record<UploadAssetKind, string> = {
   UPLOAD_OTHER: 'Other reference',
 }
 
-/** Long side in pixels; larger images cost tokens without helping the analysis. */
 const MAX_SIDE = 1280
 const MAX_IMAGES = 12
 
@@ -24,7 +23,6 @@ export interface Upload {
   data: Buffer
 }
 
-/** The person's uploads, as stored. */
 export async function loadUploads(
   assets: AssetRepo,
   storage: StorageProvider,
@@ -50,35 +48,33 @@ export async function loadUploads(
   )
 }
 
-/**
- * Uploads as images a vision model accepts: SVG logos become PNG, large
- * photos are scaled down, and each gets a numbered label.
- */
 export async function toLlmImages(
   uploads: Array<Upload>,
+  firstNumber = 1,
 ): Promise<Array<LlmImage>> {
   return Promise.all(
-    uploads.slice(0, MAX_IMAGES).map(async (upload, i) => {
-      const image = sharp(upload.data).resize({
-        width: MAX_SIDE,
-        height: MAX_SIDE,
-        fit: 'inside',
-        withoutEnlargement: true,
-      })
-      const keepAlpha = upload.kind === 'UPLOAD_LOGO'
-      const data = keepAlpha
-        ? await image.png().toBuffer()
-        : await image.jpeg({ quality: 85 }).toBuffer()
-      return {
-        label: `Image ${i + 1}: ${LABELS[upload.kind]}`,
-        mimeType: keepAlpha ? 'image/png' : 'image/jpeg',
-        data,
-      }
-    }),
+    uploads.slice(0, MAX_IMAGES).map(async (upload, i) => ({
+      label: `Image ${firstNumber + i}: ${LABELS[upload.kind]}`,
+      ...(await shrinkImage(upload.data, upload.kind === 'UPLOAD_LOGO')),
+    })),
   )
 }
 
-/** An upload as a data URL for a slide; SVG logos are turned into PNG. */
+export async function shrinkImage(data: Buffer, keepAlpha = false) {
+  const image = sharp(data).resize({
+    width: MAX_SIDE,
+    height: MAX_SIDE,
+    fit: 'inside',
+    withoutEnlargement: true,
+  })
+  return keepAlpha
+    ? { mimeType: 'image/png', data: await image.png().toBuffer() }
+    : {
+        mimeType: 'image/jpeg',
+        data: await image.jpeg({ quality: 85 }).toBuffer(),
+      }
+}
+
 export async function toDataUrl(upload: Pick<Upload, 'mimeType' | 'data'>) {
   const png =
     upload.mimeType === 'image/svg+xml'
@@ -96,7 +92,6 @@ const EXTENSIONS: Record<string, string> = {
   'application/zip': 'zip',
 }
 
-/** Saves a file the pipeline made (a background, a slide) as an asset of the run. */
 export async function saveGeneratedAsset(
   assets: AssetRepo,
   storage: StorageProvider,
@@ -121,4 +116,29 @@ export async function saveGeneratedAsset(
     height: height ?? null,
     sizeBytes: data.length,
   })
+}
+
+export const captureAssetIds = (
+  captures: Array<{ assetIds?: Array<string>; assetId?: string | null }>,
+) =>
+  captures.flatMap((c) =>
+    c.assetIds?.length ? c.assetIds : c.assetId ? [c.assetId] : [],
+  )
+
+export async function readAssets(
+  assets: AssetRepo,
+  storage: StorageProvider,
+  ids: Array<string>,
+) {
+  return Promise.all(
+    ids.map(async (id) => {
+      const asset = await assets.findById(id)
+      if (!asset) throw new Error(`Asset ${id} not found`)
+      const { body } = await storage.get(asset.storageKey)
+      const chunks: Array<Buffer> = []
+      for await (const chunk of body)
+        chunks.push(Buffer.from(chunk as Uint8Array))
+      return { data: Buffer.concat(chunks), mimeType: asset.mimeType }
+    }),
+  )
 }

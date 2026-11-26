@@ -3,10 +3,6 @@ import { CopyDraft, CopyOutput } from '@ai-post-recipe/shared'
 import { findUnsupportedFacts } from './grounding.js'
 import { LANGUAGE_NAMES, type Phase, runPrompt } from './phase.js'
 
-/**
- * Writes caption, hashtags and slide text for the three planned posts, then
- * checks every number and quote against the material of the run.
- */
 export const copyPhase: Phase<'COPY'> = {
   key: 'COPY',
   outputSchema: CopyOutput,

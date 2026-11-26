@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 
 import { runsQueryFunctions } from '@/data/query-functions/runs'
 
-/** A fresh ZIP of the run's posts, sources and phase outputs. */
 export function DownloadZipButton({ runId }: { runId: string }) {
   const { t } = useTranslation()
   return (

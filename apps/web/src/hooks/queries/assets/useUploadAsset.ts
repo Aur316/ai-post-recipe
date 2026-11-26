@@ -7,7 +7,6 @@ import {
 } from '@/data/query-functions/assets'
 import { runsQueryKeys } from '@/data/query-keys/runs'
 
-/** Errors are shown next to each file by the caller, not as toasts. */
 export const useUploadAsset = () => {
   const queryClient = useQueryClient()
   return useMutation<AssetDto, Error, UploadAssetRequest>({

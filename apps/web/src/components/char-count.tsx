@@ -13,7 +13,6 @@ interface CharCountProps<T extends FieldValues> {
   max: number
 }
 
-/** Shows "used / max" under a text field; turns red at the limit. */
 export function CharCount<T extends FieldValues>({
   control,
   name,

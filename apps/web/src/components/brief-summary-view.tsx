@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
 
-/** What the run starts from, at a glance; the full brief is in its own card. */
 export function BriefSummaryView({ run }: { run: RunDetailDto }) {
   const { t } = useTranslation()
   const { brief } = run

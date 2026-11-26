@@ -2,7 +2,6 @@ import { z } from 'zod'
 
 import { SourceOrigin } from './phases.js'
 
-/** A source the research phase read (or tried to), as the API returns it. */
 export const SourceDto = z.object({
   id: z.uuid(),
   url: z.string(),

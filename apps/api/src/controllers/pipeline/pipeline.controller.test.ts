@@ -75,7 +75,7 @@ describe('pipeline', () => {
       status: 'APPROVED',
       editedOutput: { tone: 'Friendly and expert' },
       output: { tone: analysis.tone },
-      promptId: 'analysis@v2',
+      promptId: 'analysis@v3',
       model: 'fake',
     })
   })
@@ -186,7 +186,6 @@ describe('pipeline retries', () => {
     })
     expect((await get(id)).status).toBe('FAILED')
 
-    // Start resumes from the failed phase.
     expect((await post(`/api/runs/${id}/start`)).status).toBe(202)
     expect((await phase(id, 'ANALYSIS'))?.attempt).toBe(2)
   })
@@ -216,7 +215,6 @@ describe('research, costs and errors', () => {
       ['https://gymbeam.hr/true-whey', 'BRIEF', false, 'HTTP 404'],
     ])
 
-    // Running research again replaces the sources instead of adding to them.
     await post(`/api/runs/${id}/phases/RESEARCH/rerun`)
     await ctx.queue.drain()
     expect((await get(id)).sources).toHaveLength(2)
@@ -243,7 +241,6 @@ describe('research, costs and errors', () => {
     await post(`/api/runs/${id}/phases/PLAN/approve`)
     await ctx.queue.drain()
 
-    // $2 spent after the plan: the copy phase may not call the model.
     const copy = await phase(id, 'COPY')
     expect(copy).toMatchObject({ status: 'FAILED', attempt: 1 })
     expect(copy?.error).toContain('Cost cap reached')
@@ -354,7 +351,6 @@ describe('slides', () => {
 
     const run = await s.get(id)
     expect(run.status).toBe('COMPLETED')
-    // Fake copy: one slide text per post.
     expect(run.posts.map((p) => p.slides.map((sl) => !!sl.assetId))).toEqual([
       [true],
       [true],
@@ -387,7 +383,6 @@ describe('slides', () => {
     expect(s.ctx.images.requests.at(-1)?.prompt.user).toContain(
       'darker background',
     )
-    // The other posts keep their slides.
     expect((await s.get(id)).posts[0]?.slides[0]?.assetId).toBeTruthy()
   })
 
@@ -462,7 +457,6 @@ describe('export', () => {
         'phases/08-export.json',
       ]),
     )
-    // The ZIP follows later edits.
     expect(
       strFromU8(files['post-1-image/caption.txt'] ?? new Uint8Array()),
     ).toBe('Edited caption\n\n#edited\n')
@@ -501,7 +495,6 @@ describe('usage', () => {
     const id = await s.createRun()
     await s.post(`/api/runs/${id}/start`)
     await s.ctx.queue.drain()
-    // Run the analysis twice: both attempts count.
     await s.post(`/api/runs/${id}/phases/ANALYSIS/rerun`)
     await s.ctx.queue.drain()
 

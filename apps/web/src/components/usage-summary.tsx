@@ -12,7 +12,6 @@ import {
 
 import { formatCost, formatTokens, totalTokens } from '@/utils/usage'
 
-/** "$0.76 · 115k tokens": what the run's AI calls cost, re-runs included. */
 export function UsageBadge({ usage }: { usage: Usage }) {
   const { t, i18n } = useTranslation()
   return (
@@ -25,7 +24,6 @@ export function UsageBadge({ usage }: { usage: Usage }) {
   )
 }
 
-/** The total, with a breakdown per phase on click. */
 export function UsageButton({
   usage,
   byPhase,
@@ -47,7 +45,11 @@ export function UsageButton({
           <UsageText usage={usage} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-auto">
+      <PopoverContent
+        align="end"
+        collisionPadding={16}
+        className="w-auto max-w-[calc(100vw-2rem)]"
+      >
         <UsageTable usage={usage} byPhase={byPhase} />
       </PopoverContent>
     </Popover>
@@ -66,7 +68,6 @@ function UsageText({ usage }: { usage: Usage }) {
   )
 }
 
-/** Attempts, input and output tokens and cost per phase, and the total. */
 export function UsageTable({
   usage,
   byPhase,
@@ -79,43 +80,45 @@ export function UsageTable({
   return (
     <div className="space-y-2 text-sm">
       <p className="font-medium">{t('usage.title')}</p>
-      <table className="tabular-nums">
-        <thead className="text-xs text-muted-foreground">
-          <tr>
-            <th className="pr-4 text-left font-normal">{t('usage.phase')}</th>
-            <th className="pr-4 text-right font-normal">
-              {t('usage.attempts')}
-            </th>
-            <th className="pr-4 text-right font-normal">
-              {t('usage.tokensIn')}
-            </th>
-            <th className="pr-4 text-right font-normal">
-              {t('usage.tokensOut')}
-            </th>
-            <th className="text-right font-normal">{t('usage.cost')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {byPhase.map((row) => (
-            <tr key={row.phase}>
-              <td className="pr-4">{t(`phases.${row.phase as PhaseKey}`)}</td>
-              <td className="pr-4 text-right">{row.attempts}</td>
-              <td className="pr-4 text-right">{n(row.tokensIn)}</td>
-              <td className="pr-4 text-right">{n(row.tokensOut)}</td>
-              <td className="text-right">{formatCost(row.costUsd)}</td>
+      <div className="scrollbar-thin overflow-x-auto">
+        <table className="tabular-nums">
+          <thead className="text-xs text-muted-foreground">
+            <tr>
+              <th className="pr-4 text-left font-normal">{t('usage.phase')}</th>
+              <th className="pr-4 text-right font-normal">
+                {t('usage.attempts')}
+              </th>
+              <th className="pr-4 text-right font-normal">
+                {t('usage.tokensIn')}
+              </th>
+              <th className="pr-4 text-right font-normal">
+                {t('usage.tokensOut')}
+              </th>
+              <th className="text-right font-normal">{t('usage.cost')}</th>
             </tr>
-          ))}
-          <tr className="border-t font-semibold">
-            <td className="pt-1 pr-4">{t('usage.total')}</td>
-            <td className="pt-1 pr-4 text-right">
-              {byPhase.reduce((sum, r) => sum + r.attempts, 0)}
-            </td>
-            <td className="pt-1 pr-4 text-right">{n(usage.tokensIn)}</td>
-            <td className="pt-1 pr-4 text-right">{n(usage.tokensOut)}</td>
-            <td className="pt-1 text-right">{formatCost(usage.costUsd)}</td>
-          </tr>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {byPhase.map((row) => (
+              <tr key={row.phase}>
+                <td className="pr-4">{t(`phases.${row.phase as PhaseKey}`)}</td>
+                <td className="pr-4 text-right">{row.attempts}</td>
+                <td className="pr-4 text-right">{n(row.tokensIn)}</td>
+                <td className="pr-4 text-right">{n(row.tokensOut)}</td>
+                <td className="text-right">{formatCost(row.costUsd)}</td>
+              </tr>
+            ))}
+            <tr className="border-t font-semibold">
+              <td className="pt-1 pr-4">{t('usage.total')}</td>
+              <td className="pt-1 pr-4 text-right">
+                {byPhase.reduce((sum, r) => sum + r.attempts, 0)}
+              </td>
+              <td className="pt-1 pr-4 text-right">{n(usage.tokensIn)}</td>
+              <td className="pt-1 pr-4 text-right">{n(usage.tokensOut)}</td>
+              <td className="pt-1 text-right">{formatCost(usage.costUsd)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <p className="text-xs text-muted-foreground">{t('usage.note')}</p>
     </div>
   )

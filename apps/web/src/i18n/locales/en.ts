@@ -1,4 +1,3 @@
-/** English UI texts. `hr.ts` must have the same keys (checked by its type). */
 export const en = {
   meta: {
     description:
@@ -118,6 +117,7 @@ export const en = {
     unreachable: 'Could not be read',
     fromSearch: 'Found by search',
     queries: 'Searches',
+    captures: 'Website screenshots for the analysis',
     noSearch:
       "No web search (no SERPER_API_KEY): only the brief's links were read.",
   },
@@ -169,6 +169,9 @@ export const en = {
     title: 'Runs',
     newRun: 'New run',
     empty: 'No runs yet. Start one with a brand brief.',
+    search: 'Search runs',
+    searchPlaceholder: 'Search by brand or Instagram profile',
+    noMatch: 'No runs match “{{search}}”.',
   },
   runStatus: {
     DRAFT: 'Draft',
@@ -198,6 +201,8 @@ export const en = {
     inspirationLinks: 'Inspiration links',
     preferredFormats: 'Preferred formats:',
     language: 'Language of the run:',
+    styleSource: 'Style from:',
+    styleSources: { UPLOADS: 'uploaded images', WEBSITE: 'the website' },
     references: 'References ({{count}})',
   },
   outputLanguage: { hr: 'Croatian', en: 'English' },
@@ -259,6 +264,10 @@ export const en = {
     onlyImages: 'Only PNG, JPEG, WebP or SVG files',
     svgOnlyLogo: 'SVG is only allowed for logos',
     tooLarge: 'Larger than 10 MB',
+    notInWebsiteMode:
+      'Not used while the style comes from the website: choose Logo or Product photo, or remove it',
+    dropHintWebsite:
+      'Drop the logo and product photos here, or click to choose. PNG, JPEG, WebP (SVG for logos), up to 10 MB each.',
   },
   brief: {
     steps: {
@@ -269,7 +278,7 @@ export const en = {
     },
     brandName: 'Brand name',
     brandNamePlaceholder: 'e.g. GymBeam Hrvatska',
-    instagramUrl: 'Instagram profile URL',
+    instagramUrl: 'Instagram profile URL (optional)',
     reason: 'Why this brand?',
     reasonPlaceholder:
       'e.g. A large Croatian sports nutrition brand with an active Instagram profile and a clear product range.',
@@ -311,7 +320,13 @@ export const en = {
       STORY: 'Story',
     },
     uploads: 'Screenshots, product photos and logo',
+    uploadsWebsite: 'Logo and product photos',
     uploadedReferences: 'Uploaded references',
+    styleFromWebsite: "Read the brand's style from its website",
+    styleFromWebsiteOff:
+      'Off: the analysis reads colours and style from the screenshots you upload (for example of the Instagram feed).',
+    styleFromWebsiteOn:
+      'On: the app takes screenshots of the links above and reads the colours from the site itself. Upload only the logo and product photos.',
     back: 'Back',
     next: 'Next',
     create: 'Create run',

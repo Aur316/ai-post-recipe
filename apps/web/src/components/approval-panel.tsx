@@ -16,7 +16,6 @@ interface ApprovalPanelProps {
   phase: PhaseRunDto
 }
 
-/** Shows the AI proposal as editable JSON; approve it as is, with edits, or run it again. */
 export function ApprovalPanel({ runId, phase }: ApprovalPanelProps) {
   const { t } = useTranslation()
   const original = formatPhaseOutput(phase.phase, phase.output)
@@ -82,7 +81,6 @@ export function ApprovalPanel({ runId, phase }: ApprovalPanelProps) {
   )
 }
 
-/** Shows the proposal as it reads, following the JSON while it is valid. */
 function Preview({
   phase,
   text,

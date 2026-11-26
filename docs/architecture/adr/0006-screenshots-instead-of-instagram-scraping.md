@@ -16,3 +16,7 @@ The user uploads screenshots of the profile and of selected posts. A vision mode
 - No scraping code, no login, no terms-of-use risk.
 - The user chooses which posts are representative.
 - The analysis sees only what was uploaded; the form asks for enough screenshots.
+
+## Update (after M8)
+
+When a brand has no Instagram screenshots to upload, the brief can take the look from the brand's **website** instead: the app takes its own screenshots of the official pages and reads their colours. Instagram is still never downloaded, and the profile URL is optional.
