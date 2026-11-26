@@ -51,11 +51,13 @@ const outputs: Partial<PhaseOutputs> = {
   },
 }
 
+const productPhoto = await png(8, 8)
+
 const upload = (kind: 'UPLOAD_LOGO' | 'UPLOAD_PRODUCT', id: string) => ({
   id,
   kind,
   mimeType: 'image/png',
-  data: Buffer.from(id),
+  data: kind === 'UPLOAD_PRODUCT' ? productPhoto : Buffer.from(id),
 })
 
 describe('visuals phase', () => {
@@ -102,16 +104,16 @@ describe('visuals phase', () => {
     ])
     expect(images.requests[1]?.prompt.user).toContain('Kreatin')
     expect(images.requests[1]?.prompt.user).not.toContain('c2')
-    expect(result).toMatchObject({ promptId: 'background@v5', model: 'fake' })
+    expect(images.requests.map((r) => r.images?.[0]?.label)).toEqual(
+      Array(3).fill('Product photo (place this exact product in the scene)'),
+    )
+    expect(result).toMatchObject({ promptId: 'background@v6', model: 'fake' })
     expect(result.usage?.costUsd).toBeCloseTo(0.12)
 
-    const [first, , secondPost] = renderer.rendered
+    const [first] = renderer.rendered
     expect(first).toMatchObject({ format: 'IMAGE', layout: 'cover', total: 1 })
     expect(first?.logoUrl).toBe(
       `data:image/png;base64,${Buffer.from('logo').toString('base64')}`,
-    )
-    expect(secondPost?.productImageUrl).toBe(
-      `data:image/png;base64,${Buffer.from('p2').toString('base64')}`,
     )
     expect(renderer.rendered.map((r) => r.layout).slice(1, 4)).toEqual([
       'cover',
@@ -166,6 +168,5 @@ describe('visuals phase', () => {
       ])
       expect(request.prompt.user).toContain('attached screenshot')
     }
-    expect(renderer.rendered.every((r) => !r.productImageUrl)).toBe(true)
   })
 })

@@ -29,7 +29,6 @@ export interface SlideProps {
   brandName: string
   tokens: BrandTokens
   backgroundUrl?: string
-  productImageUrl?: string
   logoUrl?: string
 }
 
@@ -131,34 +130,6 @@ export function Slide(props: SlideProps) {
       />
 
       <Header {...props} top={safeTop - (story ? 60 : 24)} pad={pad} />
-
-      {props.layout === 'cover' && props.productImageUrl && (
-        <div
-          style={{
-            position: 'absolute',
-            left: pad,
-            right: pad,
-            top: safeTop + 60,
-            height: story ? 820 : 640,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <img
-            src={props.productImageUrl}
-            alt=""
-            data-product
-            style={{
-              maxWidth: '100%',
-              maxHeight: '100%',
-              objectFit: 'contain',
-              borderRadius: 32,
-              boxShadow: '0 40px 80px rgba(0,0,0,0.45)',
-            }}
-          />
-        </div>
-      )}
 
       <div
         style={{
