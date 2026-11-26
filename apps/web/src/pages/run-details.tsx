@@ -69,7 +69,7 @@ export function RunDetails() {
               <CardTitle>{t('runDetails.phases')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <PhaseTimeline runId={run.id} phases={run.phases} />
+              <PhaseTimeline run={run} />
             </CardContent>
           </Card>
         </div>

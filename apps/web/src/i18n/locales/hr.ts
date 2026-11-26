@@ -96,6 +96,21 @@ export const hr: Translation = {
     edited: 'Uređeno (koristi se)',
     original: 'Prijedlog AI-a',
   },
+  briefSummary: {
+    accepted: 'Brif za {{brand}} prihvaćen',
+    links: 'Poveznice',
+    products: 'Proizvodi',
+    references: 'Reference',
+    language: 'Jezik',
+  },
+  research: {
+    read: 'Pročitane stranice',
+    unreachable: 'Nedostupne',
+    fromSearch: 'Pronađene pretragom',
+    queries: 'Pretrage',
+    noSearch:
+      'Bez web pretrage (nema SERPER_API_KEY): pročitane su samo poveznice iz brifa.',
+  },
   common: {
     loading: 'Učitavanje…',
     remove: 'Ukloni',

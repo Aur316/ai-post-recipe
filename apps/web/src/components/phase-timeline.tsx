@@ -2,6 +2,7 @@ import {
   PHASE_ORDER,
   type PhaseKey,
   type PhaseRunDto,
+  type RunDetailDto,
 } from '@ai-post-recipe/shared'
 import { useTranslation } from 'react-i18next'
 
@@ -19,12 +20,12 @@ import { formatDuration, isPhaseActive } from '@/utils/phases'
 import { phaseStatusTone } from '@/utils/status-tones'
 
 interface PhaseTimelineProps {
-  runId: string
-  phases: Array<PhaseRunDto>
+  run: RunDetailDto
 }
 
 /** All eight phases in order, with the latest attempt of each that has started. */
-export function PhaseTimeline({ runId, phases }: PhaseTimelineProps) {
+export function PhaseTimeline({ run }: PhaseTimelineProps) {
+  const { id: runId, phases } = run
   const anyActive = phases.some((p) => isPhaseActive(p.status))
   return (
     <ol className="space-y-2">
@@ -36,6 +37,7 @@ export function PhaseTimeline({ runId, phases }: PhaseTimelineProps) {
           phaseKey={key}
           phase={phases.find((p) => p.phase === key)}
           canRerun={!anyActive}
+          run={run}
         />
       ))}
     </ol>
@@ -48,6 +50,7 @@ interface PhaseItemProps {
   phaseKey: PhaseKey
   phase?: PhaseRunDto
   canRerun: boolean
+  run: RunDetailDto
 }
 
 function PhaseItem({
@@ -56,6 +59,7 @@ function PhaseItem({
   phaseKey,
   phase,
   canRerun,
+  run,
 }: PhaseItemProps) {
   const { t } = useTranslation()
   const rerun = useRerunPhase()
@@ -128,7 +132,7 @@ function PhaseItem({
       )}
       {phase && (status === 'DONE' || status === 'APPROVED') && (
         <div className="mt-4">
-          <PhaseOutputView phase={phase} />
+          <PhaseOutputView phase={phase} run={run} />
         </div>
       )}
       {phase && (status === 'DONE' || status === 'APPROVED') && (

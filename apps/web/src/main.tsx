@@ -13,7 +13,6 @@ import { router } from '@/router'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {/* Last resort, for errors outside the router (providers, the router itself). */}
     <ErrorBoundary
       fallback={({ error }) => <ErrorFallback error={error} fullScreen />}
     >

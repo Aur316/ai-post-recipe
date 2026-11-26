@@ -6,12 +6,16 @@ import {
   type PhaseKey,
   type PhaseRunDto,
   PlanOutput,
+  ResearchOutput,
+  type RunDetailDto,
 } from '@ai-post-recipe/shared'
 import { useTranslation } from 'react-i18next'
 
 import { AnalysisView } from '@/components/analysis-view'
+import { BriefSummaryView } from '@/components/brief-summary-view'
 import { CopyView } from '@/components/copy-view'
 import { PlanView } from '@/components/plan-view'
+import { ResearchView } from '@/components/research-view'
 import { Button } from '@/components/ui/button'
 
 import { findChanges } from '@/utils/changes'
@@ -20,10 +24,18 @@ import { findChanges } from '@/utils/changes'
 export function OutputView({
   phase,
   value,
+  run,
 }: {
   phase: PhaseKey
   value: unknown
+  /** Needed for the brief summary, which reads the brief itself. */
+  run?: RunDetailDto
 }) {
+  if (phase === 'BRIEF') return run ? <BriefSummaryView run={run} /> : null
+  if (phase === 'RESEARCH') {
+    const parsed = ResearchOutput.safeParse(value)
+    return parsed.success ? <ResearchView research={parsed.data} /> : null
+  }
   if (phase === 'ANALYSIS') {
     const parsed = AnalysisOutput.safeParse(value)
     return parsed.success ? <AnalysisView analysis={parsed.data} /> : null
@@ -40,20 +52,28 @@ export function OutputView({
 }
 
 export const hasOutputView = (phase: PhaseKey) =>
-  phase === 'ANALYSIS' || phase === 'PLAN' || phase === 'COPY'
+  ['BRIEF', 'RESEARCH', 'ANALYSIS', 'PLAN', 'COPY'].includes(phase)
 
 /**
  * A finished phase as it reads. When the person edited it at approval, the
  * edited version is shown, with a list of the changes and the AI proposal one
  * click away: the "own correction" the hand-in asks for.
  */
-export function PhaseOutputView({ phase }: { phase: PhaseRunDto }) {
+export function PhaseOutputView({
+  phase,
+  run,
+}: {
+  phase: PhaseRunDto
+  run?: RunDetailDto
+}) {
   const { t } = useTranslation()
   const [showOriginal, setShowOriginal] = useState(false)
   if (!hasOutputView(phase.phase)) return null
 
   const edited = phase.editedOutput !== null
-  if (!edited) return <OutputView phase={phase.phase} value={phase.output} />
+  if (!edited) {
+    return <OutputView phase={phase.phase} value={phase.output} run={run} />
+  }
 
   const changes = findChanges(phase.output, phase.editedOutput)
   return (
@@ -104,6 +124,7 @@ export function PhaseOutputView({ phase }: { phase: PhaseRunDto }) {
       <OutputView
         phase={phase.phase}
         value={showOriginal ? phase.output : phase.editedOutput}
+        run={run}
       />
     </div>
   )

@@ -94,6 +94,21 @@ export const en = {
     edited: 'Edited (used)',
     original: 'AI proposal',
   },
+  briefSummary: {
+    accepted: 'Brief for {{brand}} accepted',
+    links: 'Links',
+    products: 'Products',
+    references: 'References',
+    language: 'Language',
+  },
+  research: {
+    read: 'Pages read',
+    unreachable: 'Could not be read',
+    fromSearch: 'Found by search',
+    queries: 'Searches',
+    noSearch:
+      "No web search (no SERPER_API_KEY): only the brief's links were read.",
+  },
   common: {
     loading: 'Loading…',
     remove: 'Remove',

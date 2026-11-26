@@ -225,6 +225,59 @@ describe('Run details', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Demo mode')
   })
 
+  it('summarises the brief and the research', async () => {
+    const research = {
+      queries: ['GymBeam Hrvatska'],
+      sources: [
+        {
+          url: 'https://gymbeam.hr',
+          title: 'GymBeam shop',
+          excerpt: '',
+          text: '',
+          reachable: true,
+          error: null,
+          origin: 'BRIEF',
+          fetchedAt: '2026-11-26T10:00:00.000Z',
+        },
+        {
+          url: 'https://blocked.example',
+          title: 'Blocked page',
+          excerpt: '',
+          text: '',
+          reachable: false,
+          error: 'Blocked by robots.txt',
+          origin: 'SEARCH',
+          fetchedAt: '2026-11-26T10:00:00.000Z',
+        },
+      ],
+    }
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(
+          run('RUNNING', [
+            phaseRun('BRIEF', 'DONE', { accepted: true }),
+            phaseRun('RESEARCH', 'DONE', research),
+          ]),
+        ),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    expect(
+      await screen.findByText('Brief for GymBeam Hrvatska accepted'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Pages read')).toBeInTheDocument()
+    expect(
+      screen.getByText('GymBeam Hrvatska', { selector: '[data-slot="badge"]' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Blocked page' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getAllByText(/Blocked by robots\.txt/).length,
+    ).toBeGreaterThan(0)
+  })
+
   describe('plan and copy', () => {
     const plan = {
       posts: [1, 2, 3].map((index) => ({
