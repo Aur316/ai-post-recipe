@@ -39,7 +39,7 @@ const phaseRun = (phase: string, status: string, output: unknown = null) => ({
   attempt: 1,
   status,
   output,
-  editedOutput: null,
+  editedOutput: null as unknown,
   promptId: null,
   model: null,
   tokensIn: null,
@@ -74,6 +74,7 @@ const run = (status: string, phases: Array<ReturnType<typeof phaseRun>>) => ({
   assets: [],
   phases,
   sources: [] as Array<unknown>,
+  posts: [] as Array<unknown>,
 })
 
 describe('Run details', () => {
@@ -222,6 +223,149 @@ describe('Run details', () => {
     renderRoute(`/en/runs/${RUN_ID}`)
 
     expect(await screen.findByRole('status')).toHaveTextContent('Demo mode')
+  })
+
+  it('summarises the brief and the research', async () => {
+    const research = {
+      queries: ['GymBeam Hrvatska'],
+      sources: [
+        {
+          url: 'https://gymbeam.hr',
+          title: 'GymBeam shop',
+          excerpt: '',
+          text: '',
+          reachable: true,
+          error: null,
+          origin: 'BRIEF',
+          fetchedAt: '2026-11-26T10:00:00.000Z',
+        },
+        {
+          url: 'https://blocked.example',
+          title: 'Blocked page',
+          excerpt: '',
+          text: '',
+          reachable: false,
+          error: 'Blocked by robots.txt',
+          origin: 'SEARCH',
+          fetchedAt: '2026-11-26T10:00:00.000Z',
+        },
+      ],
+    }
+    server.use(
+      http.get(`/api/runs/${RUN_ID}`, () =>
+        HttpResponse.json(
+          run('RUNNING', [
+            phaseRun('BRIEF', 'DONE', { accepted: true }),
+            phaseRun('RESEARCH', 'DONE', research),
+          ]),
+        ),
+      ),
+    )
+    renderRoute(`/en/runs/${RUN_ID}`)
+
+    expect(
+      await screen.findByText('Brief for GymBeam Hrvatska accepted'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Pages read')).toBeInTheDocument()
+    expect(
+      screen.getByText('GymBeam Hrvatska', { selector: '[data-slot="badge"]' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Blocked page' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getAllByText(/Blocked by robots\.txt/).length,
+    ).toBeGreaterThan(0)
+  })
+
+  describe('plan and copy', () => {
+    const plan = {
+      posts: [1, 2, 3].map((index) => ({
+        index,
+        format: index === 2 ? 'CAROUSEL' : 'IMAGE',
+        goal: `Goal ${index}`,
+        concept: `Concept ${index}`,
+        rationale: `Rationale ${index}`,
+        product: 'True Whey',
+      })),
+    }
+    const copy = {
+      posts: [1, 2, 3].map((index) => ({
+        index,
+        caption: `Caption ${index}`,
+        hashtags: ['#gymbeam'],
+        slides: [{ order: 1, text: `Slide ${index}` }],
+      })),
+      unsupported: [
+        {
+          postIndex: 2,
+          place: 1,
+          kind: 'number',
+          value: '40',
+          context: 'Sada 40% popusta',
+        },
+      ],
+    }
+
+    it('shows the plan as cards while it waits for approval', async () => {
+      server.use(
+        http.get(`/api/runs/${RUN_ID}`, () =>
+          HttpResponse.json(
+            run('AWAITING_APPROVAL', [
+              phaseRun('PLAN', 'AWAITING_APPROVAL', plan),
+            ]),
+          ),
+        ),
+      )
+      renderRoute(`/en/runs/${RUN_ID}`)
+
+      expect(await screen.findByText('Concept 2')).toBeInTheDocument()
+      expect(screen.getByText('Carousel')).toBeInTheDocument()
+      expect(screen.getByText('Post 3')).toBeInTheDocument()
+    })
+
+    it('shows the copy and the facts that need checking', async () => {
+      server.use(
+        http.get(`/api/runs/${RUN_ID}`, () =>
+          HttpResponse.json(run('RUNNING', [phaseRun('COPY', 'DONE', copy)])),
+        ),
+      )
+      renderRoute(`/en/runs/${RUN_ID}`)
+
+      expect(await screen.findByText('Caption 2')).toBeInTheDocument()
+      expect(screen.getByRole('note')).toHaveTextContent(
+        'Check before publishing: 1 number(s) or quote(s) appear in no source',
+      )
+      expect(screen.getByRole('note')).toHaveTextContent('Post 2, slide 1: 40')
+    })
+
+    it('lists the edits and shows the AI proposal on request', async () => {
+      const user = userEvent.setup()
+      const edited = {
+        posts: plan.posts.map((p) =>
+          p.index === 1 ? { ...p, concept: 'My concept' } : p,
+        ),
+      }
+      server.use(
+        http.get(`/api/runs/${RUN_ID}`, () =>
+          HttpResponse.json(
+            run('RUNNING', [
+              { ...phaseRun('PLAN', 'APPROVED', plan), editedOutput: edited },
+            ]),
+          ),
+        ),
+      )
+      renderRoute(`/en/runs/${RUN_ID}`)
+
+      expect(
+        await screen.findByText('Your edits at approval (1)'),
+      ).toBeInTheDocument()
+      expect(screen.getByText('posts.0.concept')).toBeInTheDocument()
+      expect(screen.getAllByText('My concept').length).toBeGreaterThan(0)
+
+      await user.click(screen.getByRole('button', { name: 'AI proposal' }))
+      expect(screen.getAllByText('Concept 1').length).toBeGreaterThan(0)
+    })
   })
 
   describe('references', () => {

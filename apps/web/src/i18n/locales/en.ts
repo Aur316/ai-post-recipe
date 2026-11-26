@@ -74,6 +74,41 @@ export const en = {
         'Then reload this page: the status above shows the keys as set, and the demo-mode banner disappears.',
     },
   },
+  posts: {
+    post: 'Post {{index}}',
+    goal: 'Goal',
+    product: 'Product',
+    concept: 'Concept',
+    rationale: 'Why it fits',
+  },
+  copy: {
+    caption: 'caption',
+    slide: 'slide {{order}}',
+    slides: 'Text on the image, slide by slide',
+    unsupported:
+      'Check before publishing: {{count}} number(s) or quote(s) appear in no source',
+  },
+  changes: {
+    title: 'Your edits at approval ({{count}})',
+    version: 'Version',
+    edited: 'Edited (used)',
+    original: 'AI proposal',
+  },
+  briefSummary: {
+    accepted: 'Brief for {{brand}} accepted',
+    links: 'Links',
+    products: 'Products',
+    references: 'References',
+    language: 'Language',
+  },
+  research: {
+    read: 'Pages read',
+    unreachable: 'Could not be read',
+    fromSearch: 'Found by search',
+    queries: 'Searches',
+    noSearch:
+      "No web search (no SERPER_API_KEY): only the brief's links were read.",
+  },
   common: {
     loading: 'Loading…',
     remove: 'Remove',
@@ -127,7 +162,7 @@ export const en = {
     RESEARCH: 'Research',
     ANALYSIS: 'Brand analysis',
     PLAN: 'Content plan',
-    COPY: 'Copy',
+    COPY: 'Post text',
     VISUALS: 'Visuals',
     REVIEW: 'Review',
     EXPORT: 'Export',

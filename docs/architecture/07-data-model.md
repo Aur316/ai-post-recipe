@@ -44,6 +44,10 @@ erDiagram
     string runId FK
     int index
     string format
+    string goal
+    string concept
+    string product
+    string caption
     json slides
   }
   Asset {

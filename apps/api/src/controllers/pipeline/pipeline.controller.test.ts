@@ -293,3 +293,42 @@ describe('research, costs and errors', () => {
     })
   })
 })
+
+describe('posts', () => {
+  it('creates the posts from the approved plan, with edits, and fills in the copy', async () => {
+    const { ctx, createRun, get, phase, post } = setup()
+
+    const id = await createRun()
+    await post(`/api/runs/${id}/start`)
+    await ctx.queue.drain()
+    await post(`/api/runs/${id}/phases/ANALYSIS/approve`)
+    await ctx.queue.drain()
+    expect((await get(id)).posts).toEqual([])
+
+    const plan = (await phase(id, 'PLAN'))?.output as {
+      posts: Array<{ concept: string }>
+    }
+    const edited = {
+      posts: plan.posts.map((p, i) =>
+        i === 0 ? { ...p, concept: 'Edited concept' } : p,
+      ),
+    }
+    await post(`/api/runs/${id}/phases/PLAN/approve`, { editedOutput: edited })
+    await ctx.queue.drain()
+
+    const run = await get(id)
+    expect(
+      run.posts.map((p) => [p.index, p.format, p.concept, p.product]),
+    ).toEqual([
+      [1, 'IMAGE', 'Edited concept', 'True Whey'],
+      [2, 'CAROUSEL', 'Concept for post 2', 'True Whey'],
+      [3, 'IMAGE', 'Concept for post 3', 'True Whey'],
+    ])
+    expect(run.posts[0]).toMatchObject({
+      caption: 'Caption for post 1',
+      hashtags: ['#gymbeam', '#fitness'],
+      slides: [{ order: 1, text: 'Slide text for post 1' }],
+    })
+    expect((await phase(id, 'COPY'))?.output).toMatchObject({ unsupported: [] })
+  })
+})

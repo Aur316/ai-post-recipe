@@ -12,7 +12,6 @@ import { RunDetails } from '@/pages/run-details'
 import { Runs } from '@/pages/runs'
 
 export const routes: Array<RouteObject> = [
-  // `/` has no language yet; LanguageRoute redirects it.
   { index: true, element: <LanguageRoute />, errorElement: <RouteError /> },
   {
     path: ':lang',
@@ -32,7 +31,6 @@ export const routes: Array<RouteObject> = [
       },
     ],
   },
-  // An old link without a language, e.g. /runs/1.
   { path: '*', element: <LanguageRoute />, errorElement: <RouteError /> },
 ]
 

@@ -1,13 +1,9 @@
 import { useState } from 'react'
 
-import {
-  AnalysisOutput,
-  PHASE_OUTPUT_SCHEMAS,
-  type PhaseRunDto,
-} from '@ai-post-recipe/shared'
+import { PHASE_OUTPUT_SCHEMAS, type PhaseRunDto } from '@ai-post-recipe/shared'
 import { useTranslation } from 'react-i18next'
 
-import { AnalysisView } from '@/components/analysis-view'
+import { OutputView, hasOutputView } from '@/components/phase-output-view'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
@@ -59,7 +55,9 @@ export function ApprovalPanel({ runId, phase }: ApprovalPanelProps) {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">{t('approval.hint')}</p>
-      {phase.phase === 'ANALYSIS' && <AnalysisPreview text={text} />}
+      {hasOutputView(phase.phase) && (
+        <Preview phase={phase.phase} text={text} />
+      )}
       <Textarea
         aria-label={t('approval.outputLabel')}
         className="scrollbar-thin min-h-64 font-mono text-xs"
@@ -84,8 +82,14 @@ export function ApprovalPanel({ runId, phase }: ApprovalPanelProps) {
   )
 }
 
-/** Shows the analysis as it reads, following the JSON while it is valid. */
-function AnalysisPreview({ text }: { text: string }) {
+/** Shows the proposal as it reads, following the JSON while it is valid. */
+function Preview({
+  phase,
+  text,
+}: {
+  phase: PhaseRunDto['phase']
+  text: string
+}) {
   const { t } = useTranslation()
   let value: unknown
   try {
@@ -93,12 +97,11 @@ function AnalysisPreview({ text }: { text: string }) {
   } catch {
     return null
   }
-  const analysis = AnalysisOutput.safeParse(value)
-  if (!analysis.success) return null
+  const view = <OutputView phase={phase} value={value} />
   return (
     <div className="space-y-2 rounded-md border p-3">
       <p className="text-xs text-muted-foreground">{t('analysis.preview')}</p>
-      <AnalysisView analysis={analysis.data} />
+      {view}
     </div>
   )
 }

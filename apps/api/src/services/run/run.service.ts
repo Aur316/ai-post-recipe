@@ -3,6 +3,7 @@ import type { Brief, ListQuery } from '@ai-post-recipe/shared'
 import { ConflictError, NotFoundError } from '../../lib/errors.js'
 import type { AssetRepo } from '../../repositories/asset/asset.repo.js'
 import type { PhaseRunRepo } from '../../repositories/phase-run/phase-run.repo.js'
+import type { PostRepo } from '../../repositories/post/post.repo.js'
 import type { RunRepo } from '../../repositories/run/run.repo.js'
 import type { SourceRepo } from '../../repositories/source/source.repo.js'
 
@@ -12,6 +13,7 @@ export class RunService {
     private readonly assets: AssetRepo,
     private readonly phaseRuns: PhaseRunRepo,
     private readonly sources: SourceRepo,
+    private readonly posts: PostRepo,
   ) {}
 
   create(brief: Brief) {
@@ -44,12 +46,13 @@ export class RunService {
   async get(id: string) {
     const run = await this.runs.findById(id)
     if (!run) throw new NotFoundError('Run', id)
-    const [assets, phases, sources] = await Promise.all([
+    const [assets, phases, sources, posts] = await Promise.all([
       this.assets.listByRun(id),
       this.phaseRuns.latestByRun(id),
       this.sources.listByRun(id),
+      this.posts.listByRun(id),
     ])
-    return { run, assets, phases, sources }
+    return { run, assets, phases, sources, posts }
   }
 }
 

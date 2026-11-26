@@ -123,6 +123,8 @@ model Post {
   goal      String
   concept   String
   rationale String
+  /// The product from the brief that the post features.
+  product   String   @default("")
   caption   String?
   hashtags  String[]
   /// [{ order, templateId, text, assetId }]

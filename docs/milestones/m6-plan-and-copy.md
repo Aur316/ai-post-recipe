@@ -2,7 +2,7 @@
 
 **Goal:** from the approved analysis the app plans three posts and writes their copy, and the operator can edit the plan before any copy is written.
 
-**Status:** Not started
+**Status:** Done
 
 ## Requirements
 
@@ -28,16 +28,22 @@ FR-05, FR-06, FR-10, FR-11, FR-17
 
 ## Tasks
 
-- [ ] Plan and copy prompts in `packages/prompts`
-- [ ] Plan phase with its Zod schema; creates the three `Post` rows
-- [ ] Copy phase: caption, hashtags and slide text per post; only sourced facts
-- [ ] Grounding check that lists any fact in the copy not found in a source
-- [ ] Copy prompt and schema rule: no invented statements or quotes from real people; quotes carry their source URL
-- [ ] Plan approval panel: one editable card per post
-- [ ] `CaptionEditor`
-- [ ] Original vs. edited view for approved phases
-- [ ] Tests: plan schema (exactly three posts), copy grounding check, approval with edits
+- [x] Plan and copy prompts in `packages/prompts` (`plan@v2`, `copy@v2`), in the language of the run
+- [x] Plan phase with its Zod schema (exactly three posts); approving the plan creates the three `Post` rows from the edited version
+- [x] Copy phase: caption, hashtags and slide text per post; written onto the `Post` rows
+- [x] Grounding check that lists every number and quote in the copy that no source contains (fixed rules, not the model)
+- [x] Copy prompt rule: no invented statements or quotes from real people, no notes to the team or placeholders
+- [x] Plan and copy shown as cards; the plan approval panel shows them live above the JSON editor
+- [x] Original vs. edited view for approved phases: list of changes, and the AI proposal one click away
+- [x] Tests: plan schema, copy grounding check, posts from an edited plan, web views
+- [ ] Moved to M7: `CaptionEditor`, on the post preview next to the rendered slides
 
 ## Exit criteria
 
 - A real run reaches the end of the copy phase with three posts and their text, after the operator edited the plan.
+
+## Notes
+
+- **Scope change:** the plan is edited as JSON with a live card preview, not with a form per field; the caption editor moves to M7, where the post preview with its slides exists. Both save time for the visuals.
+- **Grounding check:** every number (two digits or more, or with decimals; `6,5` equals `6.5`, `1.000` equals `1000`) and every quote of three words or more must appear in the brief, a source page or an evidence quote. Anything else is listed on the copy card as "check before publishing". It does not block the run: the person decides.
+- **Live run (GymBeam, Croatian):** copy `copy@v2` cost $0.03, no unsupported facts, no notes to the team in the slide texts.

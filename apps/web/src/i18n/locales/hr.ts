@@ -76,6 +76,41 @@ export const hr: Translation = {
         'Zatim osvježi ovu stranicu: stanje iznad prikazuje ključeve kao postavljene, a traka demo načina nestaje.',
     },
   },
+  posts: {
+    post: 'Objava {{index}}',
+    goal: 'Cilj',
+    product: 'Proizvod',
+    concept: 'Koncept',
+    rationale: 'Zašto odgovara',
+  },
+  copy: {
+    caption: 'opis',
+    slide: 'slajd {{order}}',
+    slides: 'Tekst na slici, slajd po slajd',
+    unsupported:
+      'Provjeri prije objave: {{count}} broj(eva) ili citat(a) nema ni u jednom izvoru',
+  },
+  changes: {
+    title: 'Tvoje izmjene pri odobrenju ({{count}})',
+    version: 'Verzija',
+    edited: 'Uređeno (koristi se)',
+    original: 'Prijedlog AI-a',
+  },
+  briefSummary: {
+    accepted: 'Brif za {{brand}} prihvaćen',
+    links: 'Poveznice',
+    products: 'Proizvodi',
+    references: 'Reference',
+    language: 'Jezik',
+  },
+  research: {
+    read: 'Pročitane stranice',
+    unreachable: 'Nedostupne',
+    fromSearch: 'Pronađene pretragom',
+    queries: 'Pretrage',
+    noSearch:
+      'Bez web pretrage (nema SERPER_API_KEY): pročitane su samo poveznice iz brifa.',
+  },
   common: {
     loading: 'Učitavanje…',
     remove: 'Ukloni',
