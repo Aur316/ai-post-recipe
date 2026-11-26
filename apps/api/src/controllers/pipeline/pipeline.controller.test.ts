@@ -2,6 +2,7 @@ import {
   ErrorResponse,
   PHASE_ORDER,
   type PhaseKey,
+  PostDto,
   RunDetailDto,
   RunSummaryDto,
 } from '@ai-post-recipe/shared'
@@ -330,5 +331,87 @@ describe('posts', () => {
       slides: [{ order: 1, text: 'Slide text for post 1' }],
     })
     expect((await phase(id, 'COPY'))?.output).toMatchObject({ unsupported: [] })
+  })
+})
+
+describe('slides', () => {
+  const runToEnd = async (s: ReturnType<typeof setup>) => {
+    const id = await s.createRun()
+    await s.post(`/api/runs/${id}/start`)
+    await s.ctx.queue.drain()
+    await s.post(`/api/runs/${id}/phases/ANALYSIS/approve`)
+    await s.ctx.queue.drain()
+    await s.post(`/api/runs/${id}/phases/PLAN/approve`)
+    await s.ctx.queue.drain()
+    return id
+  }
+
+  it('renders a PNG for every slide and puts it on the post', async () => {
+    const s = setup()
+    const id = await runToEnd(s)
+
+    const run = await s.get(id)
+    expect(run.status).toBe('COMPLETED')
+    // Fake copy: one slide text per post.
+    expect(run.posts.map((p) => p.slides.map((sl) => !!sl.assetId))).toEqual([
+      [true],
+      [true],
+      [true],
+    ])
+    const assetId = run.posts[0]?.slides[0]?.assetId ?? ''
+    const png = await request(s.ctx.app).get(`/api/assets/${assetId}`)
+    expect(png.status).toBe(200)
+    expect(png.headers['content-type']).toBe('image/png')
+    expect(run.assets.map((a) => a.kind).sort()).toEqual([
+      ...Array<string>(3).fill('GENERATED_BACKGROUND'),
+      ...Array<string>(3).fill('RENDERED_SLIDE'),
+    ])
+  })
+
+  it('regenerates one slide with an instruction', async () => {
+    const s = setup()
+    const id = await runToEnd(s)
+    const before = (await s.get(id)).posts[1]?.slides[0]?.assetId
+
+    const res = await s.post(`/api/runs/${id}/posts/2/slides/1/regenerate`, {
+      instruction: 'darker background',
+    })
+
+    expect(res.status).toBe(200)
+    const after = PostDto.parse(res.body).slides[0]?.assetId
+    expect(after).toBeTruthy()
+    expect(after).not.toBe(before)
+    expect(s.ctx.images.requests.at(-1)?.prompt.user).toContain(
+      'darker background',
+    )
+    // The other posts keep their slides.
+    expect((await s.get(id)).posts[0]?.slides[0]?.assetId).toBeTruthy()
+  })
+
+  it('refuses to regenerate a slide that has not been rendered', async () => {
+    const s = setup()
+    const id = await s.createRun()
+
+    const res = await s.post(`/api/runs/${id}/posts/1/slides/1/regenerate`)
+    expect(res.status).toBe(404)
+  })
+
+  it('saves an edited caption and hashtags', async () => {
+    const s = setup()
+    const id = await runToEnd(s)
+
+    const res = await request(s.ctx.app)
+      .patch(`/api/runs/${id}/posts/1`)
+      .send({ caption: 'My caption', hashtags: ['#mine'] })
+
+    expect(res.status).toBe(200)
+    expect(PostDto.parse(res.body)).toMatchObject({
+      caption: 'My caption',
+      hashtags: ['#mine'],
+    })
+    const bad = await request(s.ctx.app)
+      .patch(`/api/runs/${id}/posts/1`)
+      .send({ caption: 'x', hashtags: ['no hash'] })
+    expect(bad.status).toBe(400)
   })
 })

@@ -45,4 +45,4 @@ ai-post-recipe/
 - `packages/shared` has no runtime dependency other than Zod.
 - `apps/web` must never import server-only code such as providers or Prisma.
 
-> **Current state:** `packages/shared`, `packages/prompts`, `packages/tsconfig` and `packages/eslint-config` exist. `slide-templates` is added in M7 (see [milestones](../milestones/README.md)).
+> **Current state:** `packages/shared`, `packages/prompts`, `packages/slide-templates`, `packages/tsconfig` and `packages/eslint-config` exist. `slide-templates` holds the slide template used by the renderer.

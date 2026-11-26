@@ -21,7 +21,10 @@ export function BriefSummaryView({ run }: { run: RunDetailDto }) {
           label={t('briefSummary.products')}
           value={brief.products.length}
         />
-        <Stat label={t('briefSummary.references')} value={run.assets.length} />
+        <Stat
+          label={t('briefSummary.references')}
+          value={run.assets.filter((a) => a.kind.startsWith('UPLOAD_')).length}
+        />
         <Stat
           label={t('briefSummary.language')}
           value={t(`outputLanguage.${brief.language}`)}

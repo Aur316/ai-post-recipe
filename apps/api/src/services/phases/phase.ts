@@ -3,12 +3,15 @@ import type { Brief, PhaseKey, PhaseOutputs } from '@ai-post-recipe/shared'
 import type { z } from 'zod'
 
 import type { PageFetcher } from '../../providers/fetcher/web-fetcher.js'
+import type { ImageProvider } from '../../providers/image/image.provider.js'
 import type {
   LlmImage,
   LlmProvider,
   LlmUsage,
 } from '../../providers/llm/llm.provider.js'
+import type { SlideRenderer } from '../../providers/renderer/slide-renderer.js'
 import type { SearchProvider } from '../../providers/search/search.provider.js'
+import type { Upload } from './images.js'
 
 /** What a phase may use; tests pass fakes. */
 export interface PhaseTools {
@@ -18,6 +21,16 @@ export interface PhaseTools {
   fetcher: PageFetcher
   /** The run's uploaded images, ready to send to a vision model. */
   loadImages(): Promise<Array<LlmImage>>
+  /** The run's uploads as stored, for slides. */
+  loadUploads(): Promise<Array<Upload>>
+  images: ImageProvider
+  renderer: SlideRenderer
+  /** Stores a file the phase made and returns its asset id. */
+  saveAsset(
+    kind: 'GENERATED_BACKGROUND' | 'RENDERED_SLIDE',
+    data: Buffer,
+    mimeType: string,
+  ): Promise<string>
 }
 
 export interface PhaseContext extends PhaseTools {

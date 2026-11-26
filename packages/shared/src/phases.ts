@@ -148,15 +148,16 @@ export const CopyOutput = CopyDraft.extend({
   unsupported: z.array(UnsupportedFact),
 })
 
-export const VisualsOutput = z.object({
-  slides: z.array(
-    z.object({
-      postIndex: z.number().int(),
-      order: z.number().int(),
-      assetId: z.string().optional(),
-    }),
-  ),
+/** One rendered slide: the PNG and the AI background it was drawn on. */
+export const RenderedSlide = z.object({
+  postIndex: z.number().int(),
+  order: z.number().int(),
+  assetId: z.string(),
+  backgroundAssetId: z.string(),
 })
+export type RenderedSlide = z.infer<typeof RenderedSlide>
+
+export const VisualsOutput = z.object({ slides: z.array(RenderedSlide) })
 
 export const ReviewOutput = z.object({
   score: z.number(),

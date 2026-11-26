@@ -1,0 +1,125 @@
+import type { PhaseOutputs } from '@ai-post-recipe/shared'
+import { describe, expect, it } from 'vitest'
+
+import { FakeImageProvider } from '../../providers/image/fake-image.provider.js'
+import { FakeRenderer } from '../../providers/renderer/fake.renderer.js'
+import { phaseContext } from '../../test/phase-context.js'
+import { visualsPhase } from './visuals.phase.js'
+
+const outputs: Partial<PhaseOutputs> = {
+  PLAN: {
+    posts: [
+      {
+        index: 1,
+        format: 'IMAGE',
+        goal: 'g',
+        concept: 'c1',
+        rationale: 'r',
+        product: 'True Whey',
+      },
+      {
+        index: 2,
+        format: 'CAROUSEL',
+        goal: 'g',
+        concept: 'c2',
+        rationale: 'r',
+        product: 'Kreatin',
+      },
+      {
+        index: 3,
+        format: 'STORY',
+        goal: 'g',
+        concept: 'c3',
+        rationale: 'r',
+        product: 'True Whey',
+      },
+    ],
+  },
+  COPY: {
+    unsupported: [],
+    posts: [1, 2, 3].map((index) => ({
+      index,
+      caption: `Caption ${index}`,
+      hashtags: [],
+      slides: [1, 2, 3].map((order) => ({
+        order,
+        text: `Post ${index} slide ${order}`,
+      })),
+    })),
+  },
+}
+
+const upload = (kind: 'UPLOAD_LOGO' | 'UPLOAD_PRODUCT', id: string) => ({
+  id,
+  kind,
+  mimeType: 'image/png',
+  data: Buffer.from(id),
+})
+
+describe('visuals phase', () => {
+  it('makes one background per post and renders every slide with the real logo and product', async () => {
+    const images = new FakeImageProvider({
+      tokensIn: 10,
+      tokensOut: 0,
+      costUsd: 0.04,
+    })
+    const renderer = new FakeRenderer()
+    const saved: Array<string> = []
+
+    const result = await visualsPhase.execute(
+      phaseContext({
+        outputs,
+        images,
+        renderer,
+        loadUploads: () =>
+          Promise.resolve([
+            upload('UPLOAD_LOGO', 'logo'),
+            upload('UPLOAD_PRODUCT', 'p1'),
+            upload('UPLOAD_PRODUCT', 'p2'),
+          ]),
+        saveAsset: (kind) => {
+          saved.push(kind)
+          return Promise.resolve(`${kind}-${saved.length}`)
+        },
+      }),
+    )
+
+    // A single image uses only its first slide text.
+    expect(result.output.slides.map((s) => [s.postIndex, s.order])).toEqual([
+      [1, 1],
+      [2, 1],
+      [2, 2],
+      [2, 3],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+    ])
+    expect(images.requests.map((r) => r.aspectRatio)).toEqual([
+      '4:5',
+      '4:5',
+      '9:16',
+    ])
+    // The scene theme, not the concept, which may describe stickers or text.
+    expect(images.requests[1]?.prompt.user).toContain('Kreatin')
+    expect(images.requests[1]?.prompt.user).not.toContain('c2')
+    expect(result).toMatchObject({ promptId: 'background@v2', model: 'fake' })
+    expect(result.usage?.costUsd).toBeCloseTo(0.12)
+
+    const [first, , secondPost] = renderer.rendered
+    expect(first).toMatchObject({ format: 'IMAGE', layout: 'cover', total: 1 })
+    expect(first?.logoUrl).toBe(
+      `data:image/png;base64,${Buffer.from('logo').toString('base64')}`,
+    )
+    // Post 2 shows the second product photo.
+    expect(secondPost?.productImageUrl).toBe(
+      `data:image/png;base64,${Buffer.from('p2').toString('base64')}`,
+    )
+    expect(renderer.rendered.map((r) => r.layout).slice(1, 4)).toEqual([
+      'cover',
+      'text',
+      'closing',
+    ])
+    expect(saved.filter((k) => k === 'GENERATED_BACKGROUND')).toHaveLength(3)
+    expect(saved.filter((k) => k === 'RENDERED_SLIDE')).toHaveLength(7)
+  })
+})

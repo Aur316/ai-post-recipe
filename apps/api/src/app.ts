@@ -6,6 +6,7 @@ import { pinoHttp } from 'pino-http'
 import { AssetController } from './controllers/asset/asset.controller.js'
 import { HealthController } from './controllers/health/health.controller.js'
 import { PipelineController } from './controllers/pipeline/pipeline.controller.js'
+import { PostController } from './controllers/post/post.controller.js'
 import { RunController } from './controllers/run/run.controller.js'
 import type { Db } from './db/prisma.js'
 import { logger } from './lib/logger.js'
@@ -20,6 +21,7 @@ import { RunRepo } from './repositories/run/run.repo.js'
 import { SourceRepo } from './repositories/source/source.repo.js'
 import { AssetService } from './services/asset/asset.service.js'
 import { PipelineService } from './services/pipeline/pipeline.service.js'
+import { PostService, type SlideDeps } from './services/post/post.service.js'
 import { RunService } from './services/run/run.service.js'
 
 export interface AppDeps {
@@ -28,9 +30,11 @@ export interface AppDeps {
   queue: JobQueue
   /** Which providers are configured, for the health check. */
   providers: HealthResponse['providers']
+  /** Image model and renderer, for regenerating one slide. */
+  slides: SlideDeps
 }
 
-export function createApp({ db, storage, queue, providers }: AppDeps) {
+export function createApp({ db, storage, queue, providers, slides }: AppDeps) {
   const runRepo = new RunRepo(db)
   const assetRepo = new AssetRepo(db)
 
@@ -48,6 +52,7 @@ export function createApp({ db, storage, queue, providers }: AppDeps) {
     new AssetService(runRepo, assetRepo, storage),
   )
   const health = new HealthController(db, storage, providers)
+  const posts = new PostController(new PostService(db, storage, slides))
 
   const app = express()
   app.disable('x-powered-by')
@@ -71,6 +76,11 @@ export function createApp({ db, storage, queue, providers }: AppDeps) {
   app.post('/api/runs/:id/start', pipeline.start)
   app.post('/api/runs/:id/phases/:phase/approve', pipeline.approve)
   app.post('/api/runs/:id/phases/:phase/rerun', pipeline.rerun)
+  app.patch('/api/runs/:id/posts/:index', posts.update)
+  app.post(
+    '/api/runs/:id/posts/:index/slides/:order/regenerate',
+    posts.regenerateSlide,
+  )
   app.post('/api/runs/:id/assets', uploadSingleFile, assets.upload)
   app.get('/api/assets/:id', assets.download)
   app.delete('/api/assets/:id', assets.remove)
