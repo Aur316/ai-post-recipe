@@ -33,7 +33,7 @@ FR-14, FR-15, FR-16
 - [x] `GET /api/runs/:id/export`: always a fresh ZIP, so later caption edits and regenerated slides are included
 - [x] Review view (score, verdict and issues per slide, made-again marker) and a Download ZIP button in the run header and on the export phase
 - [x] `examples/gymbeam`: `brief.json`, a `references/` folder (file name sets the kind) and `pnpm seed:demo`
-- [ ] Run the GymBeam recipe and commit the three finished posts to `examples/gymbeam`
+- [x] Run the GymBeam recipe and commit the three finished posts to `examples/gymbeam`
 - [x] Tests: rule checks, one regeneration and a second check, score; ZIP structure and that it follows edits
 
 ## Exit criteria

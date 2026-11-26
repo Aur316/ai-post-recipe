@@ -18,7 +18,7 @@ flowchart LR
 | [M5 · Research and analysis](m5-research-and-analysis.md) | Real sources and a grounded brand analysis                | Done        |
 | [M6 · Plan and copy](m6-plan-and-copy.md)                 | Three post plans and their copy, editable at approval     | Done        |
 | [M7 · Visuals](m7-visuals.md)                             | Slide templates, backgrounds, PNG rendering, preview      | Done        |
-| [M8 · Review and export](m8-review-and-export.md)         | Automatic checks, ZIP export, the three demo posts        | In progress |
+| [M8 · Review and export](m8-review-and-export.md)         | Automatic checks, ZIP export, the three demo posts        | Done        |
 | [M9 · Delivery](m9-delivery.md)                           | One-command start, recipe document, PDF, published images | Not started |
 
 ## Definition of done
