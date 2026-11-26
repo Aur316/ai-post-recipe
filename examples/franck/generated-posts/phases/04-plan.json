@@ -1,0 +1,39 @@
+{
+  "phase": "PLAN",
+  "status": "APPROVED",
+  "attempt": 1,
+  "promptId": "plan@v2",
+  "model": "anthropic/claude-sonnet-5.5",
+  "tokensIn": 5002,
+  "tokensOut": 2029,
+  "costUsd": 0.030294,
+  "output": {
+    "posts": [
+      {
+        "goal": "Svjesnost o novom okusu i predstavljanje proizvoda",
+        "index": 1,
+        "format": "IMAGE",
+        "concept": "Jedna topla fotografija na drvenom stolu u domaćem interijeru: kutija Cappuccino Tiramisu, šalica cappuccina posuta kakaom i kriška tiramisua pokraj nje. Prevladavaju karamel i kakao smeđi tonovi, uz crveni Franck logo kao jedini jaki akcent. Na slici je kratki natpis „NOVO! Tiramisu u šalici.“ Opis ima dvije do tri kratke rečenice o okusu kave, kakaa i nježnih kremastih nota, inspiriranom omiljenim tiramisu desertom. Završava pitanjem za komentare: „S kim bi podijelio/la ovaj slatki trenutak?“ i emotikonom šalice.",
+        "product": "Cappuccino Tiramisu",
+        "rationale": "Prvi post mora jasno najaviti novi okus. Jedna vizualno jaka fotografija odgovara toplom, domaćem stilu profila i publici od 20 do 40 godina koja voli isprobavati nove okuse. Pitanje na kraju potiče komentare i spominjanje prijatelja, što je jedan od ciljeva brenda. Tvrdnje o okusu preuzete su izravno s webshopa."
+      },
+      {
+        "goal": "Edukacija i više spremanja objave",
+        "index": 2,
+        "format": "CAROUSEL",
+        "concept": "Karusel od 5 slajdova pod naslovom „Tiramisu trenutak u 3 koraka“. Slajd 1 je naslovnica s kutijom i šalicom na karamel pozadini. Slajd 2: „1. Otvori vrećicu“ i izlij sadržaj u šalicu. Slajd 3: „2. Prelij sa 180 ml vruće vode“, uz napomenu „vruće, ne kipuće“. Slajd 4: „3. Promiješaj i uživaj“, uz kadar kreme i kakaa u šalici. Slajd 5 donosi podatak da je u kutiji 8 vrećica (144 g) i poziv „Spremi za sljedeću pauzu uz kavu“. Grafika je čista, s bijelim tekstom na toplim smeđim pločama i crvenim brojevima koraka.",
+        "product": "Cappuccino Tiramisu",
+        "rationale": "Praktičan vodič koji se isplati spremiti povećava broj spremanja, a priprema je navedena na stranici proizvoda. Jednostavni koraci i kratki tekstovi odgovaraju prijateljskom tonu brenda. Slajd o pakiranju daje korisnu informaciju bez izmišljenih tvrdnji."
+      },
+      {
+        "goal": "Interes za kupnju i posjete webshopu",
+        "index": 3,
+        "format": "STORY",
+        "concept": "Serija od 4 story kadra. Kadar 1: kutija na drvenom stolu uz natpis „Tiramisu u šalici je stigao 🤎“ i anketa „Slatka pauza: jutro ili popodne?“. Kadar 2: kratki prikaz kutije 144 g (8 x 18 g) i cijene 3,89 € u crvenom balončiću. Kadar 3: „Besplatna dostava iznad 30 € u Hrvatskoj“ i podsjetnik da registracijom u Franck Clubu dobiješ 200 bodova dobrodošlice i 2 € popusta na prvu kupnju. Kadar 4: bijeli tekst „Pogledaj u webshopu“ na crvenoj pozadini, s link stickerom prema stranici proizvoda i strelicom prema gore. Tonovi su karamel, kakao i crvena, a tekst kratak i prijateljski.",
+        "product": "Cappuccino Tiramisu",
+        "rationale": "Storyji su prikladni za brzu interakciju (anketa) i izravan link na webshop, što podržava cilj posjeta. Svi navedeni podaci (cijena, veličina pakiranja, dostava, Franck Club popust) provjereni su na webshopu. Cijena i povoljni uvjeti dostave potiču na kupnju publiku koja voli slatku kavu kod kuće ili na poslu."
+      }
+    ]
+  },
+  "editedOutput": null
+}

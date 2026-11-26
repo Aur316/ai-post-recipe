@@ -1,0 +1,143 @@
+{
+  "phase": "REVIEW",
+  "status": "DONE",
+  "attempt": 1,
+  "promptId": "review@v1",
+  "model": "anthropic/claude-sonnet-5.5",
+  "tokensIn": 21793,
+  "tokensOut": 7534,
+  "costUsd": 0.3839935,
+  "output": {
+    "score": 0.5,
+    "issues": [],
+    "slides": [
+      {
+        "order": 1,
+        "issues": [],
+        "passed": true,
+        "postIndex": 1,
+        "ruleIssues": [],
+        "regenerated": false
+      },
+      {
+        "order": 1,
+        "issues": [],
+        "passed": true,
+        "postIndex": 2,
+        "ruleIssues": [],
+        "regenerated": false
+      },
+      {
+        "order": 2,
+        "issues": [
+          "Headline overlaps the bottom of the Cappuccino box, covering part of the product."
+        ],
+        "passed": false,
+        "postIndex": 2,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 3,
+        "issues": [
+          "Headline overlaps the bottom of the product box and the cup.",
+          "Open book in the background shows text-like lines and pictures that should not be there."
+        ],
+        "passed": false,
+        "postIndex": 2,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 4,
+        "issues": [
+          "Headline overlaps the bottom of the product box and the cup.",
+          "Background contains a pinned card with readable 'Recipe card' text and lines of writing.",
+          "Slide counter badge sits over the recipe card and has weak contrast."
+        ],
+        "passed": false,
+        "postIndex": 2,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 5,
+        "issues": [],
+        "passed": true,
+        "postIndex": 2,
+        "ruleIssues": [],
+        "regenerated": false
+      },
+      {
+        "order": 1,
+        "issues": [],
+        "passed": true,
+        "postIndex": 3,
+        "ruleIssues": [],
+        "regenerated": false
+      },
+      {
+        "order": 2,
+        "issues": [
+          "Headline text runs over the product box and covers part of its label and tiramisu image."
+        ],
+        "passed": false,
+        "postIndex": 3,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 3,
+        "issues": [
+          "Tablet in the background shows a website interface with text and fake product images.",
+          "Headline starts right at the bottom edge of the product box, touching or overlapping it."
+        ],
+        "passed": false,
+        "postIndex": 3,
+        "ruleIssues": [],
+        "regenerated": true
+      },
+      {
+        "order": 4,
+        "issues": [],
+        "passed": true,
+        "postIndex": 3,
+        "ruleIssues": [],
+        "regenerated": false
+      }
+    ],
+    "replaced": [
+      {
+        "order": 2,
+        "assetId": "01a218f4-c7a7-7087-b466-184720b26119",
+        "postIndex": 2,
+        "backgroundAssetId": "01a218f4-c461-7029-ba2d-d3f7f8abd899"
+      },
+      {
+        "order": 3,
+        "assetId": "01a218f4-f1c6-7454-914f-f9cd52ada222",
+        "postIndex": 2,
+        "backgroundAssetId": "01a218f4-ee8c-76f2-a854-139988ded4da"
+      },
+      {
+        "order": 4,
+        "assetId": "01a218f5-199f-76f0-af98-b1b21e64e283",
+        "postIndex": 2,
+        "backgroundAssetId": "01a218f5-1676-733d-bd00-a8e0c8335d1d"
+      },
+      {
+        "order": 2,
+        "assetId": "01a218f5-449e-71c6-be0a-6c86637177cd",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218f5-40e7-74de-891b-951e5f9241ae"
+      },
+      {
+        "order": 3,
+        "assetId": "01a218f5-6e46-718c-99c8-38959b36ade9",
+        "postIndex": 3,
+        "backgroundAssetId": "01a218f5-6a16-7628-845c-0df8a9057e1a"
+      }
+    ]
+  },
+  "editedOutput": null
+}

@@ -1,0 +1,14 @@
+{
+  "phase": "BRIEF",
+  "status": "DONE",
+  "attempt": 1,
+  "promptId": null,
+  "model": null,
+  "tokensIn": null,
+  "tokensOut": null,
+  "costUsd": null,
+  "output": {
+    "accepted": true
+  },
+  "editedOutput": null
+}

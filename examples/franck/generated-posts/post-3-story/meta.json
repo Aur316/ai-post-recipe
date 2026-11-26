@@ -1,0 +1,30 @@
+{
+  "post": 3,
+  "format": "STORY",
+  "goal": "Interes za kupnju i posjete webshopu",
+  "concept": "Serija od 4 story kadra. Kadar 1: kutija na drvenom stolu uz natpis „Tiramisu u šalici je stigao 🤎“ i anketa „Slatka pauza: jutro ili popodne?“. Kadar 2: kratki prikaz kutije 144 g (8 x 18 g) i cijene 3,89 € u crvenom balončiću. Kadar 3: „Besplatna dostava iznad 30 € u Hrvatskoj“ i podsjetnik da registracijom u Franck Clubu dobiješ 200 bodova dobrodošlice i 2 € popusta na prvu kupnju. Kadar 4: bijeli tekst „Pogledaj u webshopu“ na crvenoj pozadini, s link stickerom prema stranici proizvoda i strelicom prema gore. Tonovi su karamel, kakao i crvena, a tekst kratak i prijateljski.",
+  "rationale": "Storyji su prikladni za brzu interakciju (anketa) i izravan link na webshop, što podržava cilj posjeta. Svi navedeni podaci (cijena, veličina pakiranja, dostava, Franck Club popust) provjereni su na webshopu. Cijena i povoljni uvjeti dostave potiču na kupnju publiku koja voli slatku kavu kod kuće ili na poslu.",
+  "product": "Cappuccino Tiramisu",
+  "slides": [
+    {
+      "order": 1,
+      "text": "Tiramisu u šalici je stigao 🤎 Slatka pauza: jutro ili popodne?",
+      "file": "slide-1.png"
+    },
+    {
+      "order": 2,
+      "text": "Kutija 144 g (8 x 18 g). Cijena 3,89 €",
+      "file": "slide-2.png"
+    },
+    {
+      "order": 3,
+      "text": "Besplatna dostava iznad 30 € u Hrvatskoj. Registracijom u Franck Clubu dobiješ 200 bodova dobrodošlice i 2 € popusta na prvu kupnju.",
+      "file": "slide-3.png"
+    },
+    {
+      "order": 4,
+      "text": "Pogledaj u webshopu ⬆️",
+      "file": "slide-4.png"
+    }
+  ]
+}
