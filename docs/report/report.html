@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AI Post Recipe – Report</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 14mm 15mm;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+        font-size: 8.6pt;
+        line-height: 1.38;
+        color: #1d2330;
+        margin: 0;
+      }
+      h1 {
+        font-size: 16pt;
+        margin: 0 0 1mm;
+        color: #14202e;
+      }
+      .sub {
+        color: #586174;
+        margin: 0 0 3mm;
+      }
+      h2 {
+        font-size: 10.5pt;
+        color: #0f6b6b;
+        margin: 2.6mm 0 0.8mm;
+      }
+      p {
+        margin: 0 0 1.6mm;
+      }
+      ul,
+      ol {
+        margin: 0 0 1.6mm;
+        padding-left: 4.5mm;
+      }
+      li {
+        margin: 0 0 0.6mm;
+      }
+      code {
+        font-family: Menlo, Consolas, monospace;
+        font-size: 8pt;
+        background: #eef1f5;
+        padding: 0 1mm;
+        border-radius: 1mm;
+      }
+      a {
+        color: #0f6b6b;
+        text-decoration: none;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 0 0 1.6mm;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 0.7mm 1.5mm;
+        border-bottom: 0.2mm solid #d7dce3;
+      }
+      th {
+        color: #586174;
+        font-weight: 600;
+      }
+      td:first-child {
+        white-space: nowrap;
+      }
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6mm;
+      }
+      .case {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr 1fr;
+        gap: 2.5mm;
+        align-items: start;
+        margin: 1mm 0 1.6mm;
+      }
+      .case img {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        border-radius: 1.2mm;
+        border: 0.2mm solid #d7dce3;
+      }
+      .cap {
+        font-size: 7.6pt;
+        color: #586174;
+        margin-top: 0.6mm;
+      }
+      table,
+      .case,
+      li {
+        break-inside: avoid;
+      }
+      h2 {
+        break-after: avoid;
+      }
+      .case img {
+        max-height: 54mm;
+        object-fit: contain;
+        object-position: left top;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AI Post Recipe</h1>
+    <p class="sub">
+      From an Instagram brand to three finished posts · brand: GymBeam Hrvatska
+      (<a href="https://www.instagram.com/gymbeamhr/">@gymbeamhr</a>) · code:
+      <a href="https://github.com/Aur316/ai-post-recipe"
+        >github.com/Aur316/ai-post-recipe</a
+      >
+    </p>
+
+    <p>
+      The recipe is a small web app (React, Express, PostgreSQL) that runs eight
+      phases as background jobs and stops twice for a person to approve. I chose
+      GymBeam because it is the recommended brand, has an active Croatian
+      profile and product pages full of verifiable facts.
+    </p>
+
+    <h2>Where to find what</h2>
+    <table>
+      <tr>
+        <th>If you want to…</th>
+        <th>Open</th>
+      </tr>
+      <tr>
+        <td>See the three finished posts</td>
+        <td>
+          <code>examples/gymbeam/generated-posts</code> (a second brand:
+          <code>examples/franck</code>): one folder per post with the slides in
+          order, <code>caption.txt</code> and <code>meta.json</code> (format,
+          goal, concept, rationale)
+        </td>
+      </tr>
+      <tr>
+        <td>Check the inputs</td>
+        <td>
+          <code>examples/gymbeam/brief.json</code> and
+          <code>references/</code> (profile screenshots, product photos, logo)
+        </td>
+      </tr>
+      <tr>
+        <td>Read the analysis, plan, copy and review</td>
+        <td>
+          <code>generated-posts/phases/*.json</code>, each with its prompt
+          version, model and cost; sources in <code>sources.md</code>
+        </td>
+      </tr>
+      <tr>
+        <td>Run the recipe yourself</td>
+        <td>
+          <code>docs/recipe.md</code> (commands, models, settings, human steps,
+          what may vary); keys: <code>docs/onboarding.md</code>; prompts:
+          <code>packages/prompts/prompts</code>
+        </td>
+      </tr>
+      <tr>
+        <td>Understand the code</td>
+        <td>
+          <code>README.md</code>, then <code>docs/architecture</code> (design,
+          pipeline, data model, decision records)
+        </td>
+      </tr>
+    </table>
+
+    <h2>How to run and configure</h2>
+    <ol>
+      <li>
+        <code>cp .env.example .env</code>, then set
+        <code>OPENROUTER_API_KEY</code> (required) and
+        <code>SERPER_API_KEY</code> (optional web search).
+        <code>.env.example</code> holds no secrets.
+      </li>
+      <li>
+        <code>docker compose --profile full up --build</code> and open
+        <code>http://localhost:8080</code>. From source instead:
+        <code>pnpm install</code> and <code>pnpm dev</code> (Node.js 24, pnpm,
+        Docker), then <code>http://localhost:5173</code>.
+      </li>
+      <li>
+        Create a run: fill in the form from
+        <code>examples/gymbeam/brief.json</code>, upload the files in
+        <code>examples/gymbeam/references</code>, press <b>Start</b>.
+      </li>
+      <li>
+        Approve (or correct) the brand analysis and the content plan; then press
+        <b>Download ZIP</b>.
+      </li>
+    </ol>
+    <p>
+      Settings: each prompt file in <code>packages/prompts/prompts</code> names
+      its model (Claude Sonnet 5.5 for text and vision, Gemini 3.1 Flash Image
+      for scenes); <code>MODEL_&lt;PROMPT ID&gt;</code> overrides it, and
+      <code>MAX_COST_USD_PER_RUN</code> ($3 in <code>.env.example</code>) caps
+      the spend. One run costs about $0.85 (the GymBeam run from a clean clone:
+      $0.84).
+    </p>
+
+    <h2>Phases</h2>
+    <table>
+      <tr>
+        <th>Phase</th>
+        <th>Input → what it does → output</th>
+      </tr>
+      <tr>
+        <td>1 Brief</td>
+        <td>Form and uploads → validates and stores them → brief</td>
+      </tr>
+      <tr>
+        <td>2 Research</td>
+        <td>
+          Brief links and products (+ Serper) → downloads official pages as
+          text, keeps failed ones with the reason → sources
+        </td>
+      </tr>
+      <tr>
+        <td>3 Analysis</td>
+        <td>
+          Sources, profile screenshots, logo, products → tone, audience, themes,
+          colours; each claim <i>verified</i> with a link or <i>assumption</i> →
+          analysis, <b>approval</b>
+        </td>
+      </tr>
+      <tr>
+        <td>4 Plan</td>
+        <td>
+          Approved analysis → three posts with goal, format, concept, rationale,
+          product → plan, <b>approval</b>
+        </td>
+      </tr>
+      <tr>
+        <td>5 Copy</td>
+        <td>
+          Plan and sources → caption, hashtags, slide text from sourced facts
+          only; unsupported numbers are listed → copy
+        </td>
+      </tr>
+      <tr>
+        <td>6 Visuals</td>
+        <td>
+          Copy, colours, product photos, logo → image model makes the scene with
+          the post's products in it, labels copied from their photos; a React
+          template adds the real logo and the text at the bottom, Playwright
+          renders PNGs → slides
+        </td>
+      </tr>
+      <tr>
+        <td>7 Review</td>
+        <td>
+          Slides, copy, sources → vision checks and size rules; a failing slide
+          is made again once → score and issues
+        </td>
+      </tr>
+      <tr>
+        <td>8 Export</td>
+        <td>
+          Everything → ZIP with slides, captions, <code>meta.json</code>,
+          <code>sources.md</code> and every phase's JSON
+        </td>
+      </tr>
+    </table>
+    <p>
+      Every phase output is saved, so a run resumes after an interruption and
+      any phase can be re-run (later ones become stale).
+    </p>
+
+    <div class="cols">
+      <div>
+        <h2>Key decisions</h2>
+        <ul>
+          <li>
+            <b>An app, not a chat.</b> Each phase stores its input, output,
+            prompt version, model, tokens and cost, so a run is repeatable and
+            auditable.
+          </li>
+          <li>
+            <b>Two approval gates</b> (analysis, plan): the AI proposal stays in
+            <code>output</code>, the correction in <code>editedOutput</code>,
+            and both are exported.
+          </li>
+          <li>
+            <b>Grounding.</b> Facts come only from downloaded pages; every claim
+            is <i>verified</i> or an <i>assumption</i>.
+          </li>
+          <li>
+            <b>Real brand assets.</b> Logo and text are drawn by a template,
+            never by the image model; the product comes from the uploaded photo.
+          </li>
+          <li>
+            <b>Screenshots instead of scraping</b> Instagram, which forbids it;
+            the operator uploads them.
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2>How the results were checked</h2>
+        <ul>
+          <li>
+            The review phase checks every slide (GymBeam score 0.9 of 1; one
+            slide was made again).
+          </li>
+          <li>
+            At both approval gates a person reads the analysis and the plan,
+            with the source links, before the run continues.
+          </li>
+          <li>
+            The same recipe ran unchanged for a second brand, Franck (coffee):
+            <code>examples/franck</code>.
+          </li>
+          <li>
+            Code: lint, type check and 200+ tests without real API calls, in CI.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Example of my own correction</h2>
+    <p>
+      In the first visuals run (<code>background@v5</code>) the template placed
+      the product photo on the slide as a white box, so it looked pasted onto
+      the scene, and posts took the product photos in turn, so the creatine post
+      showed the protein. I changed the recipe: the post's own product photo
+      goes to the image model, which places that exact product in the scene with
+      matching light and shadow (<code>v6</code>). Checking those posts, I found
+      the next problems: a post about two products got only one photo, so the
+      model invented the second label; neon signs showed made-up words; and text
+      on inner slides covered the label. So now every featured product's photo
+      is sent with its name and the label is copied letter for letter, signs may
+      only show real words that fit the post, and the text sits at the bottom of
+      every slide (<code>v7</code>, <code>review@v2</code>). The review score
+      went from 0.3 to 0.9.
+    </p>
+    <div class="case">
+      <div>
+        <img src="before.jpg" alt="" />
+        <div class="cap">
+          Before (v5): white box; the creatine post shows the protein.
+        </div>
+      </div>
+      <div>
+        <img src="after-1.jpg" alt="" />
+        <div class="cap">After (v7): post 1, creatine in the scene.</div>
+      </div>
+      <div>
+        <img src="after-2.jpg" alt="" />
+        <div class="cap">After (v7): post 3, both products, real labels.</div>
+      </div>
+    </div>
+
+    <div class="cols">
+      <div>
+        <h2>Limits</h2>
+        <ul>
+          <li>No login: meant for one person, run locally.</li>
+          <li>
+            The job queue (pg-boss) runs inside PostgreSQL and the worker takes
+            one job at a time, so two runs wait for each other. It is enough for
+            one operator; a production setup with many users would need a
+            dedicated queue such as Redis (for example with BullMQ) and several
+            workers to scale.
+          </li>
+        </ul>
+        <h2>What may vary between runs</h2>
+        <p>
+          Text and pixels differ every run, and search results may change. The
+          logo, brand colours, tone, product packaging, sourced facts and the
+          goals of the brief must stay the same.
+        </p>
+        <h2>Time spent</h2>
+        <p>
+          About 10 hours over two days: about 8 hours of active work (design,
+          code, brief and references, approvals, checks) and about 2 hours of
+          waiting for generation (recipe runs and generated code). A full run
+          takes 5–10 minutes of generation.
+        </p>
+      </div>
+      <div>
+        <h2>Proposal: a recipe that learns</h2>
+        <p>
+          <b>Data.</b> The corrections at approval (<code>output</code> vs
+          <code>editedOutput</code>), regenerate instructions and caption edits,
+          the review issues, and after publishing the posts' saves, comments and
+          reach from the Instagram Graph API.
+        </p>
+        <p>
+          <b>What changes.</b> A short per-brand memory built from these:
+          corrections that recur become rules in the analysis and plan prompts
+          ("never mention flavours we have not verified"), approved posts with
+          good results become examples in the prompts, and the plan weighs goals
+          and formats by past results. Repeated review issues become new checks.
+        </p>
+        <p>
+          <b>How to know it is better.</b> A fixed test set of briefs (GymBeam,
+          Franck and a few more) run with the old and the new version: fewer and
+          smaller human edits, a higher review score, no new factual errors, and
+          a blind side-by-side choice by a person. After publishing, compare
+          saves and comments per post with the brand's earlier posts.
+        </p>
+        <p>
+          <b>Next fixes.</b> Login and a scalable queue for more users; a new
+          scene per inner slide of a story.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

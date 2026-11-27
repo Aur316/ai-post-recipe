@@ -26,28 +26,35 @@ describe('brandImages', () => {
     upload('UPLOAD_PRODUCT', 'p2'),
   ]
 
-  it("picks the photo of the post's own product, in the brief's order", () => {
+  it("picks the photos of the post's own products, in the brief's order", () => {
     expect(
       brandImages(uploads, { brief, index: 1, product: 'Kreatin monohidrat' }),
-    ).toMatchObject({ logo: { id: 'logo' }, product: { id: 'p2' } })
+    ).toMatchObject({
+      logo: { id: 'logo' },
+      products: [{ name: 'Kreatin monohidrat', photo: { id: 'p2' } }],
+    })
     expect(
-      brandImages(uploads, { brief, index: 2, product: 'Just Whey i Kreatin' }),
-    ).toMatchObject({ product: { id: 'p1' } })
+      brandImages(uploads, {
+        brief,
+        index: 3,
+        product: 'Just Whey i Kreatin monohidrat',
+      }).products,
+    ).toMatchObject([
+      { name: 'Just Whey', photo: { id: 'p1' } },
+      { name: 'Kreatin monohidrat', photo: { id: 'p2' } },
+    ])
   })
 
   it('falls back to one photo per post when the product is not in the brief', () => {
     expect(
-      brandImages(uploads, { brief, index: 3, product: 'Shaker' }),
-    ).toMatchObject({ product: { id: 'p1' } })
+      brandImages(uploads, { brief, index: 2, product: 'Shaker' }).products,
+    ).toMatchObject([{ name: 'Kreatin monohidrat', photo: { id: 'p2' } }])
   })
 
   it('shows no product without product photos', () => {
     expect(
       brandImages([upload('UPLOAD_LOGO', 'logo')], { brief, index: 1 }),
-    ).toMatchObject({
-      logo: { id: 'logo' },
-      product: undefined,
-    })
+    ).toMatchObject({ logo: { id: 'logo' }, products: [] })
   })
 })
 

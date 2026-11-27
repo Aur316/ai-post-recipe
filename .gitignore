@@ -5,3 +5,5 @@ dist/
 .env
 graphify-out/
 apps/api/src/generated/
+
+.DS_Store

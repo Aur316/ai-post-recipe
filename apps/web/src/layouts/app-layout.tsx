@@ -18,7 +18,7 @@ export function AppLayout() {
   const { pathname } = useLocation()
 
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
+    <div className="flex h-dvh min-h-full flex-col bg-background text-foreground">
       <header className="shrink-0 border-b">
         <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 lg:px-6">
           <Link to={localized('/')} className="font-semibold">
@@ -32,7 +32,7 @@ export function AppLayout() {
       </header>
       <DemoModeBanner />
       <main className="scrollbar-thin min-h-0 flex-1 overflow-y-auto bg-background">
-        <div className="mx-auto h-full max-w-screen-2xl px-4 pt-8 *:pb-8 lg:px-6">
+        <div className="mx-auto h-full max-w-screen-2xl bg-background px-4 pt-8 *:pb-8 lg:px-6">
           <ErrorBoundary
             resetKey={pathname}
             fallback={(props) => <ErrorFallback {...props} />}

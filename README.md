@@ -4,7 +4,7 @@ AI Post Recipe turns an Instagram brand brief into three ready-to-publish posts 
 
 Every phase runs as a background job and stores its output in PostgreSQL, so a run can be paused, resumed or re-run from any finished phase. After the brand analysis and the content plan the run stops and waits for a person to approve or edit the result. The final export is a ZIP with the images, captions, sources and every intermediate result.
 
-> **Status:** milestones M1–M8 done (the GymBeam example posts follow). A run goes through all eight phases as background jobs and stops twice for approval; research reads real pages, the brand analysis comes from a real vision model, and the plan and copy are checked against the sources (with an OpenRouter key). The brand's look comes from uploaded screenshots or, at the flip of a switch, from the brand's website. Each post gets finished PNG slides (AI background, real logo, product photo and text). A review checks every slide, remakes failing ones once, and the run exports a ZIP with everything. See [the milestones](docs/milestones/README.md) for what comes next.
+> **Results:** the three finished GymBeam Hrvatska posts are in [`examples/gymbeam/generated-posts`](examples/gymbeam/generated-posts), with every input in [`examples/gymbeam`](examples/gymbeam). The same recipe made the posts for a second brand in [`examples/franck`](examples/franck). How to repeat it: [the recipe](docs/recipe.md). Instructions and review: [the report](docs/report.pdf).
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ cp .env.example .env
 docker compose --profile full up --build
 ```
 
-Open http://localhost:8080. The web app shows the API status.
+Open http://localhost:8080. Set `OPENROUTER_API_KEY` in `.env` first (see [Configuration](#configuration)); without it the app runs in demo mode with recorded sample answers. To repeat the GymBeam run, follow [the recipe](docs/recipe.md). A run costs about $1 of OpenRouter credit; image generation needs at least $1 of balance on the account.
 
 Stop the stack with `docker compose --profile full down`. Add `-v` to also delete the database volume.
 
@@ -71,7 +71,7 @@ Run these from the repository root. Turborepo runs each one in every workspace t
 | `DATABASE_URL`         | `postgresql://app:app@localhost:5432/recipe` | PostgreSQL connection string. Compose overrides the host to `db` in the `full` profile                                         |
 | `OPENROUTER_API_KEY`   | (empty)                                      | Key from [openrouter.ai/keys](https://openrouter.ai/keys). Without it the AI phases return recorded sample answers (demo mode) |
 | `SERPER_API_KEY`       | (empty)                                      | Optional key from [serper.dev](https://serper.dev). Without it research reads only the links in the brief                      |
-| `MAX_COST_USD_PER_RUN` | `2`                                          | No LLM call starts once a run has spent this much                                                                              |
+| `MAX_COST_USD_PER_RUN` | `2` (`3` in `.env.example`)                  | No LLM call starts once a run has spent this much                                                                              |
 | `MODEL_<PROMPT ID>`    | (from the prompt file)                       | Overrides a prompt's model, e.g. `MODEL_ANALYSIS=google/gemini-3.5-flash`                                                      |
 | `LLM_TIMEOUT_MS`       | `120000`                                     | Timeout of one model request                                                                                                   |
 
@@ -81,7 +81,7 @@ The `S3_*` variables configure object storage: SeaweedFS from Docker Compose by 
 
 ```
 apps/
-  api/        Express API (later: job worker and slide renderer)
+  api/        Express API, job worker and slide renderer
   web/        React single-page app
 packages/
   shared/         Zod schemas and types shared by the API and the web app
@@ -89,6 +89,7 @@ packages/
   slide-templates/ The Instagram slide template (React), rendered to PNG by the API
   tsconfig/       Shared TypeScript settings
   eslint-config/  Shared ESLint rules
+examples/     Demo briefs, reference images and the finished posts (GymBeam, Franck)
 docker/       Dockerfiles and the nginx config for the web image
 docs/
   architecture/   How the app is designed, plus decision records
@@ -103,5 +104,7 @@ The app has no login and is meant to run locally for one person. Do not expose i
 
 ## Documentation
 
+- [Recipe](docs/recipe.md): how to repeat the GymBeam run: commands, models and settings, inputs, phases, human steps and what may vary.
+- [Report](docs/report.pdf): the short PDF with instructions, decisions, checks, limits and proposals.
 - [Architecture](docs/architecture/README.md): system design, the generation pipeline, data model, API and decision records.
 - [Milestones](docs/milestones/README.md): the build plan from scaffold to delivery.

@@ -1,6 +1,6 @@
 ---
 id: review
-version: 1
+version: 2
 model: anthropic/claude-sonnet-5.5
 maxTokens: 6000
 ---
@@ -11,8 +11,9 @@ You are the final quality check before Instagram posts go to the client. You get
 
 Check each slide and fail it only for a real problem:
 
-- The text is hard to read (low contrast, cut off, overlapping the product or the logo).
-- The background shows text, letters, signs, labels, user interface elements or a fake product. The real text, logo and product are placed on top by the app; anything else written in the background is a problem.
+- The slide's text is hard to read (low contrast, cut off) or covers the product, its label or the logo.
+- The background shows made-up text: gibberish, random or misspelled letters, words that do not fit the post, or user interface elements. Real, correctly spelled words that belong to the scene (a neon sign with the brand name, a sign about training) are fine.
+- A product label is invented, distorted or does not match the product's real name, or a product appears that is not one of the brand's uploaded products.
 - The background contains a recognisable person or face.
 - The uploaded product photo or logo is expected ({{expected}}) but is missing, distorted or covered.
 - The slide clearly does not fit the brand's colours and style described below.
