@@ -1,14 +1,14 @@
 {
   "phase": "REVIEW",
   "status": "DONE",
-  "attempt": 2,
+  "attempt": 3,
   "promptId": "review@v2",
   "model": "anthropic/claude-sonnet-5.5",
-  "tokensIn": 22556,
-  "tokensOut": 7309,
-  "costUsd": 0.381681,
+  "tokensIn": 20469,
+  "tokensOut": 5549,
+  "costUsd": 0.307414,
   "output": {
-    "score": 0.9,
+    "score": 1,
     "issues": [],
     "slides": [
       {
@@ -25,7 +25,7 @@
         "passed": true,
         "postIndex": 2,
         "ruleIssues": [],
-        "regenerated": true
+        "regenerated": false
       },
       {
         "order": 2,
@@ -33,7 +33,7 @@
         "passed": true,
         "postIndex": 2,
         "ruleIssues": [],
-        "regenerated": true
+        "regenerated": false
       },
       {
         "order": 3,
@@ -41,18 +41,15 @@
         "passed": true,
         "postIndex": 2,
         "ruleIssues": [],
-        "regenerated": true
+        "regenerated": false
       },
       {
         "order": 4,
-        "issues": [
-          "Recipe cards on the table show made-up, unreadable text and handwriting, so remove them or replace them with blank paper.",
-          "The 'Tiramisu' and 'Cappuccino' card headings are not part of the post and have tiny gibberish body text, so they must go."
-        ],
-        "passed": false,
+        "issues": [],
+        "passed": true,
         "postIndex": 2,
         "ruleIssues": [],
-        "regenerated": true
+        "regenerated": false
       },
       {
         "order": 5,
@@ -60,7 +57,7 @@
         "passed": true,
         "postIndex": 2,
         "ruleIssues": [],
-        "regenerated": true
+        "regenerated": false
       },
       {
         "order": 1,
@@ -68,7 +65,7 @@
         "passed": true,
         "postIndex": 3,
         "ruleIssues": [],
-        "regenerated": false
+        "regenerated": true
       },
       {
         "order": 2,
@@ -76,7 +73,7 @@
         "passed": true,
         "postIndex": 3,
         "ruleIssues": [],
-        "regenerated": false
+        "regenerated": true
       },
       {
         "order": 3,
@@ -84,7 +81,7 @@
         "passed": true,
         "postIndex": 3,
         "ruleIssues": [],
-        "regenerated": false
+        "regenerated": true
       },
       {
         "order": 4,
@@ -92,39 +89,33 @@
         "passed": true,
         "postIndex": 3,
         "ruleIssues": [],
-        "regenerated": false
+        "regenerated": true
       }
     ],
     "replaced": [
       {
         "order": 1,
-        "assetId": "01a21c86-c0cd-715c-b762-f05268475056",
-        "postIndex": 2,
-        "backgroundAssetId": "01a21c86-bdb5-74bb-bfa4-9ae1b5f2adfa"
+        "assetId": "01a21c99-30f2-7423-8738-b36861625d96",
+        "postIndex": 3,
+        "backgroundAssetId": "01a21c99-2c9e-763f-83ab-03a59e20b9cf"
       },
       {
         "order": 2,
-        "assetId": "01a21c86-f648-745c-bbbc-643fc9e58e5e",
-        "postIndex": 2,
-        "backgroundAssetId": "01a21c86-f2b9-721f-be2d-b28ef1dccd6f"
+        "assetId": "01a21c99-6c5b-7761-be20-194a72135a95",
+        "postIndex": 3,
+        "backgroundAssetId": "01a21c99-682c-736c-9ae5-395f85fe85fd"
       },
       {
         "order": 3,
-        "assetId": "01a21c87-2788-751a-8ebf-46b894cb20d3",
-        "postIndex": 2,
-        "backgroundAssetId": "01a21c87-240d-74d3-9497-0f95fd01423e"
+        "assetId": "01a21c99-dd74-740a-9b59-703c1d73986e",
+        "postIndex": 3,
+        "backgroundAssetId": "01a21c99-d93a-7401-a95f-53a658bece87"
       },
       {
         "order": 4,
-        "assetId": "01a21c87-5d38-7765-aef7-7655154dd701",
-        "postIndex": 2,
-        "backgroundAssetId": "01a21c87-59cb-77a8-bf39-81bb0ab6962a"
-      },
-      {
-        "order": 5,
-        "assetId": "01a21c87-93ad-742c-9c74-f022bbb671f1",
-        "postIndex": 2,
-        "backgroundAssetId": "01a21c87-903c-73e8-80ce-d1bcf497bef1"
+        "assetId": "01a21c9a-1ab9-75ea-a39b-356ea5619cfd",
+        "postIndex": 3,
+        "backgroundAssetId": "01a21c9a-1653-717a-b554-f6535d00ee58"
       }
     ]
   },

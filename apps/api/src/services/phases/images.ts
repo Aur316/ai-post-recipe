@@ -75,6 +75,11 @@ export async function shrinkImage(data: Buffer, keepAlpha = false) {
       }
 }
 
+export async function aspectRatio(upload: Pick<Upload, 'data'>) {
+  const { width = 1, height = 1 } = await sharp(upload.data).metadata()
+  return width / height
+}
+
 export async function toDataUrl(upload: Pick<Upload, 'mimeType' | 'data'>) {
   const png =
     upload.mimeType === 'image/svg+xml'

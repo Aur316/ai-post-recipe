@@ -9,7 +9,12 @@ import {
 
 import type { ImageProvider } from '../../providers/image/image.provider.js'
 import type { SlideRenderer } from '../../providers/renderer/slide-renderer.js'
-import { type Upload, shrinkImage, toDataUrl } from '../phases/images.js'
+import {
+  type Upload,
+  aspectRatio,
+  shrinkImage,
+  toDataUrl,
+} from '../phases/images.js'
 
 export interface SlideTools {
   images: ImageProvider
@@ -142,6 +147,7 @@ export async function renderSlide(
     tokens: tokensFor(input.post.analysis),
     backgroundUrl: await toDataUrl(input.background),
     logoUrl: logo ? await toDataUrl(logo) : undefined,
+    logoAspect: logo ? await aspectRatio(logo) : undefined,
   })
   return tools.saveAsset('RENDERED_SLIDE', png, 'image/png')
 }

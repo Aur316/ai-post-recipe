@@ -30,6 +30,7 @@ export interface SlideProps {
   tokens: BrandTokens
   backgroundUrl?: string
   logoUrl?: string
+  logoAspect?: number
 }
 
 export function layoutFor(order: number, total: number): SlideLayout {
@@ -210,7 +211,11 @@ function Header(props: SlideProps & { top: number; pad: number }) {
             src={props.logoUrl}
             alt=""
             data-logo
-            style={{ height: 64, maxWidth: 360, objectFit: 'contain' }}
+            style={{
+              height: (props.logoAspect ?? 4) < 2 ? 140 : 64,
+              maxWidth: 360,
+              objectFit: 'contain',
+            }}
           />
         </div>
       ) : (

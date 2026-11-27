@@ -13,7 +13,7 @@
       }
       body {
         font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
-        font-size: 8.9pt;
+        font-size: 8.6pt;
         line-height: 1.38;
         color: #1d2330;
         margin: 0;
@@ -30,7 +30,7 @@
       h2 {
         font-size: 10.5pt;
         color: #0f6b6b;
-        margin: 3.2mm 0 1mm;
+        margin: 2.6mm 0 0.8mm;
       }
       p {
         margin: 0 0 1.6mm;
@@ -86,7 +86,9 @@
         margin: 1mm 0 1.6mm;
       }
       .case img {
-        width: 100%;
+        display: block;
+        width: auto;
+        max-width: 100%;
         border-radius: 1.2mm;
         border: 0.2mm solid #d7dce3;
       }
@@ -95,8 +97,18 @@
         color: #586174;
         margin-top: 0.6mm;
       }
-      .break {
-        break-before: page;
+      table,
+      .case,
+      li {
+        break-inside: avoid;
+      }
+      h2 {
+        break-after: avoid;
+      }
+      .case img {
+        max-height: 54mm;
+        object-fit: contain;
+        object-position: left top;
       }
     </style>
   </head>
@@ -112,13 +124,56 @@
 
     <p>
       The recipe is a small web app (React, Express, PostgreSQL) that runs eight
-      phases as background jobs and stops twice for a person to approve. The
-      three GymBeam posts, every input and every intermediate result are in
-      <code>examples/gymbeam</code>; the full recipe (commands, models,
-      settings, inputs, phases, human steps) is in <code>docs/recipe.md</code>.
-      I chose GymBeam because it is the recommended brand, has an active
-      Croatian profile and product pages full of verifiable facts.
+      phases as background jobs and stops twice for a person to approve. I chose
+      GymBeam because it is the recommended brand, has an active Croatian
+      profile and product pages full of verifiable facts.
     </p>
+
+    <h2>Where to find what</h2>
+    <table>
+      <tr>
+        <th>If you want to…</th>
+        <th>Open</th>
+      </tr>
+      <tr>
+        <td>See the three finished posts</td>
+        <td>
+          <code>examples/gymbeam/generated-posts</code> (a second brand:
+          <code>examples/franck</code>): one folder per post with the slides in
+          order, <code>caption.txt</code> and <code>meta.json</code> (format,
+          goal, concept, rationale)
+        </td>
+      </tr>
+      <tr>
+        <td>Check the inputs</td>
+        <td>
+          <code>examples/gymbeam/brief.json</code> and
+          <code>references/</code> (profile screenshots, product photos, logo)
+        </td>
+      </tr>
+      <tr>
+        <td>Read the analysis, plan, copy and review</td>
+        <td>
+          <code>generated-posts/phases/*.json</code>, each with its prompt
+          version, model and cost; sources in <code>sources.md</code>
+        </td>
+      </tr>
+      <tr>
+        <td>Run the recipe yourself</td>
+        <td>
+          <code>docs/recipe.md</code> (commands, models, settings, human steps,
+          what may vary); keys: <code>docs/onboarding.md</code>; prompts:
+          <code>packages/prompts/prompts</code>
+        </td>
+      </tr>
+      <tr>
+        <td>Understand the code</td>
+        <td>
+          <code>README.md</code>, then <code>docs/architecture</code> (design,
+          pipeline, data model, decision records)
+        </td>
+      </tr>
+    </table>
 
     <h2>How to run and configure</h2>
     <ol>
@@ -271,7 +326,7 @@
       </div>
     </div>
 
-    <h2 class="break">Example of my own correction</h2>
+    <h2>Example of my own correction</h2>
     <p>
       In the first visuals run (<code>background@v5</code>) the template placed
       the product photo on the slide as a white box, so it looked pasted onto
@@ -308,24 +363,14 @@
       <div>
         <h2>Limits</h2>
         <ul>
-          <li>
-            The product is redrawn by the image model, so a label can still come
-            out slightly wrong; the review checks it and remakes the slide once,
-            and the operator can regenerate a slide with an instruction.
-          </li>
-          <li>
-            All slides of a post share one scene, so a story repeats the same
-            picture behind different texts.
-          </li>
-          <li>
-            Square logos look small, because the header is sized for wide
-            wordmarks.
-          </li>
-          <li>
-            The analysis once took Instagram's dark interface for a brand
-            colour.
-          </li>
           <li>No login: meant for one person, run locally.</li>
+          <li>
+            The job queue (pg-boss) runs inside PostgreSQL and the worker takes
+            one job at a time, so two runs wait for each other. It is enough for
+            one operator; a production setup with many users would need a
+            dedicated queue such as Redis (for example with BullMQ) and several
+            workers to scale.
+          </li>
         </ul>
         <h2>What may vary between runs</h2>
         <p>
@@ -364,9 +409,8 @@
           saves and comments per post with the brand's earlier posts.
         </p>
         <p>
-          <b>Next fixes.</b> A new scene per inner slide of a story; logo size
-          by aspect ratio; ignore the colours of Instagram's own interface in
-          the analysis.
+          <b>Next fixes.</b> Login and a scalable queue for more users; a new
+          scene per inner slide of a story.
         </p>
       </div>
     </div>

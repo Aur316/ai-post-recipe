@@ -52,12 +52,13 @@ const outputs: Partial<PhaseOutputs> = {
 }
 
 const productPhoto = await png(8, 8)
+const logo = await png(40, 10)
 
 const upload = (kind: 'UPLOAD_LOGO' | 'UPLOAD_PRODUCT', id: string) => ({
   id,
   kind,
   mimeType: 'image/png',
-  data: kind === 'UPLOAD_PRODUCT' ? productPhoto : Buffer.from(id),
+  data: kind === 'UPLOAD_PRODUCT' ? productPhoto : logo,
 })
 
 describe('visuals phase', () => {
@@ -115,9 +116,10 @@ describe('visuals phase', () => {
 
     const [first] = renderer.rendered
     expect(first).toMatchObject({ format: 'IMAGE', layout: 'cover', total: 1 })
-    expect(first?.logoUrl).toBe(
-      `data:image/png;base64,${Buffer.from('logo').toString('base64')}`,
-    )
+    expect(first).toMatchObject({
+      logoUrl: `data:image/png;base64,${logo.toString('base64')}`,
+      logoAspect: 4,
+    })
     expect(renderer.rendered.map((r) => r.layout).slice(1, 4)).toEqual([
       'cover',
       'text',
