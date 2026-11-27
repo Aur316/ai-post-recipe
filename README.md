@@ -108,3 +108,7 @@ The app has no login and is meant to run locally for one person. Do not expose i
 - [Report](docs/report.pdf): the short PDF with instructions, decisions, checks, limits and proposals.
 - [Architecture](docs/architecture/README.md): system design, the generation pipeline, data model, API and decision records.
 - [Milestones](docs/milestones/README.md): the build plan from scaffold to delivery.
+
+## License
+
+All rights reserved; free to view and run for non-commercial use. See [LICENSE](LICENSE).
