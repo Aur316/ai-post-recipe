@@ -24,7 +24,8 @@ describe('Onboarding', () => {
     server.use(health('fake', 'none'), emptyRuns)
     const router = renderRoute('/en')
 
-    const banner = await screen.findByRole('status')
+    const banner = await screen.findByText(/Demo mode/)
+    expect(banner).toHaveAttribute('role', 'status')
     await user.click(
       within(banner).getByRole('link', { name: 'Set up the keys' }),
     )

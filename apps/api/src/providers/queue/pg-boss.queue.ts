@@ -7,6 +7,8 @@ import type {
   SendOptions,
 } from './job-queue.js'
 
+const WORKERS = 4
+
 export class PgBossQueue implements JobQueue {
   private readonly boss: PgBoss
   private readonly created = new Set<string>()
@@ -44,7 +46,7 @@ export class PgBossQueue implements JobQueue {
     await this.ensureQueue(queue)
     await this.boss.work<T>(
       queue,
-      { pollingIntervalSeconds: 0.5 },
+      { pollingIntervalSeconds: 0.5, localConcurrency: WORKERS },
       async ([job]) => {
         if (!job) return
         await handler({

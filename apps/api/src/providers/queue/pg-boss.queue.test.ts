@@ -44,6 +44,24 @@ describe('PgBossQueue', () => {
     expect(received).not.toContain('rolled back')
   })
 
+  it('runs jobs of different runs at the same time', async () => {
+    const parallel = `${name}-parallel`
+    let running = 0
+    let peak = 0
+    await queue.work<{ value: string }>(parallel, async () => {
+      running += 1
+      peak = Math.max(peak, running)
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+      running -= 1
+    })
+
+    await Promise.all(
+      ['a', 'b'].map((value) => queue.send(parallel, { value })),
+    )
+
+    await expect.poll(() => peak, { timeout: 10_000 }).toBe(2)
+  })
+
   it('gives every job the expiry, so a job whose worker stopped is retried soon', async () => {
     await queue.send(name, { value: 'expiry' })
 
