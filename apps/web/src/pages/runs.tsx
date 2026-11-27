@@ -7,6 +7,7 @@ import useInfiniteScroll from 'react-infinite-scroll-hook'
 import { Link, useSearchParams } from 'react-router'
 
 import { InfiniteScrollSpinner } from '@/components/infinite-scroll-spinner'
+import { PageLoader } from '@/components/page-loader'
 import { RunStatusBadge } from '@/components/run-status-badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -77,9 +78,7 @@ export function Runs() {
           />
         </div>
 
-        {isPending && (
-          <p className="text-muted-foreground">{t('common.loading')}</p>
-        )}
+        {isPending && <PageLoader />}
         {!isPending && runs.length === 0 && (
           <p className="text-muted-foreground">
             {debouncedSearch

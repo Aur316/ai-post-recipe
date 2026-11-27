@@ -239,7 +239,10 @@ describe('Run details', () => {
     )
     renderRoute(`/en/runs/${RUN_ID}`)
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Demo mode')
+    expect(await screen.findByText(/Demo mode/)).toHaveAttribute(
+      'role',
+      'status',
+    )
   })
 
   it('summarises the brief and the research', async () => {

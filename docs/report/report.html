@@ -365,11 +365,11 @@
         <ul>
           <li>No login: meant for one person, run locally.</li>
           <li>
-            The job queue (pg-boss) runs inside PostgreSQL and the worker takes
-            one job at a time, so two runs wait for each other. It is enough for
-            one operator; a production setup with many users would need a
-            dedicated queue such as Redis (for example with BullMQ) and several
-            workers to scale.
+            The job queue (pg-boss) runs inside PostgreSQL, and one API process
+            runs four jobs at a time (phases of one run always run in order).
+            This is enough for a few operators; a production setup with many
+            users would need a dedicated queue such as Redis (for example with
+            BullMQ) and separate workers to scale.
           </li>
         </ul>
         <h2>What may vary between runs</h2>

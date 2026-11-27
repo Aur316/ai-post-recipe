@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 
 import { BackLink } from '@/components/back-link'
 import { BriefForm } from '@/components/brief-form'
+import { PageLoader } from '@/components/page-loader'
 
 import { cn } from '@/lib/utils'
 
@@ -15,8 +16,7 @@ export function EditRun() {
   const { id = '' } = useParams()
   const { data: run, isPending } = useGetRunById({ id })
 
-  if (isPending)
-    return <p className="text-muted-foreground">{t('common.loading')}</p>
+  if (isPending) return <PageLoader />
   if (!run) return <NotFound title={t('common.runNotFound')} />
 
   return (

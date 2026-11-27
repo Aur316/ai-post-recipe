@@ -5,6 +5,7 @@ import { AssetGrid } from '@/components/asset-grid'
 import { BackLink } from '@/components/back-link'
 import { DeleteRunButton } from '@/components/delete-run-button'
 import { DownloadZipButton } from '@/components/download-zip-button'
+import { PageLoader } from '@/components/page-loader'
 import { PhaseTimeline } from '@/components/phase-timeline'
 import { RunStatusBadge } from '@/components/run-status-badge'
 import { SourcesList } from '@/components/sources-list'
@@ -32,8 +33,7 @@ export function RunDetails() {
   })
   const startRun = useStartRun()
 
-  if (isPending)
-    return <p className="text-muted-foreground">{t('common.loading')}</p>
+  if (isPending) return <PageLoader />
   if (!run) return <NotFound title={t('common.runNotFound')} />
 
   const { brief } = run
