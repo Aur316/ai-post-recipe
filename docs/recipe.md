@@ -54,7 +54,7 @@ Everything the GymBeam run used is in [`examples/gymbeam`](../examples/gymbeam):
 | Product photos      | `references/product-01-just-whey.png`, `references/product-02-creatine-monohydrate.jpg`, from the product pages on gymbeam.hr                                  |
 | Logo                | `references/logo.svg`, from the gymbeam.hr header                                                                                                              |
 
-The file name sets the kind of each reference (`logo…`, `product…`, `screenshot…`). Product photos follow the order of the products in the brief.
+In the form, the app suggests each file's kind from its name (`logo…` → Logo, `screenshot…` → Instagram screenshot, anything else → Product photo); check it in the list before starting. Product photos are matched to the brief's products in upload order, so add them in the brief's order: `product-01…` first. Choosing all files at once in the file picker keeps this order.
 
 ## Phases
 
