@@ -105,9 +105,12 @@ describe('visuals phase', () => {
     expect(images.requests[1]?.prompt.user).toContain('Kreatin')
     expect(images.requests[1]?.prompt.user).not.toContain('c2')
     expect(images.requests.map((r) => r.images?.[0]?.label)).toEqual(
-      Array(3).fill('Product photo (place this exact product in the scene)'),
+      ['True Whey', 'Kreatin', 'True Whey'].map(
+        (name) =>
+          `Product photo: ${name} (place this exact product in the scene)`,
+      ),
     )
-    expect(result).toMatchObject({ promptId: 'background@v6', model: 'fake' })
+    expect(result).toMatchObject({ promptId: 'background@v7', model: 'fake' })
     expect(result.usage?.costUsd).toBeCloseTo(0.12)
 
     const [first] = renderer.rendered

@@ -1,14 +1,14 @@
 {
   "phase": "REVIEW",
   "status": "DONE",
-  "attempt": 1,
-  "promptId": "review@v1",
+  "attempt": 2,
+  "promptId": "review@v2",
   "model": "anthropic/claude-sonnet-5.5",
-  "tokensIn": 21793,
-  "tokensOut": 7534,
-  "costUsd": 0.3839935,
+  "tokensIn": 22556,
+  "tokensOut": 7309,
+  "costUsd": 0.381681,
   "output": {
-    "score": 0.5,
+    "score": 0.9,
     "issues": [],
     "slides": [
       {
@@ -25,25 +25,20 @@
         "passed": true,
         "postIndex": 2,
         "ruleIssues": [],
-        "regenerated": false
+        "regenerated": true
       },
       {
         "order": 2,
-        "issues": [
-          "Headline overlaps the bottom of the Cappuccino box, covering part of the product."
-        ],
-        "passed": false,
+        "issues": [],
+        "passed": true,
         "postIndex": 2,
         "ruleIssues": [],
         "regenerated": true
       },
       {
         "order": 3,
-        "issues": [
-          "Headline overlaps the bottom of the product box and the cup.",
-          "Open book in the background shows text-like lines and pictures that should not be there."
-        ],
-        "passed": false,
+        "issues": [],
+        "passed": true,
         "postIndex": 2,
         "ruleIssues": [],
         "regenerated": true
@@ -51,9 +46,8 @@
       {
         "order": 4,
         "issues": [
-          "Headline overlaps the bottom of the product box and the cup.",
-          "Background contains a pinned card with readable 'Recipe card' text and lines of writing.",
-          "Slide counter badge sits over the recipe card and has weak contrast."
+          "Recipe cards on the table show made-up, unreadable text and handwriting, so remove them or replace them with blank paper.",
+          "The 'Tiramisu' and 'Cappuccino' card headings are not part of the post and have tiny gibberish body text, so they must go."
         ],
         "passed": false,
         "postIndex": 2,
@@ -66,7 +60,7 @@
         "passed": true,
         "postIndex": 2,
         "ruleIssues": [],
-        "regenerated": false
+        "regenerated": true
       },
       {
         "order": 1,
@@ -78,24 +72,19 @@
       },
       {
         "order": 2,
-        "issues": [
-          "Headline text runs over the product box and covers part of its label and tiramisu image."
-        ],
-        "passed": false,
+        "issues": [],
+        "passed": true,
         "postIndex": 3,
         "ruleIssues": [],
-        "regenerated": true
+        "regenerated": false
       },
       {
         "order": 3,
-        "issues": [
-          "Tablet in the background shows a website interface with text and fake product images.",
-          "Headline starts right at the bottom edge of the product box, touching or overlapping it."
-        ],
-        "passed": false,
+        "issues": [],
+        "passed": true,
         "postIndex": 3,
         "ruleIssues": [],
-        "regenerated": true
+        "regenerated": false
       },
       {
         "order": 4,
@@ -108,34 +97,34 @@
     ],
     "replaced": [
       {
-        "order": 2,
-        "assetId": "01a218f4-c7a7-7087-b466-184720b26119",
+        "order": 1,
+        "assetId": "01a21c86-c0cd-715c-b762-f05268475056",
         "postIndex": 2,
-        "backgroundAssetId": "01a218f4-c461-7029-ba2d-d3f7f8abd899"
+        "backgroundAssetId": "01a21c86-bdb5-74bb-bfa4-9ae1b5f2adfa"
+      },
+      {
+        "order": 2,
+        "assetId": "01a21c86-f648-745c-bbbc-643fc9e58e5e",
+        "postIndex": 2,
+        "backgroundAssetId": "01a21c86-f2b9-721f-be2d-b28ef1dccd6f"
       },
       {
         "order": 3,
-        "assetId": "01a218f4-f1c6-7454-914f-f9cd52ada222",
+        "assetId": "01a21c87-2788-751a-8ebf-46b894cb20d3",
         "postIndex": 2,
-        "backgroundAssetId": "01a218f4-ee8c-76f2-a854-139988ded4da"
+        "backgroundAssetId": "01a21c87-240d-74d3-9497-0f95fd01423e"
       },
       {
         "order": 4,
-        "assetId": "01a218f5-199f-76f0-af98-b1b21e64e283",
+        "assetId": "01a21c87-5d38-7765-aef7-7655154dd701",
         "postIndex": 2,
-        "backgroundAssetId": "01a218f5-1676-733d-bd00-a8e0c8335d1d"
+        "backgroundAssetId": "01a21c87-59cb-77a8-bf39-81bb0ab6962a"
       },
       {
-        "order": 2,
-        "assetId": "01a218f5-449e-71c6-be0a-6c86637177cd",
-        "postIndex": 3,
-        "backgroundAssetId": "01a218f5-40e7-74de-891b-951e5f9241ae"
-      },
-      {
-        "order": 3,
-        "assetId": "01a218f5-6e46-718c-99c8-38959b36ade9",
-        "postIndex": 3,
-        "backgroundAssetId": "01a218f5-6a16-7628-845c-0df8a9057e1a"
+        "order": 5,
+        "assetId": "01a21c87-93ad-742c-9c74-f022bbb671f1",
+        "postIndex": 2,
+        "backgroundAssetId": "01a21c87-903c-73e8-80ce-d1bcf497bef1"
       }
     ]
   },

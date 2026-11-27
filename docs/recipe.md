@@ -24,13 +24,13 @@ Where to get the keys: [onboarding](onboarding.md). Without `OPENROUTER_API_KEY`
 
 All model calls go through OpenRouter. Each prompt file sets its own model; `MODEL_<PROMPT ID>` in `.env` overrides it. The prompts set no temperature, so every call uses OpenRouter's default (1.0).
 
-| Phase    | Prompt          | Model                           | Max output tokens | Other settings                                                     |
-| -------- | --------------- | ------------------------------- | ----------------: | ------------------------------------------------------------------ |
-| Analysis | `analysis@v3`   | `anthropic/claude-sonnet-5.5`   |              8000 | Vision: gets the uploaded screenshots, logo and product photos     |
-| Plan     | `plan@v2`       | `anthropic/claude-sonnet-5.5`   |              8000 |                                                                    |
-| Copy     | `copy@v2`       | `anthropic/claude-sonnet-5.5`   |              8000 |                                                                    |
-| Visuals  | `background@v6` | `google/gemini-3.1-flash-image` |              4000 | 4:5 for image and carousel, 9:16 for story; gets the product photo |
-| Review   | `review@v1`     | `anthropic/claude-sonnet-5.5`   |              6000 | Vision: gets every rendered slide                                  |
+| Phase    | Prompt          | Model                           | Max output tokens | Other settings                                                                                |
+| -------- | --------------- | ------------------------------- | ----------------: | --------------------------------------------------------------------------------------------- |
+| Analysis | `analysis@v3`   | `anthropic/claude-sonnet-5.5`   |              8000 | Vision: gets the uploaded screenshots, logo and product photos                                |
+| Plan     | `plan@v2`       | `anthropic/claude-sonnet-5.5`   |              8000 |                                                                                               |
+| Copy     | `copy@v2`       | `anthropic/claude-sonnet-5.5`   |              8000 |                                                                                               |
+| Visuals  | `background@v7` | `google/gemini-3.1-flash-image` |              4000 | 4:5 for image and carousel, 9:16 for story; gets the photo of every product the post features |
+| Review   | `review@v2`     | `anthropic/claude-sonnet-5.5`   |              6000 | Vision: gets every rendered slide                                                             |
 
 Other tools:
 
@@ -40,7 +40,7 @@ Other tools:
 
 The prompts are in [`packages/prompts/prompts`](../packages/prompts/prompts), one Markdown file per prompt with the model and version in its front matter. Every phase run records the prompt id and version, model, tokens and cost.
 
-`MAX_COST_USD_PER_RUN` (default `3`) stops a run before it spends more. The GymBeam run cost $1.55 in all, including one re-run of the visuals; the Franck run cost $0.71.
+`MAX_COST_USD_PER_RUN` (default `3`) stops a run before it spends more. One run costs about $0.85: the GymBeam run from a clean clone cost $0.84. The exported GymBeam run shows $2.29, because its visuals were made three times while the recipe was being improved (`background@v5` to `v7`).
 
 ## Inputs and references
 

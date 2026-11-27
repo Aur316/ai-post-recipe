@@ -23,7 +23,7 @@ cp .env.example .env
 docker compose --profile full up --build
 ```
 
-Open http://localhost:8080. Set `OPENROUTER_API_KEY` in `.env` first (see [Configuration](#configuration)); without it the app runs in demo mode with recorded sample answers. To repeat the GymBeam run, follow [the recipe](docs/recipe.md). A run costs about $1–2 of OpenRouter credit.
+Open http://localhost:8080. Set `OPENROUTER_API_KEY` in `.env` first (see [Configuration](#configuration)); without it the app runs in demo mode with recorded sample answers. To repeat the GymBeam run, follow [the recipe](docs/recipe.md). A run costs about $1 of OpenRouter credit; image generation needs at least $1 of balance on the account.
 
 Stop the stack with `docker compose --profile full down`. Add `-v` to also delete the database volume.
 
@@ -71,7 +71,7 @@ Run these from the repository root. Turborepo runs each one in every workspace t
 | `DATABASE_URL`         | `postgresql://app:app@localhost:5432/recipe` | PostgreSQL connection string. Compose overrides the host to `db` in the `full` profile                                         |
 | `OPENROUTER_API_KEY`   | (empty)                                      | Key from [openrouter.ai/keys](https://openrouter.ai/keys). Without it the AI phases return recorded sample answers (demo mode) |
 | `SERPER_API_KEY`       | (empty)                                      | Optional key from [serper.dev](https://serper.dev). Without it research reads only the links in the brief                      |
-| `MAX_COST_USD_PER_RUN` | `2`                                          | No LLM call starts once a run has spent this much                                                                              |
+| `MAX_COST_USD_PER_RUN` | `2` (`3` in `.env.example`)                  | No LLM call starts once a run has spent this much                                                                              |
 | `MODEL_<PROMPT ID>`    | (from the prompt file)                       | Overrides a prompt's model, e.g. `MODEL_ANALYSIS=google/gemini-3.5-flash`                                                      |
 | `LLM_TIMEOUT_MS`       | `120000`                                     | Timeout of one model request                                                                                                   |
 

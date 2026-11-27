@@ -129,6 +129,6 @@ describe('review phase', () => {
     expect(result.output.issues).toEqual([
       'Post 1, caption: "40" appears in no source',
     ])
-    expect(result.promptId).toBe('review@v1')
+    expect(result.promptId).toBe('review@v2')
   })
 })

@@ -18,7 +18,7 @@ export function AppLayout() {
   const { pathname } = useLocation()
 
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
+    <div className="flex h-dvh min-h-full flex-col bg-background text-foreground">
       <header className="shrink-0 border-b">
         <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 lg:px-6">
           <Link to={localized('/')} className="font-semibold">

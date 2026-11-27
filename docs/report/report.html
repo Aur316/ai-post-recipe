@@ -148,8 +148,9 @@
       Settings: each prompt file in <code>packages/prompts/prompts</code> names
       its model (Claude Sonnet 5.5 for text and vision, Gemini 3.1 Flash Image
       for scenes); <code>MODEL_&lt;PROMPT ID&gt;</code> overrides it, and
-      <code>MAX_COST_USD_PER_RUN</code> (default $2) caps the spend. The GymBeam
-      run cost $1.55, the Franck run $0.71.
+      <code>MAX_COST_USD_PER_RUN</code> ($3 in <code>.env.example</code>) caps
+      the spend. One run costs about $0.85 (the GymBeam run from a clean clone:
+      $0.84).
     </p>
 
     <h2>Phases</h2>
@@ -194,9 +195,10 @@
       <tr>
         <td>6 Visuals</td>
         <td>
-          Copy, colours, product photo, logo → image model makes the scene with
-          the product in it; a React template adds the real logo and text,
-          Playwright renders PNGs → slides
+          Copy, colours, product photos, logo → image model makes the scene with
+          the post's products in it, labels copied from their photos; a React
+          template adds the real logo and the text at the bottom, Playwright
+          renders PNGs → slides
         </td>
       </tr>
       <tr>
@@ -251,7 +253,8 @@
         <h2>How the results were checked</h2>
         <ul>
           <li>
-            The review phase checks every slide and remade the failing ones.
+            The review phase checks every slide (GymBeam score 0.9 of 1; one
+            slide was made again).
           </li>
           <li>
             At both approval gates a person reads the analysis and the plan,
@@ -271,29 +274,33 @@
     <h2 class="break">Example of my own correction</h2>
     <p>
       In the first visuals run (<code>background@v5</code>) the template placed
-      the product photo on the slide as a white box with rounded corners, so it
-      looked pasted onto the scene, and posts took the product photos in turn,
-      so the creatine post showed the protein. I changed the recipe: the post's
-      own product photo now goes to the image model as input, which places that
-      exact product in the scene on a real surface with matching light and
-      shadow (<code>background@v6</code>), and the template no longer draws a
-      box. The current GymBeam posts were made this way, and the Franck run
-      confirmed it on another brand.
+      the product photo on the slide as a white box, so it looked pasted onto
+      the scene, and posts took the product photos in turn, so the creatine post
+      showed the protein. I changed the recipe: the post's own product photo
+      goes to the image model, which places that exact product in the scene with
+      matching light and shadow (<code>v6</code>). Checking those posts, I found
+      the next problems: a post about two products got only one photo, so the
+      model invented the second label; neon signs showed made-up words; and text
+      on inner slides covered the label. So now every featured product's photo
+      is sent with its name and the label is copied letter for letter, signs may
+      only show real words that fit the post, and the text sits at the bottom of
+      every slide (<code>v7</code>, <code>review@v2</code>). The review score
+      went from 0.3 to 0.9.
     </p>
     <div class="case">
       <div>
         <img src="before.jpg" alt="" />
         <div class="cap">
-          Before (v5): white box; creatine post shows the protein.
+          Before (v5): white box; the creatine post shows the protein.
         </div>
       </div>
       <div>
         <img src="after-1.jpg" alt="" />
-        <div class="cap">After (v6): post 1, creatine in the scene.</div>
+        <div class="cap">After (v7): post 1, creatine in the scene.</div>
       </div>
       <div>
         <img src="after-2.jpg" alt="" />
-        <div class="cap">After (v6): post 2, protein in the scene.</div>
+        <div class="cap">After (v7): post 3, both products, real labels.</div>
       </div>
     </div>
 
@@ -302,13 +309,13 @@
         <h2>Limits</h2>
         <ul>
           <li>
-            The product is redrawn by the image model: the label may change
-            slightly, or an extra object appears (a shaker, a second tub). The
-            review catches most of it.
+            The product is redrawn by the image model, so a label can still come
+            out slightly wrong; the review checks it and remakes the slide once,
+            and the operator can regenerate a slide with an instruction.
           </li>
           <li>
-            All slides of a post share one scene, so on inner slides the text
-            can cover the product (seen on Franck).
+            All slides of a post share one scene, so a story repeats the same
+            picture behind different texts.
           </li>
           <li>
             Square logos look small, because the header is sized for wide
@@ -357,9 +364,9 @@
           saves and comments per post with the brand's earlier posts.
         </p>
         <p>
-          <b>Next fixes.</b> A scene without the product for inner slides; logo
-          size by aspect ratio; give the image model every product a post
-          features.
+          <b>Next fixes.</b> A new scene per inner slide of a story; logo size
+          by aspect ratio; ignore the colours of Instagram's own interface in
+          the analysis.
         </p>
       </div>
     </div>

@@ -52,7 +52,7 @@ export async function makeBackground(
 ) {
   const story = post.format === 'STORY'
   const shot = referenceShot(tools.websiteShots, post.index)
-  const { product } = brandImages(tools.uploads, post)
+  const { products } = brandImages(tools.uploads, post)
   const prompt = tools.prompts.render('background', {
     brand: post.brief.brandName,
     colors:
@@ -65,20 +65,18 @@ export async function makeBackground(
     reference: shot
       ? "Reference: the attached screenshot of the brand's website."
       : '',
-    product: product
-      ? `Product: ${post.product || 'the product'}, from the attached product photo.`
+    product: products.length
+      ? `Products: ${products.map((p) => p.name).join(' and ')}, one attached photo each.`
       : '',
     instruction: instruction ? `Extra instruction: ${instruction}` : '',
   })
   const images = [
-    ...(product
-      ? [
-          {
-            label: 'Product photo (place this exact product in the scene)',
-            ...(await shrinkImage(product.data, true)),
-          },
-        ]
-      : []),
+    ...(await Promise.all(
+      products.map(async (p) => ({
+        label: `Product photo: ${p.name} (place this exact product in the scene)`,
+        ...(await shrinkImage(p.photo.data, true)),
+      })),
+    )),
     ...(shot
       ? [
           {
@@ -106,15 +104,21 @@ export function brandImages(
   post: Pick<PostDesign, 'brief' | 'index' | 'product'>,
 ) {
   const logo = uploads.find((u) => u.kind === 'UPLOAD_LOGO')
-  const products = uploads.filter((u) => u.kind === 'UPLOAD_PRODUCT')
+  const photos = uploads.filter((u) => u.kind === 'UPLOAD_PRODUCT')
   const featured = (post.product ?? '').toLowerCase()
-  const named = post.brief.products.findIndex(
-    (p) => featured !== '' && featured.includes(p.name.toLowerCase()),
-  )
-  const product = products.length
-    ? products[named >= 0 ? named : (post.index - 1) % products.length]
-    : undefined
-  return { logo, product }
+  const nameOf = (i: number) =>
+    post.brief.products[i]?.name ?? post.product ?? 'the product'
+  const named = photos.flatMap((photo, i) => {
+    const name = post.brief.products[i]?.name.toLowerCase()
+    return name && featured.includes(name) ? [{ name: nameOf(i), photo }] : []
+  })
+  const turn = (post.index - 1) % Math.max(photos.length, 1)
+  const products = named.length
+    ? named
+    : photos
+        .slice(turn, turn + 1)
+        .map((photo) => ({ name: nameOf(turn), photo }))
+  return { logo, products }
 }
 
 export async function renderSlide(

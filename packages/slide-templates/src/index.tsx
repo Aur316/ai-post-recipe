@@ -123,9 +123,7 @@ export function Slide(props: SlideProps) {
           position: 'absolute',
           inset: 0,
           background:
-            props.layout === 'text'
-              ? 'rgba(0,0,0,0.55)'
-              : 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.82) 100%)',
+            'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.82) 100%)',
         }}
       />
 
@@ -137,10 +135,9 @@ export function Slide(props: SlideProps) {
           left: pad,
           right: pad,
           bottom: safeBottom,
-          top: props.layout === 'text' ? safeTop + 120 : undefined,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: props.layout === 'text' ? 'center' : 'flex-end',
+          justifyContent: 'flex-end',
           gap: 32,
         }}
       >
